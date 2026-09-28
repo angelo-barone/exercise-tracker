@@ -1,0 +1,1352 @@
+<title>PPL×2 Logbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  color-scheme:light;
+  --ground:#f7f8f9; --surface:#ffffff; --surface-2:#f1f3f5;
+  --line:#e3e6ea; --line-strong:#c4c9d0;
+  --text:#16181c; --dim:#5c626b; --faint:#8b919b;
+  --accent:#16181c; --on-accent:#ffffff;
+  --good:#15704a; --warn:#a4470e;
+  --r:8px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme:dark;
+    --ground:#121417; --surface:#191c20; --surface-2:#202429;
+    --line:#2a2e34; --line-strong:#454b53;
+    --text:#e9ebee; --dim:#a2a8b1; --faint:#767c86;
+    --accent:#e9ebee; --on-accent:#16181c;
+    --good:#5cc492; --warn:#eb9d5f;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme:dark;
+  --ground:#121417; --surface:#191c20; --surface-2:#202429;
+  --line:#2a2e34; --line-strong:#454b53;
+  --text:#e9ebee; --dim:#a2a8b1; --faint:#767c86;
+  --accent:#e9ebee; --on-accent:#16181c;
+  --good:#5cc492; --warn:#eb9d5f;
+}
+
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--ground); color:var(--text);
+  font-family:"Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size:15px; line-height:1.5; -webkit-text-size-adjust:100%;
+}
+button, textarea, input { font:inherit; color:inherit; }
+button { background:none; border:none; cursor:pointer; touch-action:manipulation; }
+button:focus-visible, input:focus-visible, textarea:focus-visible {
+  outline:2px solid var(--text); outline-offset:2px; border-radius:4px;
+}
+[hidden] { display:none !important; }
+
+.wrap { max-width:520px; margin:0 auto; padding:0 16px 104px; }
+
+/* ---------- header ---------- */
+.topbar {
+  position:sticky; top:0; z-index:30; background:var(--ground);
+  border-bottom:1px solid var(--line);
+  margin:0 -16px 18px; padding:14px 16px 12px;
+}
+.topbar-row { display:flex; align-items:flex-start; gap:12px; }
+.daytag { font-size:21px; font-weight:700; letter-spacing:-.015em; line-height:1.2; }
+.muscles { font-size:12px; color:var(--faint); margin-top:2px; }
+.topbar-meta { margin-left:auto; text-align:right; flex:none; }
+.datefield {
+  background:var(--surface); border:1px solid var(--line); color:var(--text);
+  border-radius:6px; padding:4px 7px; font-size:12.5px; font-variant-numeric:tabular-nums;
+}
+.tally { font-size:12px; color:var(--faint); margin-top:5px; }
+.sync { display:block; margin:1px 0 0 auto; padding:0; font-size:11.5px; color:var(--faint); cursor:default; }
+.sync.warn { color:var(--warn); font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+
+.seg { display:flex; gap:6px; margin-top:12px; }
+.seg button {
+  flex:1; padding:7px 0; border-radius:6px; border:1px solid var(--line);
+  background:var(--surface); font-size:13px; font-weight:500; color:var(--dim);
+}
+.seg button[aria-pressed="true"] { background:var(--text); color:var(--ground); border-color:var(--text); font-weight:600; }
+
+.banner {
+  border:1px solid var(--line); border-radius:var(--r); background:var(--surface);
+  padding:10px 12px; margin-bottom:14px; font-size:12.5px; color:var(--dim);
+}
+.banner b { color:var(--text); font-weight:600; }
+
+/* ---------- exercise ---------- */
+.exlist { display:flex; flex-direction:column; gap:8px; }
+.grouphead {
+  font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--faint); margin:18px 0 0; padding-bottom:2px;
+}
+.ex { background:var(--surface); border:1px solid var(--line); border-radius:var(--r); }
+.ex.open { border-color:var(--line-strong); }
+
+.exhead { width:100%; display:flex; align-items:center; gap:12px; padding:13px 14px; text-align:left; }
+.exnum {
+  flex:none; width:22px; font-size:12.5px; font-weight:500; color:var(--faint);
+  font-variant-numeric:tabular-nums;
+}
+.ex.done .exnum { color:var(--good); font-weight:600; }
+.exmain { min-width:0; flex:1; }
+.exname { display:block; font-weight:600; font-size:14.5px; }
+.exsub { display:block; font-size:12px; color:var(--faint); margin-top:1px; }
+.exlast { flex:none; text-align:right; font-size:11.5px; color:var(--faint); font-variant-numeric:tabular-nums; }
+.exlast b { display:block; font-size:13.5px; font-weight:600; color:var(--text); }
+.exlast .skel { display:block; width:48px; height:12px; border-radius:3px; background:var(--surface-2); }
+
+.exbody { padding:14px; display:flex; flex-direction:column; gap:14px; border-top:1px solid var(--line); }
+.cue { margin:0; font-size:13px; color:var(--dim); }
+
+/* ---------- notes ---------- */
+.noteshead { display:flex; align-items:baseline; margin-bottom:5px; }
+.noteshead h4, .minihead {
+  margin:0; font-size:11px; font-weight:600; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--faint);
+}
+.noteshead button { margin-left:auto; font-size:12.5px; color:var(--dim); text-decoration:underline; text-underline-offset:3px; }
+.notetext { font-size:13px; color:var(--text); white-space:pre-wrap; margin:0; }
+.notetext.empty { color:var(--faint); font-style:italic; }
+/* 16px keeps iOS from zooming the page when the field is focused */
+.noteedit, .textin {
+  width:100%; padding:9px 10px; border:1px solid var(--line-strong); border-radius:6px;
+  background:var(--surface); font-size:16px; line-height:1.45;
+}
+.noteedit { min-height:96px; resize:vertical; }
+.btnrow { display:flex; gap:8px; margin-top:8px; }
+.btnrow button { padding:8px 14px; border-radius:6px; font-size:13.5px; font-weight:500; }
+.btnrow .save { background:var(--accent); color:var(--on-accent); font-weight:600; }
+.btnrow .save:disabled { background:var(--surface-2); color:var(--faint); cursor:not-allowed; }
+.btnrow .cancel { border:1px solid var(--line-strong); color:var(--dim); }
+
+/* ---------- progression line ---------- */
+.prog { margin:0; font-size:12.5px; color:var(--dim); font-variant-numeric:tabular-nums; }
+.prog b { color:var(--text); font-weight:600; }
+.prog.up b { color:var(--good); }
+
+/* ---------- sets ---------- */
+.sets { display:flex; flex-direction:column; gap:8px; }
+.setrow { border:1px solid var(--line); border-radius:6px; padding:10px 11px; }
+.setrow.active { border-color:var(--line-strong); }
+
+.setline { display:flex; align-items:center; gap:10px; }
+.setlabel { font-size:12px; font-weight:600; color:var(--faint); flex:none; width:42px; }
+.logged-val { font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; }
+.logged-val span { color:var(--faint); font-weight:400; }
+.rpetag { margin-left:auto; font-size:12px; color:var(--dim); font-variant-numeric:tabular-nums; }
+.linkbtn { font-size:12.5px; color:var(--dim); text-decoration:underline; text-underline-offset:3px; padding:2px 0 2px 10px; }
+.hint { font-size:12px; color:var(--faint); }
+
+.stepper { display:flex; border:1px solid var(--line-strong); border-radius:6px; overflow:hidden; }
+.stepper button { width:38px; flex:none; font-size:18px; color:var(--dim); background:var(--surface-2); }
+.stepper input {
+  width:100%; min-width:0; border:none; background:var(--surface); color:var(--text);
+  text-align:center; font-size:16px; font-weight:600; font-variant-numeric:tabular-nums;
+  padding:9px 0; -moz-appearance:textfield; border-radius:0;
+}
+.stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.fieldgrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+.field > label, .flabel { display:block; font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); margin-bottom:5px; }
+.field > label em, .flabel em { font-style:normal; font-weight:400; text-transform:none; letter-spacing:0; }
+
+.steptoggle { display:flex; gap:5px; margin-top:6px; }
+.steptoggle button {
+  flex:1; font-size:11.5px; padding:3px 0; border:1px solid var(--line);
+  border-radius:5px; color:var(--faint); font-variant-numeric:tabular-nums;
+}
+.steptoggle button[aria-pressed="true"] { border-color:var(--line-strong); color:var(--text); }
+
+.rpewrap { margin-top:12px; }
+.rpehead { display:flex; align-items:baseline; gap:8px; margin-bottom:6px; }
+.rpehead label { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); }
+.rpehead .why { font-size:12px; color:var(--faint); margin-left:auto; }
+.rpegrid { display:grid; grid-template-columns:repeat(10,1fr); gap:4px; }
+.rpegrid button {
+  padding:9px 0; border-radius:5px; border:1px solid var(--line);
+  font-size:13px; font-weight:500; color:var(--dim); font-variant-numeric:tabular-nums;
+}
+.rpegrid button[aria-pressed="true"] { background:var(--text); color:var(--ground); border-color:var(--text); font-weight:600; }
+
+.logbtn {
+  width:100%; margin-top:12px; padding:12px; border-radius:6px;
+  background:var(--accent); color:var(--on-accent); font-weight:600; font-size:14.5px;
+}
+.logbtn:disabled { background:var(--surface-2); color:var(--faint); cursor:not-allowed; }
+
+/* ---------- added exercises ---------- */
+.addbtn {
+  width:100%; padding:13px; border:1px dashed var(--line-strong); border-radius:var(--r);
+  color:var(--dim); font-size:14px; font-weight:500; margin-top:8px;
+}
+.cform { background:var(--surface); border:1px solid var(--line-strong); border-radius:var(--r); padding:14px; margin-top:8px; display:flex; flex-direction:column; gap:14px; }
+.cform .seg { margin-top:0; }
+.cform .fieldgrid { margin-top:0; grid-template-columns:repeat(3,1fr); }
+.exfoot { border-top:1px solid var(--line); padding-top:12px; display:flex; flex-direction:column; gap:10px; }
+.exfoot .seg { margin-top:0; }
+.exfoot .acts { display:flex; gap:16px; }
+.exfoot .acts button { font-size:12.5px; color:var(--dim); text-decoration:underline; text-underline-offset:3px; padding:2px 0; }
+.exfoot .acts .del.armed { color:var(--warn); font-weight:600; }
+
+/* ---------- rest ---------- */
+.rest {
+  position:fixed; left:50%; transform:translateX(-50%); bottom:64px; z-index:40;
+  width:min(488px, calc(100% - 32px));
+  display:flex; align-items:center; gap:10px;
+  background:var(--surface); border:1px solid var(--line-strong);
+  border-radius:var(--r); padding:9px 13px;
+}
+.rest .t { font-size:17px; font-weight:600; font-variant-numeric:tabular-nums; }
+.rest .lab { font-size:12.5px; color:var(--faint); }
+.rest .acts { margin-left:auto; display:flex; gap:6px; }
+.rest .acts button { font-size:12.5px; color:var(--dim); padding:5px 8px; border:1px solid var(--line); border-radius:5px; }
+
+/* ---------- nav ---------- */
+.nav {
+  position:fixed; bottom:0; left:0; right:0; z-index:50;
+  background:var(--surface); border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.nav-inner { max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); }
+.nav button { padding:12px 0 14px; font-size:13px; font-weight:500; color:var(--faint); }
+.nav button[aria-pressed="true"] { color:var(--text); font-weight:600; }
+
+/* ---------- history / plan ---------- */
+.sect { margin-bottom:26px; }
+.secthead {
+  font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--faint); padding-bottom:8px; border-bottom:1px solid var(--line); margin-bottom:12px;
+}
+.hcard { background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:13px 14px; margin-bottom:8px; }
+.hcard-top { display:flex; align-items:baseline; gap:9px; margin-bottom:10px; }
+.hcard-day { font-size:15px; font-weight:700; }
+.hcard-dow { font-size:12px; color:var(--faint); }
+.hcard-date { font-size:12px; color:var(--faint); margin-left:auto; font-variant-numeric:tabular-nums; }
+.hrow { display:flex; align-items:baseline; gap:10px; padding:5px 0; font-size:12.5px; border-top:1px solid var(--line); }
+.hrow:first-of-type { border-top:none; }
+.hrow .n { color:var(--dim); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.hrow .v { color:var(--text); font-variant-numeric:tabular-nums; }
+.hrow.sum .n, .hrow.sum .v { color:var(--faint); }
+
+table.ref { width:100%; border-collapse:collapse; font-size:13px; }
+table.ref th {
+  text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--faint); font-weight:600; padding:0 8px 7px 0; border-bottom:1px solid var(--line);
+}
+table.ref td { padding:8px 8px 8px 0; border-bottom:1px solid var(--line); vertical-align:top; }
+table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-variant-numeric:tabular-nums; }
+.tname { font-weight:600; }
+.tsub { font-size:12px; color:var(--faint); }
+.tablescroll { overflow-x:auto; }
+
+.rows { border:1px solid var(--line); border-radius:var(--r); overflow:hidden; }
+.row2 { display:flex; gap:12px; align-items:baseline; padding:10px 12px; border-top:1px solid var(--line); background:var(--surface); }
+.row2:first-child { border-top:none; }
+.row2 .when { font-size:13px; color:var(--dim); flex:1; }
+.row2 .then { font-size:13px; font-weight:500; text-align:right; flex:1; }
+.row2 .then.off { color:var(--faint); font-weight:400; }
+
+.plate { border:1px solid var(--line); border-radius:var(--r); padding:10px 12px; font-size:12.5px; color:var(--dim); background:var(--surface); margin-top:10px; }
+.empty { text-align:center; color:var(--faint); font-size:13px; padding:44px 20px; }
+.toast {
+  position:fixed; bottom:128px; left:50%; transform:translateX(-50%);
+  background:var(--text); color:var(--ground); font-size:12.5px;
+  padding:9px 14px; border-radius:6px; z-index:60; max-width:88%;
+}
+@media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="topbar">
+    <div class="topbar-row">
+      <div>
+        <div class="daytag" id="dayTag">Push</div>
+        <div class="muscles" id="muscles">Chest · Shoulders · Triceps · Core</div>
+      </div>
+      <div class="topbar-meta">
+        <input type="date" class="datefield" id="dateField" aria-label="Workout date">
+        <div class="tally" id="tally">—</div>
+        <button type="button" class="sync" id="sync" disabled>Connecting…</button>
+      </div>
+    </div>
+    <div class="seg" id="daySeg" role="group" aria-label="Session type">
+      <button type="button" data-day="push" aria-pressed="true">Push</button>
+      <button type="button" data-day="pull" aria-pressed="false">Pull</button>
+      <button type="button" data-day="legs" aria-pressed="false">Legs</button>
+    </div>
+  </header>
+
+  <main id="today">
+    <div class="banner" id="restBanner" hidden></div>
+    <div class="exlist" id="exlist"></div>
+    <div id="extras"></div>
+  </main>
+
+  <main id="history" hidden></main>
+  <main id="plan" hidden></main>
+</div>
+
+<div class="rest" id="restBar" hidden>
+  <div>
+    <div class="lab" id="restLab">Rest</div>
+    <div class="t" id="restTime">2:00</div>
+  </div>
+  <div class="acts">
+    <button type="button" id="restPlus">+30s</button>
+    <button type="button" id="restSkip">Skip</button>
+  </div>
+</div>
+
+<nav class="nav">
+  <div class="nav-inner" id="nav">
+    <button type="button" data-tab="today" aria-pressed="true">Today</button>
+    <button type="button" data-tab="history" aria-pressed="false">History</button>
+    <button type="button" data-tab="plan" aria-pressed="false">Plan</button>
+  </div>
+</nav>
+
+<script>
+"use strict";
+
+/* ===================== THE PROGRAM =====================
+   PPL x2 — 6 days, Wednesday rest. Machines and cables only.
+   Two warm-up sets on the first exercise only. */
+
+const PROGRAM = {
+  push: {
+    label: "Push", muscles: "Chest · Shoulders · Triceps · Core",
+    goal: "Beat last Push session. Hit top of rep range → add 5 lbs next time.",
+    ex: [
+      { id:"p_incline", name:"Incline Bench Press", gear:"Smith Machine", sets:3, lo:6, hi:10, rest:120, load:"upper", warmup:2,
+        cue:"Upper chest priority — go heavy while fully fresh." },
+      { id:"p_shoulder", name:"Seated Shoulder Press", gear:"Shoulder Press Machine", sets:2, lo:8, hi:10, rest:120, load:"upper",
+        cue:"Full lockout at top — chest is resting from the incline." },
+      { id:"p_chestpress", name:"Chest Press Machine", gear:"Chest Press Machine", sets:2, lo:8, hi:10, rest:120, load:"upper",
+        cue:"Push hard — chest is rested from the shoulder press." },
+      { id:"p_latraise", name:"Cable Lateral Raise", gear:"Low Pulley — single arm", sets:2, lo:12, hi:15, rest:60, load:"upper",
+        cue:"Single arm, raise to shoulder height." },
+      { id:"p_pushdown", name:"Cable Tricep Pushdown", gear:"High Pulley — rope", sets:2, lo:10, hi:12, rest:90, load:"upper",
+        cue:"Elbows pinned, spread the rope at the bottom." },
+      { id:"p_kickback", name:"Single Arm Tricep Kickback", gear:"Cable or Dumbbell", sets:2, lo:12, hi:15, rest:60, load:"upper",
+        cue:"Full extension at top, squeeze for 1 second." },
+      { id:"p_abs", name:"Ab Crunch Machine", gear:"Ab Crunch Machine", sets:2, lo:12, hi:15, rest:60, load:"upper",
+        cue:"Controlled — squeeze abs at the top of every rep." }
+    ]
+  },
+  pull: {
+    label: "Pull", muscles: "Back · Biceps · Rear Delts · Forearms",
+    goal: "Beat last Pull session. Hit top of rep range → add 5 lbs next time.",
+    ex: [
+      { id:"pl_pulldown", name:"Lat Pulldown", gear:"Lat Pulldown — yellow area", sets:3, lo:6, hi:10, rest:120, load:"upper", warmup:2,
+        cue:"Pull to upper chest, drive elbows down and back." },
+      { id:"pl_row", name:"Seated Cable Row", gear:"Cable Row — yellow area", sets:2, lo:8, hi:10, rest:120, load:"upper",
+        cue:"Lead with the elbows, chest stays tall." },
+      { id:"pl_reardelt", name:"Rear Delt Reverse Fly", gear:"Pec Deck, reversed", sets:2, lo:12, hi:15, rest:60, load:"upper",
+        cue:"Light weight, arms nearly straight, squeeze the rear delts." },
+      { id:"pl_curl", name:"Cable Bicep Curl", gear:"Low Pulley", sets:2, lo:10, hi:12, rest:90, load:"upper",
+        cue:"Full extension at the bottom, no swinging." },
+      { id:"pl_hammer", name:"Cable Hammer Curl", gear:"Low Pulley — rope", sets:2, lo:10, hi:12, rest:90, load:"upper",
+        cue:"Neutral grip — brachialis and forearm thickness." },
+      { id:"pl_revcurl", name:"Cable Reverse Curl", gear:"Low Pulley — bar", sets:2, lo:12, hi:15, rest:60, load:"upper",
+        cue:"Overhand grip, full extension — direct forearm builder." }
+    ]
+  },
+  legs: {
+    label: "Legs", muscles: "Quads · Hamstrings · Glutes · Hips · Calves",
+    goal: "Beat last Legs session. Hit top of rep range → add 10 lbs next time.",
+    ex: [
+      { id:"lg_press", name:"Leg Press or Hack Squat", gear:"Your choice on the day", sets:3, lo:8, hi:10, rest:120, load:"lower", warmup:2,
+        cue:"Either machine works — pick one and stay with it for the session." },
+      { id:"lg_legcurl", name:"Seated Leg Curl", gear:"Leg Curl — yellow area", sets:2, lo:10, hi:12, rest:90, load:"lower",
+        cue:"Control the lowering phase, full stretch at the bottom." },
+      { id:"lg_legext", name:"Leg Extension", gear:"Leg Extension — yellow area", sets:2, lo:12, hi:15, rest:60, load:"lower",
+        cue:"Pause and squeeze hard at the top for 1 second." },
+      { id:"lg_abd", name:"Hip Abductor", gear:"Abductor/Adductor Machine", sets:2, lo:12, hi:15, rest:60, load:"lower",
+        cue:"Push knees outward — glute med and outer hip." },
+      { id:"lg_add", name:"Hip Adductor", gear:"Abductor/Adductor Machine", sets:2, lo:12, hi:15, rest:60, load:"lower",
+        cue:"Squeeze knees inward — run it back to back with the abductor." },
+      { id:"lg_calf", name:"Calf Extension", gear:"Calf Extension Machine", sets:3, lo:12, hi:15, rest:60, load:"lower",
+        cue:"Full stretch at the bottom, pause at the top." }
+    ]
+  }
+};
+
+const DAYS = ["push","pull","legs"];
+const DAYLABEL = { push:"Push", pull:"Pull", legs:"Legs", any:"Unsorted" };
+const WEEK = ["push","pull","legs","rest","push","pull","legs"];
+const DAYNAME = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+const PROGRAM_IDS = new Set(DAYS.flatMap(d => PROGRAM[d].ex.map(e => e.id)));
+
+const RULES = [
+  ["Hit top of rep range on all sets", "Add 5 lbs upper · 10 lbs lower"],
+  ["Can't complete minimum reps", "Stay at the same weight"],
+  ["Form breaks down", "Drop 10%, fix form, rebuild"],
+  ["Plateau 2+ weeks", "Slow the lowering to 3 seconds"]
+];
+
+const DUMBBELL_REF = [
+  ["Incline press", "60 lbs · 7 reps"], ["Chest press", "60 lbs"],
+  ["Incline chest", "60 lbs"], ["Shoulder press", "60 lbs"],
+  ["Row", "40 lbs"], ["Hammer curl", "25 lbs"], ["Goblet squat", "50 lbs"]
+];
+
+/* ===================== STATE ===================== */
+
+const state = {
+  db: null, dbReady: false,
+  date: todayISO(), day: "push",
+  progress: {}, notes: {}, custom: {}, session: {},
+  outbox: {}, syncing: false, syncFailed: false,
+  drafts: {}, steps: {},
+  open: null, editingNote: null, noteDraft: "",
+  form: null, formFor: null, armedDelete: null,
+  tab: "today", restEnd: 0, restLabel: ""
+};
+
+function todayISO() {
+  const d = new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function parseISO(s) { const p = s.split("-").map(Number); return new Date(p[0], p[1]-1, p[2]); }
+function scheduledDay(iso) { return WEEK[parseISO(iso).getDay()]; }
+function sessionId(iso, day) { return iso + "_" + day; }
+function fmtW(n) { return (Math.round(n*10)/10).toString().replace(/\.0$/, ""); }
+function esc(s) {
+  return String(s).replace(/[&<>"]/g, c => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
+}
+const el = id => document.getElementById(id);
+
+/* ---- local copy: fast first paint ---- */
+const LS = "pplx2:v1";
+function cacheRead() { try { return JSON.parse(localStorage.getItem(LS) || "{}"); } catch (e) { return {}; } }
+function cacheWrite(patch) {
+  try { localStorage.setItem(LS, JSON.stringify(Object.assign(cacheRead(), patch))); } catch (e) {}
+}
+function cacheSession(sid, log) {
+  const sessions = Object.assign({}, cacheRead().sessions || {});
+  sessions[sid] = log;
+  cacheWrite({ sessions: sessions });
+}
+
+/* ===================== SYNC =====================
+   Every change goes into an outbox kept on the phone. An entry leaves the
+   outbox only after the cloud confirms it, and anything still in the outbox
+   wins over what the cloud returns — so a dropped connection or a page
+   reload can never erase a set you logged. */
+
+const OB = "pplx2:outbox";
+function loadOutbox() { try { state.outbox = JSON.parse(localStorage.getItem(OB) || "{}"); } catch (e) { state.outbox = {}; } }
+function saveOutbox() { try { localStorage.setItem(OB, JSON.stringify(state.outbox)); } catch (e) {} }
+
+function queue(path, data) {
+  state.outbox[path] = { data: data, ts: Date.now() };
+  saveOutbox();
+  renderSync();
+  flush();
+}
+
+function withTimeout(p, ms) {
+  return Promise.race([p, new Promise((_, rej) => setTimeout(() => {
+    const e = new Error("timeout"); e.code = "timeout"; rej(e);
+  }, ms))]);
+}
+
+let retryTimer = 0;
+async function flush() {
+  if (!state.db || state.syncing) return;
+  const paths = Object.keys(state.outbox);
+  if (!paths.length) { state.syncFailed = false; renderSync(); return; }
+  state.syncing = true; renderSync();
+  let failure = null;
+  for (const path of paths) {
+    const entry = state.outbox[path];
+    if (!entry) continue;
+    try {
+      const ref = state.db.doc(path);
+      await withTimeout(entry.data === null ? ref.delete() : ref.set(entry.data), 12000);
+      if (state.outbox[path] && state.outbox[path].ts === entry.ts) delete state.outbox[path];
+      saveOutbox();
+    } catch (e) { failure = e; break; }
+  }
+  state.syncing = false;
+  state.syncFailed = !!failure;
+  if (failure) {
+    const c = failure.code;
+    if (c === "quota_exceeded") note("Cloud storage is full — your changes are safe on this phone.");
+    if (c === "not_granted" || c === "capability_disabled" || c === "capability_removed" || c === "revoked") state.db = null;
+    clearTimeout(retryTimer);
+    retryTimer = setTimeout(flush, 15000);
+  }
+  renderSync();
+  if (!failure && Object.keys(state.outbox).length) flush();
+}
+
+function renderSync() {
+  const b = el("sync");
+  const n = Object.keys(state.outbox).length;
+  b.classList.remove("warn");
+  b.disabled = true;
+  if (!state.dbReady) { b.textContent = "Connecting…"; return; }
+  if (!state.db) { b.textContent = "Saved on this phone"; return; }
+  if (!n) { b.textContent = "All saved"; return; }
+  if (state.syncing && !state.syncFailed) { b.textContent = "Saving…"; return; }
+  b.textContent = n + (n === 1 ? " change" : " changes") + " not uploaded · retry";
+  b.classList.add("warn");
+  b.disabled = false;
+}
+
+function applyOutbox() {
+  for (const path in state.outbox) {
+    const parts = path.split("/"), col = parts[0], id = parts[1];
+    const d = state.outbox[path].data;
+    if (col === "progress") { if (d) state.progress[id] = d; else delete state.progress[id]; }
+    if (col === "notes") { if (d) state.notes[id] = d.text || ""; else delete state.notes[id]; }
+    if (col === "custom") { if (d) state.custom[id] = d; else delete state.custom[id]; }
+  }
+}
+function pendingSession(sid) {
+  const e = state.outbox["sessions/" + sid];
+  return e && e.data ? e.data.log : null;
+}
+
+/* ===================== EXERCISE LOOKUP ===================== */
+
+function toEx(id, c) {
+  return {
+    id: id, name: c.name, custom: true, day: c.day, createdAt: c.createdAt || "",
+    gear: c.day === "any" ? "Unsorted" : "Added by you",
+    sets: c.sets, lo: c.lo, hi: c.hi, load: c.load, rest: 90, warmup: 0
+  };
+}
+function customList() {
+  return Object.keys(state.custom).map(id => toEx(id, state.custom[id]))
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+}
+function trackedFor(day) { return PROGRAM[day].ex.concat(customList().filter(e => e.day === day)); }
+function shownFor(day) { return PROGRAM[day].ex.concat(customList().filter(e => e.day === day || e.day === "any")); }
+function exById(id) {
+  for (const d of DAYS) { const e = PROGRAM[d].ex.find(x => x.id === id); if (e) return e; }
+  return state.custom[id] ? toEx(id, state.custom[id]) : null;
+}
+
+/* ===================== BOOT ===================== */
+
+function init() {
+  const iso = todayISO();
+  state.date = iso;
+  const sched = scheduledDay(iso);
+  state.day = sched === "rest" ? nextTrainingDay(iso) : sched;
+
+  loadOutbox();
+  const cached = cacheRead();
+  state.progress = cached.progress || {};
+  state.notes = cached.notes || {};
+  state.custom = cached.custom || {};
+  applyOutbox();
+  const sid = sessionId(state.date, state.day);
+  state.session = pendingSession(sid) || (cached.sessions && cached.sessions[sid]) || {};
+
+  el("dateField").value = state.date;
+  el("dateField").addEventListener("change", e => {
+    state.date = e.target.value || todayISO();
+    const s = scheduledDay(state.date);
+    state.day = s === "rest" ? nextTrainingDay(state.date) : s;
+    resetView();
+    loadSession();
+  });
+
+  el("daySeg").addEventListener("click", e => {
+    const b = e.target.closest("button[data-day]"); if (!b) return;
+    state.day = b.dataset.day;
+    resetView();
+    loadSession();
+  });
+
+  el("nav").addEventListener("click", e => {
+    const b = e.target.closest("button[data-tab]"); if (!b) return;
+    state.tab = b.dataset.tab;
+    for (const n of el("nav").children) n.setAttribute("aria-pressed", String(n.dataset.tab === state.tab));
+    el("today").hidden = state.tab !== "today";
+    el("history").hidden = state.tab !== "history";
+    el("plan").hidden = state.tab !== "plan";
+    document.querySelector(".topbar").hidden = state.tab !== "today";
+    if (state.tab === "history") renderHistory();
+    if (state.tab === "plan") renderPlan();
+    if (state.tab === "today") render();
+    window.scrollTo(0, 0);
+  });
+
+  el("sync").addEventListener("click", () => { clearTimeout(retryTimer); flush(); });
+  el("restSkip").addEventListener("click", stopRest);
+  el("restPlus").addEventListener("click", () => { state.restEnd += 30000; tickRest(); });
+  setInterval(tickRest, 250);
+
+  window.addEventListener("online", flush);
+  window.addEventListener("pageshow", flush);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) flush(); });
+
+  render();
+  renderSync();
+  connectDb();
+}
+
+function resetView() {
+  state.open = null; state.editingNote = null;
+  state.form = null; state.formFor = null; state.armedDelete = null;
+}
+
+function nextTrainingDay(iso) {
+  const d = parseISO(iso).getDay();
+  for (let i = 1; i <= 7; i++) { const w = WEEK[(d+i) % 7]; if (w !== "rest") return w; }
+  return "push";
+}
+
+async function connectDb() {
+  let db = null;
+  try { db = await claude.use("db"); } catch (e) { db = null; }
+  state.db = db;
+  state.dbReady = true;
+  renderSync();
+  if (!db) { render(); return; }
+  try {
+    const snaps = await Promise.all([
+      db.collection("progress").get(),
+      db.collection("notes").get(),
+      db.collection("custom").get()
+    ]);
+    const p = {}, n = {}, c = {};
+    snaps[0].docs.forEach(d => { p[d.id] = d.data(); });
+    snaps[1].docs.forEach(d => { n[d.id] = (d.data() || {}).text || ""; });
+    snaps[2].docs.forEach(d => { c[d.id] = d.data(); });
+    state.progress = p; state.notes = n; state.custom = c;
+    applyOutbox();
+    cacheWrite({ progress: state.progress, notes: state.notes, custom: state.custom });
+  } catch (e) {
+    // offline: keep the local copy we painted from
+  }
+  await loadSession();
+  flush();
+}
+
+async function loadSession() {
+  const sid = sessionId(state.date, state.day);
+  const cached = cacheRead();
+  state.session = pendingSession(sid) || (cached.sessions && cached.sessions[sid]) || {};
+  render();
+  if (!state.db || pendingSession(sid)) return;
+  try {
+    const snap = await state.db.doc("sessions/" + sid).get();
+    if (sessionId(state.date, state.day) !== sid || pendingSession(sid)) return;
+    state.session = snap.exists ? (snap.data().log || {}) : {};
+    cacheSession(sid, state.session);
+    render();
+  } catch (e) {
+    // offline: keep the local copy
+  }
+}
+
+let noteTimer = 0;
+function note(msg) {
+  let t = document.querySelector(".toast");
+  if (!t) { t = document.createElement("div"); t.className = "toast"; t.setAttribute("role", "status"); document.body.appendChild(t); }
+  t.textContent = msg;
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => { t.remove(); }, 4200);
+}
+
+/* ===================== PROGRESSION ===================== */
+
+function working(ex, sets) {
+  return sets.slice((ex && ex.warmup) || 0).filter(s => s && s.reps > 0);
+}
+
+function suggestion(ex) {
+  const p = state.progress[ex.id];
+  if (!p || !p.sets || !p.sets.length) return { kind:"none" };
+  const last = p.sets[p.sets.length - 1];
+  if (p.seed) return { kind:"start", weight:last.weight };
+  const done = p.sets.filter(s => s.reps > 0);
+  if (!done.length) return { kind:"start", weight:last.weight };
+  const step = ex.load === "lower" ? 10 : 5;
+  const allTop = done.every(s => s.reps >= ex.hi);
+  const anyLow = done.some(s => s.reps < ex.lo);
+  const hardest = Math.max.apply(null, done.map(s => s.rpe || 0));
+  if (allTop && hardest <= 9) return { kind:"up", weight:last.weight + step, step:step };
+  if (anyLow) return { kind:"hold", weight:last.weight };
+  return { kind:"build", weight:last.weight };
+}
+
+function prefill(ex, idx) {
+  const logged = state.session[ex.id] || [];
+  const prior = logged[idx - 1];
+  const s = suggestion(ex);
+  const p = state.progress[ex.id];
+  let weight = 0, reps = ex.lo;
+  if (prior) { weight = prior.weight; reps = prior.reps; }
+  else if (s.kind !== "none") {
+    weight = s.weight;
+    const lastSame = p && p.sets && p.sets[Math.min(idx, p.sets.length - 1)];
+    reps = (s.kind === "up") ? ex.lo : ((lastSame && lastSame.reps) || ex.lo);
+  }
+  if ((ex.warmup || 0) > idx) weight = Math.max(0, Math.round(weight * 0.5));
+  return { weight:weight, reps:reps, rpe:0, auto:true };
+}
+
+/* ===================== RENDER ===================== */
+
+function render() {
+  if (state.tab !== "today") return;
+  const day = PROGRAM[state.day];
+  el("dayTag").textContent = day.label;
+  el("muscles").textContent = day.muscles;
+  for (const b of el("daySeg").children) b.setAttribute("aria-pressed", String(b.dataset.day === state.day));
+
+  const tracked = trackedFor(state.day);
+  let setsLogged = 0, exDone = 0;
+  Object.keys(state.session).forEach(id => { setsLogged += (state.session[id] || []).filter(Boolean).length; });
+  tracked.forEach(ex => {
+    if ((state.session[ex.id] || []).filter(Boolean).length >= ex.sets + (ex.warmup || 0)) exDone++;
+  });
+  el("tally").textContent = exDone + "/" + tracked.length + " done · " + setsLogged + " sets";
+
+  const sched = scheduledDay(state.date);
+  const banner = el("restBanner");
+  const dow = DAYNAME[parseISO(state.date).getDay()];
+  if (sched === "rest") {
+    banner.hidden = false;
+    banner.innerHTML = "<b>" + dow + " is your rest day.</b> Logging " + day.label + " against " + state.date + ".";
+  } else if (sched !== state.day) {
+    banner.hidden = false;
+    banner.innerHTML = "<b>" + dow + " is scheduled for " + PROGRAM[sched].label + ".</b> You're logging " + day.label + ".";
+  } else banner.hidden = true;
+
+  const list = el("exlist");
+  list.innerHTML = "";
+  day.ex.forEach((ex, i) => list.appendChild(exCard(ex, i + 1)));
+
+  const extras = el("extras");
+  extras.innerHTML = "";
+  const mine = customList().filter(e => e.day === state.day);
+  const loose = customList().filter(e => e.day === "any");
+  let num = day.ex.length;
+  if (mine.length) {
+    extras.appendChild(groupHead("Added to " + day.label));
+    const g = document.createElement("div"); g.className = "exlist"; g.style.marginTop = "8px";
+    mine.forEach(ex => g.appendChild(exCard(ex, ++num)));
+    extras.appendChild(g);
+  }
+  if (loose.length) {
+    extras.appendChild(groupHead("Unsorted — shows on every day"));
+    const g = document.createElement("div"); g.className = "exlist"; g.style.marginTop = "8px";
+    loose.forEach(ex => g.appendChild(exCard(ex, "·")));
+    extras.appendChild(g);
+  }
+  if (state.formFor === "new") extras.appendChild(customForm(null));
+  else {
+    const add = document.createElement("button");
+    add.type = "button"; add.className = "addbtn"; add.textContent = "+ Add exercise";
+    add.addEventListener("click", () => {
+      state.form = { name:"", day:"any", sets:3, lo:8, hi:12, load:"upper" };
+      state.formFor = "new"; state.open = null; state.editingNote = null;
+      render();
+      const n = document.querySelector(".cform .textin"); if (n) n.focus();
+    });
+    extras.appendChild(add);
+  }
+}
+
+function groupHead(text) {
+  const h = document.createElement("div");
+  h.className = "grouphead"; h.textContent = text;
+  return h;
+}
+
+function exCard(ex, label) {
+  const total = ex.sets + (ex.warmup || 0);
+  const logged = state.session[ex.id] || [];
+  const doneCount = logged.filter(Boolean).length;
+  const open = state.open === ex.id;
+  const p = state.progress[ex.id];
+
+  const card = document.createElement("section");
+  card.className = "ex" + (open ? " open" : "") + (doneCount >= total ? " done" : "");
+
+  const head = document.createElement("button");
+  head.type = "button"; head.className = "exhead";
+  head.setAttribute("aria-expanded", String(open));
+
+  let lastHtml;
+  if (!state.dbReady && !p) lastHtml = '<span class="skel"></span>';
+  else if (p && p.sets && p.sets.length) {
+    const best = p.sets.reduce((a, b) => (b.weight >= a.weight ? b : a), p.sets[0]);
+    lastHtml = "<b>" + fmtW(best.weight) + " lb</b>" +
+      (best.reps ? best.reps + " reps" + (best.rpe ? " @ " + best.rpe : "")
+                 : (p.seed ? "starting point" : "last time"));
+  } else lastHtml = "<b>—</b>first time";
+
+  head.innerHTML =
+    '<span class="exnum">' + (doneCount >= total ? "✓" : label) + '</span>' +
+    '<span class="exmain"><span class="exname">' + esc(ex.name) + '</span>' +
+    '<span class="exsub">' + ex.sets + " × " + ex.lo + "–" + ex.hi + " · " + esc(ex.gear) + '</span></span>' +
+    '<span class="exlast">' + lastHtml + '</span>';
+  head.addEventListener("click", () => {
+    state.open = open ? null : ex.id;
+    state.editingNote = null; state.armedDelete = null;
+    if (state.formFor && state.formFor !== "new") { state.form = null; state.formFor = null; }
+    render();
+  });
+  card.appendChild(head);
+  if (!open) return card;
+
+  const body = document.createElement("div");
+  body.className = "exbody";
+
+  if (ex.custom && state.formFor === ex.id) {
+    body.appendChild(customForm(ex));
+    card.appendChild(body);
+    return card;
+  }
+
+  if (ex.cue) {
+    const cue = document.createElement("p");
+    cue.className = "cue"; cue.textContent = ex.cue;
+    body.appendChild(cue);
+  }
+
+  body.appendChild(notesBlock(ex));
+
+  const s = suggestion(ex);
+  if (s.kind !== "none") {
+    const line = document.createElement("p");
+    line.className = "prog" + (s.kind === "up" ? " up" : "");
+    if (s.kind === "up") line.innerHTML = "You hit " + ex.hi + " on every set last time — go <b>" + fmtW(s.weight) + " lb</b> today.";
+    else if (s.kind === "hold") line.innerHTML = "Hold at <b>" + fmtW(s.weight) + " lb</b> until you clear " + ex.lo + " reps on every set.";
+    else if (s.kind === "start") line.innerHTML = "Starting point: <b>" + fmtW(s.weight) + " lb</b>. Adjust it and it becomes your baseline.";
+    else line.innerHTML = "Stay at <b>" + fmtW(s.weight) + " lb</b> — push for " + ex.hi + " reps on all sets.";
+    body.appendChild(line);
+  }
+
+  const sets = document.createElement("div");
+  sets.className = "sets";
+  for (let idx = 0; idx < total; idx++) sets.appendChild(setRow(ex, idx, logged[idx]));
+  body.appendChild(sets);
+
+  if (ex.custom) body.appendChild(customFoot(ex));
+
+  card.appendChild(body);
+  return card;
+}
+
+/* ===================== NOTES ===================== */
+
+function notesBlock(ex) {
+  const wrap = document.createElement("div");
+  const editing = state.editingNote === ex.id;
+  const text = state.notes[ex.id] || "";
+
+  const head = document.createElement("div");
+  head.className = "noteshead";
+  head.innerHTML = "<h4>Notes</h4>";
+  if (!editing) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = text ? "Edit" : "Add";
+    b.addEventListener("click", () => {
+      state.editingNote = ex.id;
+      state.noteDraft = text;
+      render();
+      const ta = document.querySelector(".noteedit");
+      if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
+    });
+    head.appendChild(b);
+  }
+  wrap.appendChild(head);
+
+  if (!editing) {
+    const p = document.createElement("p");
+    p.className = "notetext" + (text ? "" : " empty");
+    p.textContent = text || "No notes yet — machine settings, grip, seat height, anything you want to remember.";
+    wrap.appendChild(p);
+    return wrap;
+  }
+
+  const ta = document.createElement("textarea");
+  ta.className = "noteedit";
+  ta.value = state.noteDraft;
+  ta.setAttribute("aria-label", "Notes for " + ex.name);
+  ta.addEventListener("input", () => { state.noteDraft = ta.value; });
+  wrap.appendChild(ta);
+
+  const acts = document.createElement("div");
+  acts.className = "btnrow";
+  const save = document.createElement("button");
+  save.type = "button"; save.className = "save"; save.textContent = "Save note";
+  save.addEventListener("click", () => saveNote(ex, ta.value));
+  const cancel = document.createElement("button");
+  cancel.type = "button"; cancel.className = "cancel"; cancel.textContent = "Cancel";
+  cancel.addEventListener("click", () => { state.editingNote = null; render(); });
+  acts.append(save, cancel);
+  wrap.appendChild(acts);
+  return wrap;
+}
+
+function saveNote(ex, value) {
+  const text = String(value).trim();
+  state.notes[ex.id] = text;
+  state.editingNote = null;
+  cacheWrite({ notes: state.notes });
+  render();
+  queue("notes/" + ex.id, { text: text, name: ex.name, updatedAt: new Date().toISOString() });
+}
+
+/* ===================== ADDED EXERCISES ===================== */
+
+function customForm(ex) {
+  const f = state.form;
+  const box = document.createElement("div");
+  box.className = ex ? "" : "cform";
+  if (ex) box.style.cssText = "display:flex;flex-direction:column;gap:14px";
+
+  const title = document.createElement("div");
+  title.className = "minihead";
+  title.textContent = ex ? "Edit exercise" : "New exercise";
+  box.appendChild(title);
+
+  const nameWrap = document.createElement("div");
+  nameWrap.innerHTML = '<label class="flabel" for="cname">Name</label>';
+  const name = document.createElement("input");
+  name.id = "cname"; name.className = "textin"; name.type = "text";
+  name.placeholder = "e.g. Cable Crunch"; name.value = f.name; name.autocomplete = "off";
+  nameWrap.appendChild(name);
+  box.appendChild(nameWrap);
+
+  const dayWrap = document.createElement("div");
+  dayWrap.innerHTML = '<span class="flabel">Day <em>— Unsorted shows up on every day</em></span>';
+  dayWrap.appendChild(daySeg(f.day, v => { f.day = v; render(); }));
+  box.appendChild(dayWrap);
+
+  const grid = document.createElement("div");
+  grid.className = "fieldgrid";
+  [["Sets", "sets", 1, 1, 10], ["Reps from", "lo", 1, 1, 50], ["Reps to", "hi", 1, 1, 50]].forEach(cfg => {
+    const w = document.createElement("div"); w.className = "field";
+    w.innerHTML = "<label>" + cfg[0] + "</label>";
+    w.appendChild(stepper(f[cfg[1]], cfg[2], v => { f[cfg[1]] = Math.min(cfg[4], Math.max(cfg[3], Math.round(v))); check(); }, cfg[0]));
+    grid.appendChild(w);
+  });
+  box.appendChild(grid);
+
+  const loadWrap = document.createElement("div");
+  loadWrap.innerHTML = '<span class="flabel">Body part <em>— sets the jump: +5 lb upper, +10 lb lower</em></span>';
+  const ls = document.createElement("div"); ls.className = "seg";
+  [["upper", "Upper body"], ["lower", "Lower body"]].forEach(o => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = o[1];
+    b.setAttribute("aria-pressed", String(f.load === o[0]));
+    b.addEventListener("click", () => { f.load = o[0]; render(); });
+    ls.appendChild(b);
+  });
+  loadWrap.appendChild(ls);
+  box.appendChild(loadWrap);
+
+  const acts = document.createElement("div"); acts.className = "btnrow"; acts.style.marginTop = "0";
+  const save = document.createElement("button");
+  save.type = "button"; save.className = "save"; save.textContent = ex ? "Save changes" : "Add exercise";
+  const cancel = document.createElement("button");
+  cancel.type = "button"; cancel.className = "cancel"; cancel.textContent = "Cancel";
+  cancel.addEventListener("click", () => { state.form = null; state.formFor = null; render(); });
+  save.addEventListener("click", () => saveCustom(ex));
+  acts.append(save, cancel);
+  box.appendChild(acts);
+
+  name.addEventListener("input", () => { f.name = name.value; check(); });
+  function check() { save.disabled = !f.name.trim() || f.lo > f.hi; }
+  check();
+  return box;
+}
+
+function daySeg(current, onPick) {
+  const seg = document.createElement("div"); seg.className = "seg";
+  ["push", "pull", "legs", "any"].forEach(d => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = DAYLABEL[d];
+    b.setAttribute("aria-pressed", String(current === d));
+    b.addEventListener("click", () => onPick(d));
+    seg.appendChild(b);
+  });
+  return seg;
+}
+
+function saveCustom(ex) {
+  const f = state.form;
+  if (!f || !f.name.trim() || f.lo > f.hi) return;
+  const id = ex ? ex.id : "c_" + Date.now().toString(36);
+  const prev = state.custom[id] || {};
+  const doc = {
+    name: f.name.trim(), day: f.day, sets: f.sets, lo: f.lo, hi: f.hi, load: f.load,
+    createdAt: prev.createdAt || new Date().toISOString(), updatedAt: new Date().toISOString()
+  };
+  state.custom[id] = doc;
+  cacheWrite({ custom: state.custom });
+  state.form = null; state.formFor = null;
+  const visible = doc.day === state.day || doc.day === "any";
+  state.open = visible ? id : null;
+  render();
+  if (!visible) note(doc.name + " added to " + DAYLABEL[doc.day] + ".");
+  queue("custom/" + id, doc);
+}
+
+function customFoot(ex) {
+  const foot = document.createElement("div");
+  foot.className = "exfoot";
+  const lab = document.createElement("span");
+  lab.className = "flabel"; lab.style.marginBottom = "0"; lab.textContent = "Belongs to";
+  foot.appendChild(lab);
+  foot.appendChild(daySeg(ex.day, d => {
+    if (d === ex.day) return;
+    const doc = Object.assign({}, state.custom[ex.id], { day: d, updatedAt: new Date().toISOString() });
+    state.custom[ex.id] = doc;
+    cacheWrite({ custom: state.custom });
+    if (d !== state.day && d !== "any") { state.open = null; note(ex.name + " moved to " + DAYLABEL[d] + "."); }
+    render();
+    queue("custom/" + ex.id, doc);
+  }));
+
+  const acts = document.createElement("div"); acts.className = "acts";
+  const edit = document.createElement("button");
+  edit.type = "button"; edit.textContent = "Edit name, sets & reps";
+  edit.addEventListener("click", () => {
+    const c = state.custom[ex.id];
+    state.form = { name:c.name, day:c.day, sets:c.sets, lo:c.lo, hi:c.hi, load:c.load };
+    state.formFor = ex.id;
+    render();
+  });
+  const del = document.createElement("button");
+  const armed = state.armedDelete === ex.id;
+  del.type = "button"; del.className = "del" + (armed ? " armed" : "");
+  del.textContent = armed ? "Tap again to delete" : "Delete exercise";
+  del.addEventListener("click", () => {
+    if (state.armedDelete !== ex.id) {
+      state.armedDelete = ex.id; render();
+      setTimeout(() => { if (state.armedDelete === ex.id) { state.armedDelete = null; render(); } }, 4000);
+      return;
+    }
+    delete state.custom[ex.id];
+    cacheWrite({ custom: state.custom });
+    state.armedDelete = null; state.open = null;
+    render();
+    note(ex.name + " deleted. Sets you already logged stay in History.");
+    queue("custom/" + ex.id, null);
+  });
+  acts.append(edit, del);
+  foot.appendChild(acts);
+  return foot;
+}
+
+/* ===================== SET ROWS ===================== */
+
+function setRow(ex, idx, done) {
+  const warm = idx < (ex.warmup || 0);
+  const label = warm ? "Warm " + (idx + 1) : "Set " + (idx + 1 - (ex.warmup || 0));
+  const row = document.createElement("div");
+  const active = !done && (state.session[ex.id] || []).filter(Boolean).length === idx;
+  row.className = "setrow" + (active ? " active" : "");
+
+  if (done) {
+    const line = document.createElement("div");
+    line.className = "setline";
+    line.innerHTML =
+      '<span class="setlabel">' + label + '</span>' +
+      '<span class="logged-val">' + fmtW(done.weight) + ' <span>lb ×</span> ' + done.reps + '</span>' +
+      '<span class="rpetag">' + (done.rpe ? "RPE " + done.rpe : "") + '</span>';
+    const edit = document.createElement("button");
+    edit.type = "button"; edit.className = "linkbtn"; edit.textContent = "Edit";
+    edit.addEventListener("click", () => {
+      state.drafts[ex.id + ":" + idx] = { weight: done.weight, reps: done.reps, rpe: done.rpe, auto: false };
+      const arr = (state.session[ex.id] || []).slice();
+      arr[idx] = null;
+      state.session[ex.id] = arr;
+      render();
+    });
+    line.appendChild(edit);
+    row.appendChild(line);
+    return row;
+  }
+
+  const key = ex.id + ":" + idx;
+  let draft = state.drafts[key];
+  if (!draft) { draft = prefill(ex, idx); state.drafts[key] = draft; }
+  const step = state.steps[ex.id] || 5;
+
+  const head = document.createElement("div");
+  head.className = "setline";
+  head.innerHTML = '<span class="setlabel">' + label + '</span><span class="hint">' +
+    (warm ? "Light — no RPE needed" : "Target " + ex.lo + "–" + ex.hi + " reps") + '</span>';
+  row.appendChild(head);
+
+  const grid = document.createElement("div");
+  grid.className = "fieldgrid";
+
+  const wf = document.createElement("div"); wf.className = "field";
+  wf.innerHTML = '<label>Weight <em>lb</em></label>';
+  wf.appendChild(stepper(draft.weight, step, v => { draft.weight = Math.max(0, v); draft.auto = false; sync(); }, "Weight in pounds"));
+  const st = document.createElement("div"); st.className = "steptoggle";
+  [2.5, 5, 10].forEach(v => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = "±" + v;
+    b.setAttribute("aria-pressed", String(step === v));
+    b.addEventListener("click", () => { state.steps[ex.id] = v; render(); });
+    st.appendChild(b);
+  });
+  wf.appendChild(st);
+  grid.appendChild(wf);
+
+  const rf = document.createElement("div"); rf.className = "field";
+  rf.innerHTML = '<label>Reps</label>';
+  rf.appendChild(stepper(draft.reps, 1, v => { draft.reps = Math.max(0, v); draft.auto = false; sync(); }, "Repetitions"));
+  grid.appendChild(rf);
+  row.appendChild(grid);
+
+  if (!warm) {
+    const rw = document.createElement("div"); rw.className = "rpewrap";
+    const rh = document.createElement("div"); rh.className = "rpehead";
+    rh.innerHTML = '<label>Intensity — RPE</label><span class="why">' + rpeHint(draft.rpe) + '</span>';
+    rw.appendChild(rh);
+    const rg = document.createElement("div"); rg.className = "rpegrid";
+    for (let n = 1; n <= 10; n++) {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = n;
+      b.setAttribute("aria-pressed", String(draft.rpe === n));
+      b.setAttribute("aria-label", "RPE " + n + " — " + rpeWords(n));
+      b.addEventListener("click", () => { draft.rpe = draft.rpe === n ? 0 : n; draft.auto = false; render(); });
+      rg.appendChild(b);
+    }
+    rw.appendChild(rg);
+    row.appendChild(rw);
+  }
+
+  const go = document.createElement("button");
+  go.type = "button"; go.className = "logbtn";
+  go.textContent = warm ? "Log warm-up" : "Log " + label.toLowerCase();
+  go.disabled = !(draft.reps > 0);
+  go.addEventListener("click", () => logSet(ex, idx, draft));
+  row.appendChild(go);
+
+  function sync() { go.disabled = !(draft.reps > 0); }
+  return row;
+}
+
+function rpeWords(n) {
+  if (n >= 10) return "nothing left";
+  if (n === 9) return "1 rep left";
+  if (n === 8) return "2 reps left";
+  if (n === 7) return "3 reps left";
+  return "easy — could do 4+ more";
+}
+function rpeHint(n) { return n ? rpeWords(n) : "10 = failure · 8 = 2 left"; }
+
+function stepper(value, step, onChange, aria) {
+  const box = document.createElement("div");
+  box.className = "stepper";
+  const minus = document.createElement("button");
+  minus.type = "button"; minus.textContent = "−"; minus.setAttribute("aria-label", "Decrease " + aria);
+  const input = document.createElement("input");
+  input.type = "number"; input.inputMode = "decimal"; input.value = value;
+  input.setAttribute("aria-label", aria);
+  const plus = document.createElement("button");
+  plus.type = "button"; plus.textContent = "+"; plus.setAttribute("aria-label", "Increase " + aria);
+  minus.addEventListener("click", () => { input.value = fmtW(Math.max(0, (+input.value || 0) - step)); onChange(+input.value); });
+  plus.addEventListener("click", () => { input.value = fmtW((+input.value || 0) + step); onChange(+input.value); });
+  input.addEventListener("input", () => onChange(+input.value || 0));
+  box.append(minus, input, plus);
+  return box;
+}
+
+/* ===================== LOGGING ===================== */
+
+function logSet(ex, idx, draft) {
+  const arr = (state.session[ex.id] || []).slice();
+  for (let k = 0; k < idx; k++) if (arr[k] === undefined) arr[k] = null;
+  arr[idx] = { weight: +draft.weight || 0, reps: +draft.reps || 0, rpe: +draft.rpe || 0 };
+  state.session[ex.id] = arr;
+
+  const total = ex.sets + (ex.warmup || 0);
+  delete state.drafts[ex.id + ":" + idx];
+  // later sets you haven't touched re-prefill from the set you just logged
+  for (let k = idx + 1; k < total; k++) {
+    const d = state.drafts[ex.id + ":" + k];
+    if (d && d.auto) delete state.drafts[ex.id + ":" + k];
+  }
+
+  const isLast = arr.filter(Boolean).length >= total;
+  const workingSets = working(ex, arr);
+  if (workingSets.length) {
+    state.progress[ex.id] = { sets: workingSets, date: state.date, seed: false, name: ex.name };
+  }
+
+  const sid = sessionId(state.date, state.day);
+  cacheSession(sid, state.session);
+  cacheWrite({ progress: state.progress });
+
+  if (isLast) state.open = nextUndone(ex.id);
+  render();
+  startRest(ex, isLast);
+
+  const names = {};
+  Object.keys(state.session).forEach(id => {
+    if (PROGRAM_IDS.has(id)) return;
+    const e = exById(id);
+    names[id] = e ? e.name : ((state.progress[id] || {}).name || "Removed exercise");
+  });
+  queue("sessions/" + sid, {
+    date: state.date, day: state.day, log: state.session, names: names, updatedAt: new Date().toISOString()
+  });
+  if (workingSets.length) queue("progress/" + ex.id, state.progress[ex.id]);
+}
+
+function nextUndone(afterId) {
+  const list = shownFor(state.day);
+  const start = list.findIndex(e => e.id === afterId);
+  for (let i = start + 1; i < list.length; i++) {
+    const e = list[i], l = state.session[e.id] || [];
+    if (l.filter(Boolean).length < e.sets + (e.warmup || 0)) return e.id;
+  }
+  return null;
+}
+
+/* ===================== REST ===================== */
+
+function startRest(ex, finished) {
+  const secs = finished ? Math.min(ex.rest, 90) : ex.rest;
+  state.restEnd = Date.now() + secs * 1000;
+  state.restLabel = finished ? "before the next exercise" : ex.name;
+  tickRest();
+}
+function stopRest() { state.restEnd = 0; el("restBar").hidden = true; }
+function tickRest() {
+  const bar = el("restBar");
+  if (!state.restEnd) { if (!bar.hidden) bar.hidden = true; return; }
+  const left = Math.max(0, state.restEnd - Date.now());
+  if (left === 0) { stopRest(); return; }
+  bar.hidden = false;
+  const s = Math.ceil(left / 1000);
+  el("restTime").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  el("restLab").textContent = "Rest · " + state.restLabel;
+}
+
+/* ===================== HISTORY ===================== */
+
+async function renderHistory() {
+  const root = el("history");
+  root.innerHTML = '<div class="sect"><div class="secthead">Recent sessions</div><div id="hlist"><div class="empty">Loading…</div></div></div>';
+
+  const byId = {};
+  const cached = cacheRead().sessions || {};
+  Object.keys(cached).forEach(k => {
+    const parts = k.split("_");
+    byId[k] = { date: parts[0], day: parts[1], log: cached[k], names: {} };
+  });
+  if (state.db) {
+    try {
+      const snap = await withTimeout(state.db.collection("sessions").orderBy("date", "desc").limit(60).get(), 10000);
+      snap.docs.forEach(d => { byId[d.id] = d.data(); });
+    } catch (e) {}
+  }
+  Object.keys(state.outbox).forEach(path => {
+    if (path.indexOf("sessions/") === 0 && state.outbox[path].data) byId[path.slice(9)] = state.outbox[path].data;
+  });
+  if (state.tab !== "history") return;
+
+  const docs = Object.keys(byId).map(k => byId[k])
+    .filter(d => d && d.log && Object.keys(d.log).some(k => (d.log[k] || []).filter(Boolean).length))
+    .sort((a, b) => (b.date + b.day).localeCompare(a.date + a.day));
+
+  const list = el("hlist");
+  if (!docs.length) {
+    list.innerHTML = '<div class="empty">No sessions logged yet.<br>Your first workout shows up here.</div>';
+    return;
+  }
+  list.innerHTML = "";
+  docs.forEach(d => {
+    const card = document.createElement("article");
+    card.className = "hcard";
+    const dow = DAYNAME[parseISO(d.date).getDay()];
+    const order = (PROGRAM[d.day] ? PROGRAM[d.day].ex.map(e => e.id) : []);
+    const ids = order.filter(id => d.log[id]).concat(Object.keys(d.log).filter(id => order.indexOf(id) < 0));
+    let rows = "", volume = 0;
+    ids.forEach(id => {
+      const all = d.log[id] || [];
+      const sets = all.filter(Boolean);
+      if (!sets.length) return;
+      const ex = exById(id);
+      const name = ex ? ex.name : ((d.names && d.names[id]) || "Removed exercise");
+      working(ex, all).forEach(s => { volume += s.weight * s.reps; });
+      const top = sets.reduce((a, b) => (b.weight >= a.weight ? b : a), sets[0]);
+      rows += '<div class="hrow"><span class="n">' + esc(name) + '</span><span class="v">' +
+        sets.length + '× · ' + fmtW(top.weight) + ' lb × ' + top.reps + (top.rpe ? ' @ ' + top.rpe : '') + '</span></div>';
+    });
+    card.innerHTML =
+      '<div class="hcard-top"><span class="hcard-day">' + (PROGRAM[d.day] ? PROGRAM[d.day].label : esc(d.day)) + '</span>' +
+      '<span class="hcard-dow">' + dow + '</span>' +
+      '<span class="hcard-date">' + esc(d.date) + '</span></div>' + rows +
+      '<div class="hrow sum"><span class="n">Working volume</span>' +
+      '<span class="v">' + Math.round(volume).toLocaleString() + ' lb</span></div>';
+    list.appendChild(card);
+  });
+}
+
+/* ===================== PLAN ===================== */
+
+function renderPlan() {
+  const root = el("plan");
+  let html = '<div class="sect"><div class="secthead">The week</div><div class="rows">' +
+    WEEK.map((d, i) => '<div class="row2"><span class="when">' + DAYNAME[i] + '</span><span class="then' +
+      (d === "rest" ? ' off' : '') + '">' + (d === "rest" ? "Rest" : PROGRAM[d].label) + '</span></div>').join("") +
+    '</div></div>';
+
+  const exRow = ex => '<tr><td><div class="tname">' + esc(ex.name) + '</div><div class="tsub">' + esc(ex.gear) + '</div></td>' +
+    '<td class="w">' + ex.sets + ' × ' + ex.lo + '–' + ex.hi + '</td></tr>';
+
+  DAYS.forEach(k => {
+    const d = PROGRAM[k];
+    html += '<div class="sect"><div class="secthead">' + d.label + ' · ' + d.muscles + '</div>' +
+      '<div class="tablescroll"><table class="ref"><thead><tr><th>Exercise</th><th style="text-align:right">Sets × reps</th></tr></thead><tbody>' +
+      d.ex.map(exRow).join("") +
+      '</tbody></table></div><div class="plate">' + d.goal + '</div></div>';
+  });
+
+  const mine = customList();
+  html += '<div class="sect"><div class="secthead">Added by you</div>';
+  if (!mine.length) {
+    html += '<div class="plate" style="margin-top:0">Nothing yet. Use <b>+ Add exercise</b> at the bottom of any day on the Today tab.</div>';
+  } else {
+    html += '<div class="tablescroll"><table class="ref"><tbody>' +
+      ["push", "pull", "legs", "any"].map(g => mine.filter(e => e.day === g).map(e =>
+        '<tr><td><div class="tname">' + esc(e.name) + '</div><div class="tsub">' + DAYLABEL[g] + '</div></td>' +
+        '<td class="w">' + e.sets + ' × ' + e.lo + '–' + e.hi + '</td></tr>').join("")).join("") +
+      '</tbody></table></div>';
+  }
+  html += '</div>';
+
+  html += '<div class="sect"><div class="secthead">Progressive overload</div><div class="rows">' +
+    RULES.map(r => '<div class="row2"><span class="when">' + r[0] + '</span><span class="then">' + r[1] + '</span></div>').join("") +
+    '</div></div>';
+
+  html += '<div class="sect"><div class="secthead">Dumbbell reference</div><div class="tablescroll"><table class="ref"><tbody>' +
+    DUMBBELL_REF.map(r => '<tr><td>' + r[0] + '</td><td class="w">' + r[1] + '</td></tr>').join("") +
+    '</tbody></table></div><div class="plate">From your old sheet — free-weight numbers for when a machine is taken.</div></div>';
+
+  html += '<div class="sect"><div class="secthead">Standing orders</div><div class="rows">' +
+    '<div class="row2"><span class="when">Warm-up</span><span class="then">Two sets on the first exercise only — no cardio</span></div>' +
+    '<div class="row2"><span class="when">Protein</span><span class="then">130 g target · 100 g floor</span></div>' +
+    '<div class="row2"><span class="when">Creatine</span><span class="then">5 g daily</span></div>' +
+    '</div></div>';
+
+  root.innerHTML = html;
+}
+
+init();
+</script>
