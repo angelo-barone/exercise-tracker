@@ -1,0 +1,4 @@
+# Keep workout backups out of git. They hold personal workout data.
+backup.json
+*backup*.json
+tracker-backups/
