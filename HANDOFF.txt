@@ -1,0 +1,43 @@
+YOUR GYM LOGBOOK: HOW TO USE IT AND LOOK AFTER IT
+(Written for you, Angelo. No code knowledge needed.)
+
+OPEN IT
+Tap the Logbook icon (dumbbell) on your home screen. Pick Minto or Montpetit. That is it.
+It works with no wifi or signal.
+
+FIRST TIME ON A PHONE
+1. Open https://angelo-barone.github.io/exercise-tracker/ in Safari.
+2. Share button, then Add to Home Screen. Leave "Open as Web App" on.
+3. Open it from the new icon. Tap Plan, then Restore from a backup, pick your backup file.
+4. Tap Back up now once.
+
+EVERY DAY USE
+- Pick the day, tap an exercise, enter weight and reps, tap an intensity number 1 to 10 (by feel), tap Log.
+- Drop set: tap "+ drop set" under a set, enter the lighter weight and reps.
+- Change an exercise: open it, tap "Edit name, gym, sets & reps". Arrows move it up or down. Delete asks twice.
+- Add an exercise: tap the add button at the bottom of the day.
+- The top right shows "All saved". If it says "not saved", tap it to retry and tell me.
+
+BACKUPS (this is the one thing that protects your data)
+Your data lives on your phone only. If the phone is reset or you delete the app, it is gone unless you have a backup file.
+- Plan tab, Your data, Back up now. Save the file to iCloud Drive or Files.
+- Do it once a week, or after any big change. The app nags you after 14 days.
+- New phone or lost data: Restore from a backup and pick the newest file.
+
+CHANGING YOUR WORKOUT PROGRAM
+Tell your Health and Wellness chat what you want changed. It edits the program file and tells you when it is published.
+Then open the app with signal. A banner says a new program is ready. Tap it, read what changes, tap Apply update.
+Nothing changes until you tap Apply. Your logged workouts are never touched. You can still edit single exercises in the app yourself, but the program file is the master list.
+First time only: in the Health and Wellness chat, use Add folder and pick Dev\exercise-tracker so it can see program.json.
+
+UPDATES
+I update the app on GitHub. Close it fully and open it twice to get the newest version. Your data is never touched by an update.
+
+IF SOMETHING LOOKS WRONG
+- Do not delete the app. Deleting it wipes your data.
+- Back up first if you can, then message me what you see.
+- Any Claude Code session in the exercise-tracker folder reads CLAUDE.md and knows how the app works.
+
+THINGS STILL TO DO
+- Tell me which equipment each gym has, so exercises can be tagged for Minto or Montpetit.
+- Tell me about your back pain and tightness so the program can be revised.

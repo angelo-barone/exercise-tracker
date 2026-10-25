@@ -1,34 +1,47 @@
-# Exercise Tracker
+# PPL x2 Logbook
 
-A single-page gym logbook built for a personal Push/Pull/Legs ×2 training split. Logs weight, reps, and RPE (intensity) per set, suggests next session's weight from progressive-overload rules, and keeps per-exercise notes editable in place.
+A phone gym logbook for a Push / Pull / Legs split run twice a week. It installs on a phone home screen like an app, works with no signal, and keeps every set on the device.
 
-**Live app:** https://claude.ai/code/artifact/05137c5c-7fcc-4a44-b790-5a5d67ba28c4
+**Open it:** https://angelo-barone.github.io/exercise-tracker/
 
-## Features
+## What it does
 
-- **Per-set logging** — weight, reps, and RPE (1–10) for every set of every exercise
-- **Progressive overload suggestions** — after each session, the app compares reps/RPE against the target range and recommends whether to add weight, hold, or deload before the next session
-- **Editable notes per exercise** — seat height, grip, form cues; anything worth remembering between sessions
-- **User-defined exercises** — add exercises the base program doesn't cover, and assign them to a specific day or leave them unsorted so they show up every day
-- **History and Plan views** — full session history with working-volume totals, and a read-only view of the whole training split
-- **Offline-first sync** — every change is written to `localStorage` immediately and queued for the cloud; a dropped connection at the gym (no wifi, phone locks, page reloads) never loses a logged set. The header shows sync status and retries automatically.
+- Logs weight, reps and an intensity score (1 to 10, by feel) for every set
+- Drop sets: add extra lighter sets under any set, each with its own weight and reps
+- Asks which gym you are at (Minto or Montpetit) and shows the exercises for that gym. History is shared per exercise.
+- Rename, reorder, add and delete any exercise
+- Suggests next session's weight from progressive overload rules
+- Notes per exercise (seat height, grip, form cues)
+- History and Plan views
+- Backup and Restore: save everything to a file, load it on a new phone
+- Program file: the whole exercise program is `program.json`. When a new version is published the app shows what would change and applies it only when you tap. Logged history is never touched.
 
-## How it's built
+## How it is built
 
-Single HTML file — vanilla JavaScript, no build step, no framework, no dependencies. Runs as a [Claude Artifact](https://claude.ai/code/artifacts), which provides:
+One HTML file, plain JavaScript, no framework, no build step.
 
-- **Persistent storage** via a `db` capability (`window.claude.use("db")`) — a small document store scoped to the artifact, used here for `sessions`, `progress`, `notes`, and user-added `custom` exercises
-- Everything else — layout, state, rendering, the local-outbox sync layer — is hand-written, with no external JS libraries
+- `index.html` is the whole app
+- `sw.js` is a service worker that caches the app so it opens offline. It tries the network first, so updates arrive as soon as the phone has signal.
+- `program.json` is the exercise program and `PROGRAM.md` explains how to edit it
+- `manifest.webmanifest` and `icons/` make it installable with a dumbbell icon
+- Data lives in the phone's `localStorage` under one key. A small adapter gives the app a document store interface (collection, doc, get, set, delete), so the rest of the code does not care where data is kept.
 
-Because storage depends on the Artifacts runtime, **this file won't save data if opened as a plain static page** (e.g. via GitHub Pages) — it needs to run through the live link above. This repo exists for source control and portfolio purposes.
+The first version ran as a Claude artifact with cloud storage. That only works inside the Claude app, so v2 moved to a standalone hosted app with local storage and file backups.
 
-## Architecture notes
+## Data safety
 
-The interesting problem here was reliability on a flaky connection: gym wifi is unreliable, and a dropped write used to mean a lost workout. The fix is a local outbox pattern —
+Data is on the phone only. Use **Plan, Your data, Back up now** regularly and keep the file in iCloud Drive. The app reminds you after 14 days. A failed save shows a visible message instead of failing silently. Restoring keeps a safety copy of what was on the phone before.
 
-1. Every log/edit writes to `localStorage` synchronously, so a reload can never lose data that's already on the device.
-2. The same write is queued and retried against the cloud store until it's confirmed.
-3. Anything still in the outbox takes priority over what the cloud returns, so a stale cloud read can never overwrite an unconfirmed local write.
+## Tests
+
+`tests/hosted.test.js` (45 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets. `tests/program.test.js` (33 checks): program updates, rename, add, remove, reorder, broken files, offline.
+
+```
+SITE=. TRACKER_BACKUP=/path/to/a/backup.json NODE_PATH=$(npm root -g) node tests/hosted.test.js
+SITE=. TRACKER_BACKUP=/path/to/a/backup.json NODE_PATH=$(npm root -g) node tests/program.test.js
+```
+
+It needs a real backup file with 14 workouts. Backups are personal and are never committed to this repo.
 
 ## License
 
