@@ -162,6 +162,37 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
   ok('H: page links manifest, apple icon, standalone tags', await page.evaluate(()=>!!document.querySelector('link[rel=manifest]') && !!document.querySelector('link[rel=apple-touch-icon]') && document.querySelector('meta[name=apple-mobile-web-app-capable]').content==='yes'));
   ok('H: service worker active', await page.evaluate(async()=>{ const r=await navigator.serviceWorker.getRegistration(); return !!(r&&r.active); }));
 
+  // ---------- L Other gym ----------
+  await page.click('#nav button[data-tab="today"]');
+  await page.click('#daySeg button[data-day="push"]');
+  const gymNames = async g => { await page.click('#gymChip'); await pick(page,g); return (await names(page)); };
+  await page.click('#gymChip');
+  ok('L: picker offers Other next to Minto and Montpetit', (await page.isVisible('#gymPick button[data-gym="other"]')) && (await page.isVisible('#gymPick button[data-gym="minto"]')));
+  await pick(page,'montpetit');
+  const nMont = await names(page);
+  const nAll = await gymNames('all');
+  const nOther = await gymNames('other');
+  ok('L: Other shows every exercise, same as Show every exercise', nOther.length === nAll.length && nOther.length > nMont.length && nOther.includes('Shoulder Press (Minto)'), nMont.length+' / '+nAll.length+' / '+nOther.length);
+  ok('L: gym chip says Other', (await page.textContent('#gymChip')).includes('Other'));
+  ok('L: Other is remembered as the last gym', await page.evaluate(()=>localStorage.getItem('pplx2:gym'))==='other');
+  const gymOf = async id => { const st = await store(page); const k = Object.keys(st.sessions).filter(x=>st.sessions[x].log && st.sessions[x].log[id] && !real.sessions[x]); return k.length ? st.sessions[k[0]].gym : 'none'; };
+  await page.click('.exhead:has(.exname:text-is("Ab Crunch Machine"))');
+  await page.fill('.ex.open .setrow.active input[aria-label="Repetitions"]','10');
+  await page.click('.ex.open .setrow.active .logbtn'); await page.click('#restSkip'); await settle(page);
+  ok('L: a set logged under Other saves gym as other', (await gymOf('p_abs')) === 'other', String(await gymOf('p_abs')));
+  await page.click('#nav button[data-tab="history"]'); await page.waitForTimeout(500);
+  ok('L: History shows Other on that session', (await page.textContent('#history')).includes('Other'));
+  await page.click('#nav button[data-tab="today"]');
+  await page.click('#gymChip'); await pick(page,'all');
+  ok('L: Show every exercise does not turn into Other', await page.evaluate(()=>localStorage.getItem('pplx2:gym'))==='other');
+  await page.click('.exhead:has(.exname:text-is("Ab Crunch Machine"))');
+  await page.fill('.ex.open .setrow.active input[aria-label="Repetitions"]','10');
+  await page.click('.ex.open .setrow.active .logbtn'); await page.click('#restSkip'); await settle(page);
+  ok('L: Show every exercise still saves no gym', (await gymOf('p_abs')) === null, String(await gymOf('p_abs')));
+  const tags = (await store(page)).custom;
+  ok('L: no exercise was retagged to Other', !Object.keys(tags).some(id => tags[id].gym === 'other'));
+  await page.click('#gymChip'); await pick(page,'minto');
+
   // ---------- J/K failure and nag ----------
   await page.click('#nav button[data-tab="today"]');
   await page.evaluate(()=>{ const o=Storage.prototype.setItem; window.__o=o; Storage.prototype.setItem=function(k,v){ if(k==='pplx2:data:v1') throw new Error('quota'); return o.call(this,k,v); }; });

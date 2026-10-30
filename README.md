@@ -8,7 +8,7 @@ A phone gym logbook for a Push / Pull / Legs split run twice a week. It installs
 
 - Logs weight, reps and an intensity score (1 to 10, by feel) for every set
 - Drop sets: add extra lighter sets under any set, each with its own weight and reps
-- Asks which gym you are at (Minto or Montpetit) and shows the exercises for that gym. History is shared per exercise.
+- Asks which gym you are at (Minto, Montpetit or Other) and shows the exercises for that gym. Other shows every exercise and is saved on each session. History is shared per exercise.
 - Rename, reorder, add and delete any exercise
 - Suggests next session's weight from progressive overload rules
 - Notes per exercise (seat height, grip, form cues)
@@ -34,7 +34,7 @@ Data is on the phone only. Use **Plan, Your data, Back up now** regularly and ke
 
 ## Tests
 
-`tests/hosted.test.js` (45 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets. `tests/program.test.js` (33 checks): program updates, rename, add, remove, reorder, broken files, offline.
+`tests/hosted.test.js` (54 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym. `tests/program.test.js` (33 checks): program updates, rename, add, remove, reorder, broken files, offline.
 
 ```
 SITE=. NODE_PATH=$(npm root -g) node tests/hosted.test.js

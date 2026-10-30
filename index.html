@@ -279,6 +279,7 @@ table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-va
 .gympick h1 { margin:0; font-size:26px; font-weight:700; letter-spacing:-.015em; line-height:1.2; }
 .gymbtns { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 .gymbtns button { padding:22px 8px; border-radius:var(--r); background:var(--accent); color:var(--on-accent); font-size:17px; font-weight:700; }
+.gymbtns button[data-gym="other"] { grid-column:1 / -1; padding:16px 8px; }
 .gympick .linkbtn { align-self:flex-start; padding-left:0; }
 .dropline { display:flex; align-items:center; gap:10px; margin-top:8px; }
 .drops { margin-top:10px; }
@@ -332,6 +333,7 @@ table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-va
     <div class="gymbtns">
       <button type="button" data-gym="minto">Minto</button>
       <button type="button" data-gym="montpetit">Montpetit</button>
+      <button type="button" data-gym="other">Other</button>
     </div>
     <div class="hint" id="gymLast"></div>
     <button type="button" class="linkbtn" data-gym="all">Show every exercise</button>
@@ -425,7 +427,7 @@ const PROGRAM = {
 
 const DAYS = ["push","pull","legs"];
 const DAYLABEL = { push:"Push", pull:"Pull", legs:"Legs", any:"Unsorted" };
-const GYMS = { minto:"Minto", montpetit:"Montpetit" };
+const GYMS = { minto:"Minto", montpetit:"Montpetit", other:"Other" };
 const WEEK = ["push","pull","legs","rest","push","pull","legs"];
 const DAYNAME = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 const PROGRAM_IDS = new Set(DAYS.flatMap(d => PROGRAM[d].ex.map(e => e.id)));
@@ -822,7 +824,7 @@ function allEx() {
   return Object.keys(state.custom).map(id => toEx(id, state.custom[id]))
     .sort((a, b) => (a.order - b.order) || a.createdAt.localeCompare(b.createdAt));
 }
-function gymOk(ex) { return !state.gym || state.gym === "all" || ex.gym === "both" || ex.gym === state.gym; }
+function gymOk(ex) { return !state.gym || state.gym === "all" || state.gym === "other" || ex.gym === "both" || ex.gym === state.gym; }
 function visibleFor(day) { return allEx().filter(e => e.day === day && gymOk(e)); }
 function looseEx() { return allEx().filter(e => e.day === "any" && gymOk(e)); }
 function trackedFor(day) { return visibleFor(day); }
@@ -1896,7 +1898,7 @@ function renderPlan() {
    phone's own storage, under one key, so nothing depends on Claude or a login.
    Backup and Restore (Plan tab) protect against a reset or deleted app. */
 
-const APP_VERSION = "2.2.0";
+const APP_VERSION = "2.3.0";
 const STORE_KEY = "pplx2:data:v1";
 
 const localDb = (function () {
