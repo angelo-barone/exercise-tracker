@@ -16,6 +16,7 @@ EVERY DAY USE
 - Drop set: tap "+ drop set" under a set, enter the lighter weight and reps.
 - Change an exercise: open it, tap "Edit name, gym, sets & reps". Arrows move it up or down. Delete asks twice.
 - Add an exercise: tap the add button at the bottom of the day.
+- Full Body: tap Full Body next to Legs. It is its own workout, not part of the week, and it never changes your rest day. It uses the same exercises as Push, Pull and Legs, so your history is shared. There you cannot delete, move or add; that list changes only through the program file.
 - The top right shows "All saved". If it says "not saved", tap it to retry and tell me.
 
 BACKUPS (this is the one thing that protects your data)

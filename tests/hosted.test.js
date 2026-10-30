@@ -7,11 +7,13 @@ const TMPD = fs.mkdtempSync(path.join(os.tmpdir(), 'hostedtest-'));
 const real = JSON.parse(fs.readFileSync(BACKUP)).data;
 const results = [];
 const ok = (name, cond, extra='') => { results.push([cond?'PASS':'FAIL', name, extra]); if(!cond) console.log('FAILNOW', name, extra); };
-const PORT = 8765, URL_ = `http://localhost:${PORT}/`;
+const PORT = +process.env.PORT || (20000 + Math.floor(Math.random() * 20000)), URL_ = `http://localhost:${PORT}/`;
 const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
 (async () => {
   const srv = spawn('python3', ['-m','http.server',String(PORT),'--directory',process.env.SITE||'.'], {stdio:'ignore'});
+  // On Windows python3 is a launcher, so stopping it must also stop the server it started
+  const killSrv = () => { try { if (process.platform === 'win32') require('child_process').execSync('taskkill /pid ' + srv.pid + ' /T /F', { stdio: 'ignore' }); else srv.kill(); } catch (e) {} };
   await sleep(800);
   const browser = await chromium.launch();
   const errs = [];
@@ -217,7 +219,7 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
   const real2 = errs.filter(e=>!/ERR_TUNNEL|fonts\.g|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED|Failed to load resource/.test(e));
   ok('no page errors', real2.length===0, real2.join(' | '));
   
-  await browser.close(); srv.kill();
+  await browser.close(); killSrv();
   console.log(results.map(r=>r.join('  ')).join('\n'));
   console.log(results.filter(r=>r[0]==='FAIL').length+' failed of '+results.length);
 })();

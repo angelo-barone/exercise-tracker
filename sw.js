@@ -1,6 +1,6 @@
 /* Service worker: lets the app open with no signal.
    Change CACHE_VERSION on every release so phones pick up the new files. */
-const CACHE_VERSION = "pplx2-shell-2.3.0";
+const CACHE_VERSION = "pplx2-shell-2.4.0";
 const SHELL = ["./", "index.html", "manifest.webmanifest", "icons/icon-180.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon-maskable-512.png", "icons/favicon-32.png"];
 
 self.addEventListener("install", e => {

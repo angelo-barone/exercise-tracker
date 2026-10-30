@@ -29,6 +29,12 @@ The old Claude artifact "PPL x2 Logbook" still exists but is retired. It only sa
 ## Program file (added Oct 24 2026)
 Angelo's Health and Wellness chat edits `program.json`. The app fetches it on every online open (`checkProgram`, never cached, sw.js skips it), compares `version` with `pplx2:programApplied`, and if it differs from the phone it shows a banner plus a Program update section in Plan listing added, changed, removed, new order and phone only exercises. Apply writes through `queue()`, keeps a safety copy in `pplx2:before-program`, and never touches sessions, notes or progress. Rules for the editor are in PROGRAM.md. A file that is invalid or lists an id in both `exercises` and `removed` is refused whole. After a push that changes program.json, nothing else is needed (no CACHE_VERSION bump).
 
+Full Body (v2.4.0): `fullBody` in program.json is an ordered list of existing exercise ids. Apply stores it as a number `fb` on each of those exercise docs in `custom` (10, 20, ...), so there are no copies and the list travels with backups. The Full Body day (`state.day === "fullbody"`, session id `date_fullbody`) is not in `DAYS` or `WEEK`, so the schedule and rest day are untouched. On that tab Delete, Move up/down and + Add are hidden. Deleting an exercise on its own day also drops it from Full Body. Rules for the editor are in PROGRAM.md.
+
+Release order matters when program.json depends on new app code: push the app first, confirm on the phone, then push program.json. An older app ignores `fullBody` but would still offer the warm-up changes, and Apply would then mark the version done without the list.
+
+Tests start a throwaway python web server on a random port and stop it when they finish (tests/program-v1.json is the frozen starting program).
+
 ## Releasing a change
 1. Edit index.html.
 2. Bump APP_VERSION in index.html and CACHE_VERSION in sw.js. If CACHE_VERSION is not bumped, phones may keep an old copy.

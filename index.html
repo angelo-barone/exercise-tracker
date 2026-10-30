@@ -310,6 +310,7 @@ table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-va
       <button type="button" data-day="push" aria-pressed="true">Push</button>
       <button type="button" data-day="pull" aria-pressed="false">Pull</button>
       <button type="button" data-day="legs" aria-pressed="false">Legs</button>
+      <button type="button" data-day="fullbody" aria-pressed="false">Full Body</button>
     </div>
   </header>
 
@@ -422,11 +423,18 @@ const PROGRAM = {
       { id:"lg_calf", name:"Calf Extension", gear:"Calf Extension Machine", sets:3, lo:12, hi:15, rest:60, load:"lower",
         cue:"Full stretch at the bottom, pause at the top." }
     ]
+  },
+  /* Full Body is not part of the weekly split and has no exercises of its own.
+     Its list is fullBody in program.json: ordered ids of exercises that live on Push, Pull or Legs. */
+  fullbody: {
+    label: "Full Body", muscles: "Whole body · same exercises and history as Push, Pull and Legs",
+    goal: "Same exercises and history as Push, Pull and Legs.",
+    ex: []
   }
 };
 
 const DAYS = ["push","pull","legs"];
-const DAYLABEL = { push:"Push", pull:"Pull", legs:"Legs", any:"Unsorted" };
+const DAYLABEL = { push:"Push", pull:"Pull", legs:"Legs", fullbody:"Full Body", any:"Unsorted" };
 const GYMS = { minto:"Minto", montpetit:"Montpetit", other:"Other" };
 const WEEK = ["push","pull","legs","rest","push","pull","legs"];
 const DAYNAME = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
@@ -814,7 +822,7 @@ function seedDoc(e, day, i) {
 function toEx(id, c) {
   return {
     id: id, name: c.name, custom: true, day: c.day, gym: c.gym || "both",
-    order: (c.order == null ? 5000 : c.order), createdAt: c.createdAt || "",
+    order: (c.order == null ? 5000 : c.order), fb: (c.fb == null ? null : c.fb), createdAt: c.createdAt || "",
     gear: c.gear || "", cue: c.cue || "",
     sets: c.sets, lo: c.lo, hi: c.hi, load: c.load || "upper",
     rest: c.rest || 90, warmup: c.warmup || 0
@@ -825,10 +833,12 @@ function allEx() {
     .sort((a, b) => (a.order - b.order) || a.createdAt.localeCompare(b.createdAt));
 }
 function gymOk(ex) { return !state.gym || state.gym === "all" || state.gym === "other" || ex.gym === "both" || ex.gym === state.gym; }
-function visibleFor(day) { return allEx().filter(e => e.day === day && gymOk(e)); }
+/* Full Body points at exercises that belong to Push, Pull or Legs (field fb = its place in the list). */
+function fullBodyEx() { return allEx().filter(e => e.fb != null).sort((a, b) => a.fb - b.fb); }
+function visibleFor(day) { return (day === "fullbody" ? fullBodyEx() : allEx().filter(e => e.day === day)).filter(gymOk); }
 function looseEx() { return allEx().filter(e => e.day === "any" && gymOk(e)); }
 function trackedFor(day) { return visibleFor(day); }
-function shownFor(day) { return visibleFor(day).concat(looseEx()); }
+function shownFor(day) { return day === "fullbody" ? visibleFor(day) : visibleFor(day).concat(looseEx()); }
 function exById(id) {
   if (state.custom[id]) return toEx(id, state.custom[id]);
   for (const d of DAYS) { const e = PROGRAM[d].ex.find(x => x.id === id); if (e) return e; }
@@ -924,6 +934,14 @@ function progProblem(file) {
     if (lo > hi) return who + " has a low rep number above its high rep number.";
   }
   for (const id of removed) if (seen[id]) return "The exercise " + id + " is listed both as an exercise and as removed.";
+  if (file.fullBody !== undefined) {
+    const fb = file.fullBody;
+    if (!Array.isArray(fb) || !fb.every(isId)) return "Its Full Body list is not a list of exercise ids.";
+    const twice = fb.find((id, i) => fb.indexOf(id) !== i);
+    if (twice) return "The Full Body list has " + twice + " twice.";
+    const bad = fb.find(id => removed.indexOf(id) >= 0 || (!seen[id] && !state.custom[id]));
+    if (bad) return "The Full Body list names " + bad + ", which is not an exercise.";
+  }
   return "";
 }
 
@@ -947,13 +965,17 @@ function progBuild(file) {
   Object.keys(next).filter(id => !inFile[id]).sort((a, b) => (at(a) - at(b)) || String(next[a].createdAt || "").localeCompare(String(next[b].createdAt || "")))
     .forEach(id => { if (seq[next[id].day]) seq[next[id].day].push(id); });
   PROG_DAYS.forEach(d => seq[d].forEach((id, i) => { next[id].order = (i + 1) * 10; }));
+  if (file.fullBody !== undefined) {
+    Object.keys(next).forEach(id => { delete next[id].fb; });
+    file.fullBody.forEach((id, i) => { next[id].fb = (i + 1) * 10; });
+  }
   return { next: next, seq: seq, removedIds: removedIds, inFile: inFile };
 }
 
 const GYMWORDS = { both: "both gyms", minto: "Minto only", montpetit: "Montpetit only" };
 function progPlan(file) {
   const b = progBuild(file);
-  const plan = { version: file.version, note: typeof file.note === "string" ? file.note : "", added: [], changed: [], removed: [], reorder: [], kept: [], any: false };
+  const plan = { version: file.version, note: typeof file.note === "string" ? file.note : "", added: [], changed: [], removed: [], reorder: [], fullBody: null, kept: [], any: false };
 
   file.exercises.forEach(e => {
     const prev = state.custom[e.id];
@@ -986,8 +1008,12 @@ function progPlan(file) {
     if (before.join() !== after.join()) plan.reorder.push({ day: d, names: b.seq[d].map(id => b.next[id].name) });
   });
 
+  if (file.fullBody !== undefined && fullBodyEx().map(e => e.id).join() !== file.fullBody.join()) {
+    plan.fullBody = file.fullBody.map(id => b.next[id].name);
+  }
+
   Object.keys(b.next).filter(id => !b.inFile[id]).forEach(id => plan.kept.push(b.next[id].name + " (" + DAYLABEL[b.next[id].day] + ")"));
-  plan.any = !!(plan.added.length || plan.changed.length || plan.removed.length || plan.reorder.length);
+  plan.any = !!(plan.added.length || plan.changed.length || plan.removed.length || plan.reorder.length || plan.fullBody);
   return plan;
 }
 
@@ -1078,6 +1104,7 @@ function programSectionEl() {
   group("Changed", p.changed);
   group("Removed", p.removed);
   p.reorder.forEach(r => group("New order on " + DAYLABEL[r.day], [r.names.join(", ")]));
+  if (p.fullBody) group("Full Body list, in this order (the same exercises and history as Push, Pull and Legs)", p.fullBody.map((n, i) => (i + 1) + ". " + n));
   group("Only on this phone, so they stay", p.kept);
 
   const acts = document.createElement("div"); acts.className = "btnrow";
@@ -1268,12 +1295,15 @@ function render() {
   vis.forEach((ex, i) => list.appendChild(exCard(ex, i + 1)));
   if (!vis.length) {
     const e = document.createElement("div");
-    e.className = "empty"; e.textContent = "No exercises for " + day.label + " here yet. Use + Add exercise below.";
+    e.className = "empty";
+    e.textContent = state.day === "fullbody" ? "The Full Body list is empty here. It comes from the program file."
+      : "No exercises for " + day.label + " here yet. Use + Add exercise below.";
     list.appendChild(e);
   }
 
   const extras = el("extras");
   extras.innerHTML = "";
+  if (state.day === "fullbody") return;
   const loose = looseEx();
   if (loose.length) {
     extras.appendChild(groupHead("Unsorted. Open each one and pick Push, Pull or Legs"));
@@ -1485,7 +1515,8 @@ function saveCustom(ex) {
   state.custom[id] = doc;
   cacheWrite({ custom: state.custom });
   state.form = null; state.formFor = null;
-  const visible = (doc.day === state.day || doc.day === "any") && gymOk(toEx(id, doc));
+  const here = state.day === "fullbody" ? doc.fb != null : (doc.day === state.day || doc.day === "any");
+  const visible = here && gymOk(toEx(id, doc));
   state.open = visible ? id : null;
   render();
   if (!visible) note(doc.name + " saved in " + DAYLABEL[doc.day] + ((doc.gym !== "both" && GYMS[doc.gym]) ? " for " + GYMS[doc.gym] : "") + ".");
@@ -1515,7 +1546,8 @@ function customFoot(ex) {
   const foot = document.createElement("div");
   foot.className = "exfoot";
 
-  if (ex.day !== "any") {
+  const onFullBody = state.day === "fullbody";
+  if (ex.day !== "any" && !onFullBody) {
     const vis = visibleFor(ex.day);
     const pos = vis.findIndex(e => e.id === ex.id);
     const mv = document.createElement("div"); mv.className = "acts move";
@@ -1568,7 +1600,7 @@ function customFoot(ex) {
     note(ex.name + " deleted. Sets you already logged stay in History.");
     queue("custom/" + ex.id, null);
   });
-  acts.append(edit, del);
+  if (onFullBody) acts.append(edit); else acts.append(edit, del);
   foot.appendChild(acts);
   return foot;
 }
@@ -1817,7 +1849,7 @@ async function renderHistory() {
     const card = document.createElement("article");
     card.className = "hcard";
     const dow = DAYNAME[parseISO(d.date).getDay()];
-    const order = allEx().filter(e => e.day === d.day).map(e => e.id);
+    const order = (d.day === "fullbody" ? fullBodyEx() : allEx().filter(e => e.day === d.day)).map(e => e.id);
     const ids = order.filter(id => d.log[id]).concat(Object.keys(d.log).filter(id => order.indexOf(id) < 0));
     let rows = "", volume = 0;
     ids.forEach(id => {
@@ -1866,6 +1898,12 @@ function renderPlan() {
       '</tbody></table></div><div class="plate">' + d.goal + ' Change the list from the Today tab: open an exercise to move, edit or delete it.</div></div>';
   });
 
+  const fb = fullBodyEx();
+  html += '<div class="sect"><div class="secthead">Full Body · not part of the week</div>' +
+    '<div class="tablescroll"><table class="ref"><thead><tr><th>Exercise</th><th style="text-align:right">Sets × reps</th></tr></thead><tbody>' +
+    (fb.length ? fb.map(exRow).join("") : '<tr><td>No list yet</td><td class="w"></td></tr>') +
+    '</tbody></table></div><div class="plate">The same exercises and history as Push, Pull and Legs. This list changes only through the program file.</div></div>';
+
   const loose = allEx().filter(e => e.day === "any");
   if (loose.length) {
     html += '<div class="sect"><div class="secthead">Unsorted</div><div class="tablescroll"><table class="ref"><tbody>' +
@@ -1881,7 +1919,7 @@ function renderPlan() {
     '</tbody></table></div><div class="plate">From your old sheet — free-weight numbers for when a machine is taken.</div></div>';
 
   html += '<div class="sect"><div class="secthead">Standing orders</div><div class="rows">' +
-    '<div class="row2"><span class="when">Warm-up</span><span class="then">Two sets on the first exercise only — no cardio</span></div>' +
+    '<div class="row2"><span class="when">Warm-up</span><span class="then">One light set on the first exercise only — no cardio</span></div>' +
     '<div class="row2"><span class="when">Protein</span><span class="then">130 g target · 100 g floor</span></div>' +
     '<div class="row2"><span class="when">Creatine</span><span class="then">5 g daily</span></div>' +
     '</div></div>';
@@ -1898,7 +1936,7 @@ function renderPlan() {
    phone's own storage, under one key, so nothing depends on Claude or a login.
    Backup and Restore (Plan tab) protect against a reset or deleted app. */
 
-const APP_VERSION = "2.3.0";
+const APP_VERSION = "2.4.0";
 const STORE_KEY = "pplx2:data:v1";
 
 const localDb = (function () {
