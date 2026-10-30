@@ -1,12 +1,13 @@
 // Tests the program.json update flow. Run from the repo root:
-// SITE=. TRACKER_BACKUP=/path/to/backup.json NODE_PATH=$(npm root -g) node tests/program.test.js
+// SITE=. NODE_PATH=$(npm root -g) node tests/program.test.js
+// It uses tests/fake-test-data.json (made-up data). Set TRACKER_BACKUP only to try a different file.
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
 const fs = require('fs'), path = require('path'), os = require('os');
-const BACKUP = path.resolve(process.env.TRACKER_BACKUP || 'backup.json');
+const BACKUP = path.resolve(process.env.TRACKER_BACKUP || path.join(__dirname, 'fake-test-data.json'));
 const SITE = path.resolve(process.env.SITE || '.');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'progsite-'));
-fs.cpSync(SITE, TMP, { recursive: true, filter: s => !/(\.git|tests|private)(\/|$)/.test(s) });
+fs.cpSync(SITE, TMP, { recursive: true, filter: s => !/[\\/](\.git|tests|private)([\\/]|$)/.test(s) });
 const base = JSON.parse(fs.readFileSync(path.join(SITE, 'program.json')));
 const setProg = o => fs.writeFileSync(path.join(TMP, 'program.json'), JSON.stringify(o));
 const clone = o => JSON.parse(JSON.stringify(o));

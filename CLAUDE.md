@@ -13,7 +13,7 @@ The old Claude artifact "PPL x2 Logbook" still exists but is retired. It only sa
 - Ask before deleting anything, and before any git commit or push.
 - NEVER put his workout data in this repo. Backups live outside git (Personal\Health and Wellness\03 Exercise\tracker-backups\).
 - Keep old exercise ids working (p_*, pl_*, lg_*, c_*). They carry history.
-- Never invent workout data.
+- Never invent workout data. The one exception, allowed by Angelo on Oct 29 2026: the labelled FAKE test file tests/fake-test-data.json, used only by the tests. Never use real data in tests.
 - Update README.md and HANDOFF.txt when features change.
 - program.json changes only when Angelo asks for a program change (usually through his Health and Wellness chat, following PROGRAM.md). Code sessions leave it alone.
 
@@ -31,7 +31,7 @@ Angelo's Health and Wellness chat edits `program.json`. The app fetches it on ev
 ## Releasing a change
 1. Edit index.html.
 2. Bump APP_VERSION in index.html and CACHE_VERSION in sw.js. If CACHE_VERSION is not bumped, phones may keep an old copy.
-3. Run tests/hosted.test.js and tests/program.test.js (need a real backup file, see README). All checks must pass.
+3. Run tests/hosted.test.js and tests/program.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
 4. Ask Angelo, then commit and push to master. Pages redeploys in about a minute.
 5. On his phone: open the app twice (first load fetches, second runs the new version).
 

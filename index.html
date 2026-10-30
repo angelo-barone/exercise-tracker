@@ -92,6 +92,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   padding:10px 12px; margin-bottom:14px; font-size:12.5px; color:var(--dim);
 }
 .banner b { color:var(--text); font-weight:600; }
+.progbanner { display:block; width:100%; text-align:left; border-color:var(--good); color:var(--dim); cursor:pointer; line-height:1.4; }
 
 /* ---------- exercise ---------- */
 .exlist { display:flex; flex-direction:column; gap:8px; }
@@ -314,6 +315,7 @@ table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-va
   <main id="today">
     <div class="banner warnbanner" id="dbBanner" hidden></div>
     <div class="banner" id="backupBanner" hidden></div>
+    <button type="button" class="banner progbanner" id="programBanner" hidden></button>
     <div class="banner" id="restBanner" hidden></div>
     <div class="exlist" id="exlist"></div>
     <div id="extras"></div>
@@ -448,6 +450,7 @@ const state = {
   date: todayISO(), day: "push",
   progress: {}, notes: {}, custom: {}, session: {}, meta: {}, gym: null, warned: false, restorePending: null,
   outbox: {}, syncing: false, syncFailed: false,
+  program: null,
   drafts: {}, steps: {},
   open: null, editingNote: null, noteDraft: "",
   form: null, formFor: null, armedDelete: null,
@@ -866,6 +869,227 @@ function migrate(queueIt) {
   }
 }
 
+/* ===================== PROGRAM UPDATES =====================
+   program.json, published next to the app, is the master exercise list.
+   The app fetches it on every online open (never from cache) and only
+   offers it. Nothing changes until Apply update is tapped. An update
+   writes exercises only: sessions, notes and progress are never touched. */
+
+const PA = "pplx2:programApplied";
+const PROG_DAYS = ["push", "pull", "legs", "any"];
+const PROG_GYMS = ["both", "minto", "montpetit"];
+const PROG_FIELDS = ["name", "day", "gym", "sets", "lo", "hi", "load", "rest", "warmup", "gear", "cue"];
+
+function appliedVersion() {
+  try { const v = parseInt(localStorage.getItem(PA), 10); return v > 0 ? v : 0; } catch (e) { return 0; }
+}
+function markApplied(v) { try { localStorage.setItem(PA, String(v)); } catch (e) {} }
+
+/* Returns "" when the file is usable, otherwise one plain sentence saying what is wrong. */
+function progProblem(file) {
+  const isInt = (v, lo, hi) => typeof v === "number" && Math.floor(v) === v && v >= lo && v <= hi;
+  const isId = v => typeof v === "string" && /^[A-Za-z0-9_-]{1,40}$/.test(v);
+  const isText = (v, max) => typeof v === "string" && v.trim().length > 0 && v.length <= max;
+  if (!file || typeof file !== "object" || Array.isArray(file)) return "It is not a program file.";
+  if (file.format !== 1) return "Its format number is not one this app understands.";
+  if (!isInt(file.version, 1, 1000000)) return "It has no valid version number.";
+  if (!Array.isArray(file.exercises)) return "It has no exercise list.";
+  const removed = file.removed == null ? [] : file.removed;
+  if (!Array.isArray(removed) || !removed.every(isId)) return "Its removed list is not a list of exercise ids.";
+  const seen = {};
+  for (const e of file.exercises) {
+    if (!e || typeof e !== "object" || !isId(e.id)) return "An exercise has a missing or invalid id.";
+    if (seen[e.id]) return "The exercise id " + e.id + " appears twice.";
+    seen[e.id] = true;
+    const prev = state.custom[e.id];
+    const who = typeof e.name === "string" && e.name ? e.name : e.id;
+    if (!prev) {
+      const need = ["name", "day", "sets", "lo", "hi", "load"].filter(f => e[f] === undefined);
+      if (need.length) return who + " is new but has no " + need.join(", ") + ".";
+    }
+    if (e.name !== undefined && !isText(e.name, 80)) return who + " has an invalid name.";
+    if (e.day !== undefined && PROG_DAYS.indexOf(e.day) < 0) return who + " has an unknown day.";
+    if (e.gym !== undefined && PROG_GYMS.indexOf(e.gym) < 0) return who + " has an unknown gym.";
+    if (e.load !== undefined && e.load !== "upper" && e.load !== "lower") return who + " has an unknown body part.";
+    if (e.sets !== undefined && !isInt(e.sets, 1, 10)) return who + " needs between 1 and 10 sets.";
+    if (e.lo !== undefined && !isInt(e.lo, 1, 50)) return who + " has an invalid low rep number.";
+    if (e.hi !== undefined && !isInt(e.hi, 1, 50)) return who + " has an invalid high rep number.";
+    if (e.rest !== undefined && !isInt(e.rest, 10, 600)) return who + " has an invalid rest time.";
+    if (e.warmup !== undefined && !isInt(e.warmup, 0, 5)) return who + " has an invalid number of warm-up sets.";
+    if (e.gear !== undefined && typeof e.gear !== "string") return who + " has invalid equipment text.";
+    if (e.cue !== undefined && typeof e.cue !== "string") return who + " has an invalid tip.";
+    const lo = e.lo !== undefined ? e.lo : (prev || {}).lo, hi = e.hi !== undefined ? e.hi : (prev || {}).hi;
+    if (lo > hi) return who + " has a low rep number above its high rep number.";
+  }
+  for (const id of removed) if (seen[id]) return "The exercise " + id + " is listed both as an exercise and as removed.";
+  return "";
+}
+
+/* Works out what the phone's exercises would look like after the update. Changes nothing. */
+function progBuild(file) {
+  const removedIds = new Set(file.removed || []);
+  const next = {};
+  Object.keys(state.custom).forEach(id => { if (!removedIds.has(id)) next[id] = Object.assign({}, state.custom[id]); });
+  const inFile = {};
+  const seq = { push: [], pull: [], legs: [], any: [] };
+  const now = new Date().toISOString();
+  file.exercises.forEach(e => {
+    inFile[e.id] = true;
+    const doc = next[e.id] || { gym: "both", createdAt: now };
+    PROG_FIELDS.forEach(f => { if (e[f] !== undefined) doc[f] = (f === "name") ? e[f].trim() : e[f]; });
+    next[e.id] = doc;
+    seq[doc.day].push(e.id);
+  });
+  // exercises only on this phone stay, after the file's own exercises of their day
+  const at = id => (next[id].order == null ? 5000 : next[id].order);
+  Object.keys(next).filter(id => !inFile[id]).sort((a, b) => (at(a) - at(b)) || String(next[a].createdAt || "").localeCompare(String(next[b].createdAt || "")))
+    .forEach(id => { if (seq[next[id].day]) seq[next[id].day].push(id); });
+  PROG_DAYS.forEach(d => seq[d].forEach((id, i) => { next[id].order = (i + 1) * 10; }));
+  return { next: next, seq: seq, removedIds: removedIds, inFile: inFile };
+}
+
+const GYMWORDS = { both: "both gyms", minto: "Minto only", montpetit: "Montpetit only" };
+function progPlan(file) {
+  const b = progBuild(file);
+  const plan = { version: file.version, note: typeof file.note === "string" ? file.note : "", added: [], changed: [], removed: [], reorder: [], kept: [], any: false };
+
+  file.exercises.forEach(e => {
+    const prev = state.custom[e.id];
+    const doc = b.next[e.id];
+    if (!prev) {
+      plan.added.push(doc.name + " (" + DAYLABEL[doc.day] + ", " + doc.sets + " × " + doc.lo + "–" + doc.hi +
+        (doc.gym && doc.gym !== "both" ? ", " + GYMWORDS[doc.gym] : "") + ")");
+      return;
+    }
+    const bits = [];
+    if (doc.day !== prev.day) bits.push("moves from " + DAYLABEL[prev.day] + " to " + DAYLABEL[doc.day]);
+    if ((doc.gym || "both") !== (prev.gym || "both")) bits.push("gym: " + GYMWORDS[prev.gym || "both"] + " to " + GYMWORDS[doc.gym || "both"]);
+    if (doc.sets !== prev.sets) bits.push("sets " + prev.sets + " to " + doc.sets);
+    if (doc.lo !== prev.lo || doc.hi !== prev.hi) bits.push("reps " + prev.lo + "–" + prev.hi + " to " + doc.lo + "–" + doc.hi);
+    if ((doc.load || "upper") !== (prev.load || "upper")) bits.push("body part: " + (prev.load || "upper") + " to " + doc.load);
+    if (e.rest !== undefined && doc.rest !== prev.rest) bits.push("rest " + (prev.rest || 90) + "s to " + doc.rest + "s");
+    if (e.warmup !== undefined && (doc.warmup || 0) !== (prev.warmup || 0)) bits.push("warm-up sets " + (prev.warmup || 0) + " to " + doc.warmup);
+    if (e.gear !== undefined && (doc.gear || "") !== (prev.gear || "")) bits.push("equipment text changed");
+    if (e.cue !== undefined && (doc.cue || "") !== (prev.cue || "")) bits.push("tip text changed");
+    const renamed = doc.name !== prev.name;
+    if (renamed || bits.length) plan.changed.push((renamed ? prev.name + " → " + doc.name : doc.name) + (bits.length ? ": " + bits.join("; ") : ""));
+  });
+
+  b.removedIds.forEach(id => { if (state.custom[id]) plan.removed.push(state.custom[id].name); });
+
+  // only a change in the relative order of exercises that stay on the same day counts
+  PROG_DAYS.forEach(d => {
+    const before = allEx().filter(e => e.day === d && b.next[e.id] && b.next[e.id].day === d).map(e => e.id);
+    const after = b.seq[d].filter(id => state.custom[id] && state.custom[id].day === d);
+    if (before.join() !== after.join()) plan.reorder.push({ day: d, names: b.seq[d].map(id => b.next[id].name) });
+  });
+
+  Object.keys(b.next).filter(id => !b.inFile[id]).forEach(id => plan.kept.push(b.next[id].name + " (" + DAYLABEL[b.next[id].day] + ")"));
+  plan.any = !!(plan.added.length || plan.changed.length || plan.removed.length || plan.reorder.length);
+  return plan;
+}
+
+async function checkProgram() {
+  let file;
+  try {
+    const res = await withTimeout(fetch("program.json?t=" + Date.now(), { cache: "no-store" }), 8000);
+    if (!res.ok) return;
+    file = JSON.parse(await res.text());
+  } catch (e) { return; }
+  if (!file || typeof file !== "object" || typeof file.version !== "number") return;
+  const applied = appliedVersion();
+  // version 1 is the starting program, copied from the app itself
+  if (!applied && file.version === 1) { markApplied(1); return; }
+  if (file.version <= (applied || 1)) return;
+  const problem = progProblem(file);
+  if (problem) state.program = { version: file.version, problem: problem };
+  else {
+    const plan = progPlan(file);
+    if (!plan.any) { markApplied(file.version); return; }
+    state.program = { version: file.version, file: file, plan: plan, dismissed: false };
+  }
+  render();
+  if (state.tab === "plan") renderPlan();
+}
+
+function applyProgram() {
+  const pg = state.program;
+  if (!pg || !pg.file) return;
+  try {
+    localStorage.setItem("pplx2:before-program", JSON.stringify({ at: new Date().toISOString(), appliedVersion: appliedVersion(), custom: state.custom }));
+  } catch (e) { note("Could not keep a safety copy, so nothing was changed."); return; }
+  const b = progBuild(pg.file);
+  const now = new Date().toISOString();
+  Object.keys(state.custom).forEach(id => {
+    if (!b.removedIds.has(id)) return;
+    delete state.custom[id];
+    queue("custom/" + id, null);
+  });
+  Object.keys(b.next).forEach(id => {
+    const prev = state.custom[id];
+    if (prev && JSON.stringify(prev) === JSON.stringify(b.next[id])) return;
+    b.next[id].updatedAt = now;
+    state.custom[id] = b.next[id];
+    queue("custom/" + id, b.next[id]);
+  });
+  cacheWrite({ custom: state.custom });
+  markApplied(pg.version);
+  state.program = null; state.open = null; state.form = null; state.formFor = null;
+  render();
+  if (state.tab === "plan") renderPlan();
+  note("Program updated to version " + pg.version + ".");
+}
+
+function programSectionEl() {
+  const pg = state.program;
+  if (!pg || pg.dismissed) return null;
+  const sec = document.createElement("div");
+  sec.className = "sect"; sec.id = "programSection";
+  const head = document.createElement("div");
+  head.className = "secthead"; head.textContent = "Program update";
+  sec.appendChild(head);
+
+  if (pg.problem) {
+    const box = document.createElement("div");
+    box.className = "plate"; box.style.marginTop = "0"; box.style.borderColor = "var(--warn)";
+    box.innerHTML = "<b>The program file (version " + pg.version + ") has a problem, so nothing was changed.</b> " + esc(pg.problem) +
+      " Ask your Health and Wellness chat to fix the file.";
+    sec.appendChild(box);
+    return sec;
+  }
+
+  const p = pg.plan;
+  const intro = document.createElement("div");
+  intro.className = "plate"; intro.style.marginTop = "0";
+  intro.innerHTML = "<b>Version " + pg.version + " is ready.</b> " + (p.note ? esc(p.note) + " " : "") +
+    "Nothing changes until you tap Apply update. Your logged sets, notes and history are never touched.";
+  sec.appendChild(intro);
+
+  const group = (title, lines) => {
+    if (!lines.length) return;
+    const box = document.createElement("div");
+    box.className = "plate";
+    box.innerHTML = "<b>" + esc(title) + "</b>" + lines.map(l => "<div>" + esc(l) + "</div>").join("");
+    sec.appendChild(box);
+  };
+  group("New exercises", p.added);
+  group("Changed", p.changed);
+  group("Removed", p.removed);
+  p.reorder.forEach(r => group("New order on " + DAYLABEL[r.day], [r.names.join(", ")]));
+  group("Only on this phone, so they stay", p.kept);
+
+  const acts = document.createElement("div"); acts.className = "btnrow";
+  const yes = document.createElement("button");
+  yes.type = "button"; yes.className = "save"; yes.id = "programYes"; yes.textContent = "Apply update";
+  yes.addEventListener("click", applyProgram);
+  const no = document.createElement("button");
+  no.type = "button"; no.className = "cancel"; no.id = "programNo"; no.textContent = "Not now";
+  no.addEventListener("click", () => { pg.dismissed = true; renderPlan(); render(); });
+  acts.append(yes, no);
+  sec.appendChild(acts);
+  return sec;
+}
+
 /*@@init*/
 function init() {
   const iso = todayISO();
@@ -918,6 +1142,7 @@ function init() {
     const b = e.target.closest("button[data-gym]"); if (b) pickGym(b.dataset.gym);
   });
   el("gymChip").addEventListener("click", showPicker);
+  el("programBanner").addEventListener("click", () => el("nav").querySelector('button[data-tab="plan"]').click());
 
   el("sync").addEventListener("click", () => { clearTimeout(retryTimer); flush(); });
   el("restSkip").addEventListener("click", stopRest);
@@ -988,6 +1213,7 @@ async function connectDb() {
   if (loaded) migrate(true);
   await loadSession();
   flush();
+  if (loaded) checkProgram();
 }
 
 /*@@render*/
@@ -1029,6 +1255,11 @@ function render() {
 
   const bb = el("backupBanner"), nag = backupNagText();
   bb.hidden = !nag; bb.textContent = nag;
+
+  const pb = el("programBanner"), pg = state.program;
+  const pending = !!(pg && pg.plan && !pg.dismissed);
+  pb.hidden = !pending;
+  if (pending) pb.innerHTML = "<b>A new program is ready (version " + pg.version + ").</b> Tap to see what changes. Nothing changes until you apply it.";
 
   const list = el("exlist");
   list.innerHTML = "";
@@ -1655,6 +1886,8 @@ function renderPlan() {
 
   root.innerHTML = html;
   root.insertBefore(dataSectionEl(), root.firstChild);
+  const prog = programSectionEl();
+  if (prog) root.insertBefore(prog, root.firstChild);
 }
 
 /* ===================== PHONE STORAGE =====================
@@ -1663,7 +1896,7 @@ function renderPlan() {
    phone's own storage, under one key, so nothing depends on Claude or a login.
    Backup and Restore (Plan tab) protect against a reset or deleted app. */
 
-const APP_VERSION = "2.0.0";
+const APP_VERSION = "2.2.0";
 const STORE_KEY = "pplx2:data:v1";
 
 const localDb = (function () {
@@ -1802,7 +2035,8 @@ function applyRestore() {
   if (!rp) return;
   try {
     localDb.replaceAll(rp.data);
-    ["pplx2:v1", "pplx2:outbox"].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    // the program marker goes too: a restored phone is offered the current program again
+    ["pplx2:v1", "pplx2:outbox", PA].forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
     try { localStorage.setItem(BK, new Date().toISOString()); } catch (e) {}
     location.reload();
   } catch (e) {

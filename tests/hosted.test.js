@@ -1,7 +1,9 @@
 const { chromium } = require('playwright');
 const { spawn } = require('child_process');
-const fs = require('fs'), path = require('path');
-const BACKUP = path.resolve(process.env.TRACKER_BACKUP || 'backup.json'); // a real backup file, kept out of git
+const fs = require('fs'), path = require('path'), os = require('os');
+// FAKE made-up data that lives in the repo. Set TRACKER_BACKUP only to try a different file.
+const BACKUP = path.resolve(process.env.TRACKER_BACKUP || path.join(__dirname, 'fake-test-data.json'));
+const TMPD = fs.mkdtempSync(path.join(os.tmpdir(), 'hostedtest-'));
 const real = JSON.parse(fs.readFileSync(BACKUP)).data;
 const results = [];
 const ok = (name, cond, extra='') => { results.push([cond?'PASS':'FAIL', name, extra]); if(!cond) console.log('FAILNOW', name, extra); };
@@ -115,7 +117,7 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
   // ---------- E backup file ----------
   await page.click('#nav button[data-tab="plan"]');
   const [dl] = await Promise.all([ page.waitForEvent('download'), page.click('#backupBtn') ]);
-  const dlPath = '/tmp/dl-backup.json'; await dl.saveAs(dlPath);
+  const dlPath = path.join(TMPD, 'dl-backup.json'); await dl.saveAs(dlPath);
   const bk = JSON.parse(fs.readFileSync(dlPath));
   ok('E: backup file name has today\'s date', /^exercise-tracker-backup-\d{4}-\d{2}-\d{2}\.json$/.test(dl.suggestedFilename()), dl.suggestedFilename());
   ok('E: backup contains all data incl new session', bk.app==='pplx2-logbook' && Object.keys(bk.data.sessions).length===15 && Object.keys(bk.data.notes).length===21 && bk.data.custom.p_shoulder.name==='Shoulder Press (Minto)');
@@ -134,7 +136,7 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
   const sB = await store(pB), sA = await store(page);
   const same = c => JSON.stringify(sB[c])===JSON.stringify(sA[c]);
   ok('F: new phone restored from backup, identical data', same('sessions') && same('notes') && same('progress') && same('custom'));
-  ok('F: bad file is rejected, data kept', await (async()=>{ fs.writeFileSync('/tmp/bad.json','{"hello":1}'); await pB.click('#nav button[data-tab="plan"]'); await pB.setInputFiles('#restoreFile','/tmp/bad.json'); await pB.waitForTimeout(400); return !(await pB.isVisible('#restoreYes')) && Object.keys((await store(pB)).sessions).length===15; })());
+  ok('F: bad file is rejected, data kept', await (async()=>{ const badPath = path.join(TMPD, 'bad.json'); fs.writeFileSync(badPath,'{"hello":1}'); await pB.click('#nav button[data-tab="plan"]'); await pB.setInputFiles('#restoreFile',badPath); await pB.waitForTimeout(400); return !(await pB.isVisible('#restoreYes')) && Object.keys((await store(pB)).sessions).length===15; })());
   await ctxB.close();
 
   // ---------- G offline ----------

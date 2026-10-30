@@ -1,0 +1,1649 @@
+{
+ "_label": "FAKE TEST BACKUP. Made up for the automated tests only. Not Angelo's workout data.",
+ "app": "pplx2-logbook",
+ "format": 1,
+ "exportedAt": "2026-10-24T12:00:00.000Z",
+ "appVersion": "2.0.0",
+ "data": {
+  "custom": {
+   "c_mu0fanxt": {
+    "name": "Incline Dumbbell Press",
+    "day": "push",
+    "gym": "both",
+    "sets": 2,
+    "lo": 6,
+    "hi": 10,
+    "load": "upper",
+    "createdAt": "2026-09-10T08:00:00.000Z",
+    "updatedAt": "2026-09-10T08:00:00.000Z"
+   },
+   "c_mu0g01hb": {
+    "name": "Triceps Extension Machine",
+    "day": "push",
+    "gym": "both",
+    "sets": 2,
+    "lo": 8,
+    "hi": 12,
+    "load": "upper",
+    "createdAt": "2026-09-10T09:00:00.000Z",
+    "updatedAt": "2026-09-10T09:00:00.000Z"
+   },
+   "c_mu0gm1ql": {
+    "name": "Declined Dumbbell Crunch",
+    "day": "push",
+    "gym": "both",
+    "sets": 2,
+    "lo": 8,
+    "hi": 12,
+    "load": "upper",
+    "createdAt": "2026-09-10T10:00:00.000Z",
+    "updatedAt": "2026-09-10T10:00:00.000Z"
+   },
+   "c_mu6a0yyd": {
+    "name": "Incline Bench (no machine)",
+    "day": "push",
+    "gym": "both",
+    "sets": 3,
+    "lo": 9,
+    "hi": 12,
+    "load": "upper",
+    "createdAt": "2026-09-10T11:00:00.000Z",
+    "updatedAt": "2026-09-10T11:00:00.000Z"
+   },
+   "c_mv0beegu": {
+    "name": "Chest Fly Machine",
+    "day": "push",
+    "gym": "both",
+    "sets": 2,
+    "lo": 8,
+    "hi": 10,
+    "load": "upper",
+    "createdAt": "2026-09-10T12:00:00.000Z",
+    "updatedAt": "2026-09-10T12:00:00.000Z"
+   },
+   "c_mv8r564p": {
+    "name": "Seated Shoulder Press",
+    "day": "push",
+    "gym": "both",
+    "sets": 2,
+    "lo": 7,
+    "hi": 10,
+    "load": "upper",
+    "createdAt": "2026-09-11T13:00:00.000Z",
+    "updatedAt": "2026-09-11T13:00:00.000Z"
+   },
+   "c_mu21v74p": {
+    "name": "Seated Row Machine -MNT",
+    "day": "pull",
+    "gym": "both",
+    "sets": 2,
+    "lo": 6,
+    "hi": 10,
+    "load": "upper",
+    "createdAt": "2026-09-11T14:00:00.000Z",
+    "updatedAt": "2026-09-11T14:00:00.000Z"
+   },
+   "c_mu227o0i": {
+    "name": "Cable Rope Curls",
+    "day": "pull",
+    "gym": "both",
+    "sets": 2,
+    "lo": 8,
+    "hi": 12,
+    "load": "upper",
+    "createdAt": "2026-09-11T15:00:00.000Z",
+    "updatedAt": "2026-09-11T15:00:00.000Z"
+   },
+   "c_mu22ps4p": {
+    "name": "Single Arm Rear Delt Reverse Flys",
+    "day": "pull",
+    "gym": "both",
+    "sets": 4,
+    "lo": 8,
+    "hi": 12,
+    "load": "upper",
+    "createdAt": "2026-09-11T16:00:00.000Z",
+    "updatedAt": "2026-09-11T16:00:00.000Z"
+   },
+   "c_mubm1edn": {
+    "name": "Seated Row FUSE XL",
+    "day": "pull",
+    "gym": "both",
+    "sets": 2,
+    "lo": 7,
+    "hi": 10,
+    "load": "upper",
+    "createdAt": "2026-09-11T17:00:00.000Z",
+    "updatedAt": "2026-09-11T17:00:00.000Z"
+   },
+   "c_mubmpybd": {
+    "name": "Seated Row FUSE XL -  rd",
+    "day": "pull",
+    "gym": "both",
+    "sets": 4,
+    "lo": 8,
+    "hi": 10,
+    "load": "upper",
+    "createdAt": "2026-09-12T18:00:00.000Z",
+    "updatedAt": "2026-09-12T18:00:00.000Z"
+   },
+   "c_mv18thxb": {
+    "name": "Dumbbell Rows",
+    "day": "pull",
+    "gym": "both",
+    "sets": 2,
+    "lo": 7,
+    "hi": 10,
+    "load": "upper",
+    "createdAt": "2026-09-12T19:00:00.000Z",
+    "updatedAt": "2026-09-12T19:00:00.000Z"
+   },
+   "c_mux7l5fd": {
+    "name": "Hack Squat",
+    "day": "legs",
+    "gym": "both",
+    "sets": 3,
+    "lo": 6,
+    "hi": 10,
+    "load": "lower",
+    "createdAt": "2026-09-12T20:00:00.000Z",
+    "updatedAt": "2026-09-12T20:00:00.000Z"
+   },
+   "c_mv2tiby0": {
+    "name": "Standing Calf Raise",
+    "day": "legs",
+    "gym": "both",
+    "sets": 2,
+    "lo": 10,
+    "hi": 12,
+    "load": "lower",
+    "createdAt": "2026-09-12T21:00:00.000Z",
+    "updatedAt": "2026-09-12T21:00:00.000Z"
+   }
+  },
+  "progress": {
+   "p_incline": {
+    "sets": [
+     {
+      "weight": 40,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 40,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Incline Bench Press"
+   },
+   "p_shoulder": {
+    "sets": [
+     {
+      "weight": 45,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 45,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Seated Shoulder Press"
+   },
+   "p_chestpress": {
+    "sets": [
+     {
+      "weight": 50,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 50,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Chest Press Machine"
+   },
+   "p_latraise": {
+    "sets": [
+     {
+      "weight": 55,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 55,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Cable Lateral Raise"
+   },
+   "p_pushdown": {
+    "sets": [
+     {
+      "weight": 60,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 60,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Cable Tricep Pushdown"
+   },
+   "p_kickback": {
+    "sets": [
+     {
+      "weight": 65,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 65,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Single Arm Tricep Kickback"
+   },
+   "p_abs": {
+    "sets": [
+     {
+      "weight": 70,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 70,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Ab Crunch Machine"
+   },
+   "pl_pulldown": {
+    "sets": [
+     {
+      "weight": 75,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 75,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Lat Pulldown"
+   },
+   "pl_row": {
+    "sets": [
+     {
+      "weight": 80,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 80,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Seated Cable Row"
+   },
+   "pl_reardelt": {
+    "sets": [
+     {
+      "weight": 85,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 85,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Rear Delt Reverse Fly"
+   },
+   "pl_curl": {
+    "sets": [
+     {
+      "weight": 90,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 90,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Cable Bicep Curl"
+   },
+   "pl_hammer": {
+    "sets": [
+     {
+      "weight": 95,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 95,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Cable Hammer Curl"
+   },
+   "pl_revcurl": {
+    "sets": [
+     {
+      "weight": 40,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 40,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Cable Reverse Curl"
+   },
+   "lg_press": {
+    "sets": [
+     {
+      "weight": 45,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 45,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Leg Press or Hack Squat"
+   },
+   "lg_legcurl": {
+    "sets": [
+     {
+      "weight": 50,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 50,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Seated Leg Curl"
+   },
+   "lg_legext": {
+    "sets": [
+     {
+      "weight": 55,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 55,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Leg Extension"
+   },
+   "lg_abd": {
+    "sets": [
+     {
+      "weight": 60,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 60,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Hip Abductor"
+   },
+   "lg_add": {
+    "sets": [
+     {
+      "weight": 65,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 65,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Hip Adductor"
+   },
+   "lg_calf": {
+    "sets": [
+     {
+      "weight": 70,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 70,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Calf Extension"
+   },
+   "c_mu0fanxt": {
+    "sets": [
+     {
+      "weight": 75,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 75,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Incline Dumbbell Press"
+   },
+   "c_mu0g01hb": {
+    "sets": [
+     {
+      "weight": 80,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 80,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Triceps Extension Machine"
+   },
+   "c_mu0gm1ql": {
+    "sets": [
+     {
+      "weight": 85,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 85,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Declined Dumbbell Crunch"
+   },
+   "c_mu6a0yyd": {
+    "sets": [
+     {
+      "weight": 90,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 90,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Incline Bench (no machine)"
+   },
+   "c_mv0beegu": {
+    "sets": [
+     {
+      "weight": 95,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 95,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Chest Fly Machine"
+   },
+   "c_mv8r564p": {
+    "sets": [
+     {
+      "weight": 40,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 40,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Seated Shoulder Press"
+   },
+   "c_mu21v74p": {
+    "sets": [
+     {
+      "weight": 45,
+      "reps": 9,
+      "rpe": 8
+     },
+     {
+      "weight": 45,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Seated Row Machine -MNT"
+   },
+   "c_mu227o0i": {
+    "sets": [
+     {
+      "weight": 50,
+      "reps": 10,
+      "rpe": 9
+     },
+     {
+      "weight": 50,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Cable Rope Curls"
+   },
+   "c_mu22ps4p": {
+    "sets": [
+     {
+      "weight": 55,
+      "reps": 8,
+      "rpe": 7
+     },
+     {
+      "weight": 55,
+      "reps": 8,
+      "rpe": 8
+     }
+    ],
+    "date": "2026-10-14",
+    "seed": false,
+    "name": "Single Arm Rear Delt Reverse Flys"
+   }
+  },
+  "notes": {
+   "p_incline": {
+    "text": "FAKE TEST NOTE for Incline Bench Press: seat 4, wide grip.",
+    "name": "Incline Bench Press",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "p_shoulder": {
+    "text": "FAKE TEST NOTE for Seated Shoulder Press: seat 4, wide grip.",
+    "name": "Seated Shoulder Press",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "p_chestpress": {
+    "text": "FAKE TEST NOTE for Chest Press Machine: seat 4, wide grip.",
+    "name": "Chest Press Machine",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "p_latraise": {
+    "text": "FAKE TEST NOTE for Cable Lateral Raise: seat 4, wide grip.",
+    "name": "Cable Lateral Raise",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "p_pushdown": {
+    "text": "FAKE TEST NOTE for Cable Tricep Pushdown: seat 4, wide grip.",
+    "name": "Cable Tricep Pushdown",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "p_kickback": {
+    "text": "FAKE TEST NOTE for Single Arm Tricep Kickback: seat 4, wide grip.",
+    "name": "Single Arm Tricep Kickback",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "p_abs": {
+    "text": "FAKE TEST NOTE for Ab Crunch Machine: seat 4, wide grip.",
+    "name": "Ab Crunch Machine",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "pl_pulldown": {
+    "text": "FAKE TEST NOTE for Lat Pulldown: seat 4, wide grip.",
+    "name": "Lat Pulldown",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "pl_row": {
+    "text": "FAKE TEST NOTE for Seated Cable Row: seat 4, wide grip.",
+    "name": "Seated Cable Row",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "pl_reardelt": {
+    "text": "FAKE TEST NOTE for Rear Delt Reverse Fly: seat 4, wide grip.",
+    "name": "Rear Delt Reverse Fly",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "pl_curl": {
+    "text": "FAKE TEST NOTE for Cable Bicep Curl: seat 4, wide grip.",
+    "name": "Cable Bicep Curl",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "pl_hammer": {
+    "text": "FAKE TEST NOTE for Cable Hammer Curl: seat 4, wide grip.",
+    "name": "Cable Hammer Curl",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "pl_revcurl": {
+    "text": "FAKE TEST NOTE for Cable Reverse Curl: seat 4, wide grip.",
+    "name": "Cable Reverse Curl",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "lg_press": {
+    "text": "FAKE TEST NOTE for Leg Press or Hack Squat: seat 4, wide grip.",
+    "name": "Leg Press or Hack Squat",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "lg_legcurl": {
+    "text": "FAKE TEST NOTE for Seated Leg Curl: seat 4, wide grip.",
+    "name": "Seated Leg Curl",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "lg_legext": {
+    "text": "FAKE TEST NOTE for Leg Extension: seat 4, wide grip.",
+    "name": "Leg Extension",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "lg_abd": {
+    "text": "FAKE TEST NOTE for Hip Abductor: seat 4, wide grip.",
+    "name": "Hip Abductor",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "lg_add": {
+    "text": "FAKE TEST NOTE for Hip Adductor: seat 4, wide grip.",
+    "name": "Hip Adductor",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "lg_calf": {
+    "text": "FAKE TEST NOTE for Calf Extension: seat 4, wide grip.",
+    "name": "Calf Extension",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "c_mu0fanxt": {
+    "text": "FAKE TEST NOTE for Incline Dumbbell Press: seat 4, wide grip.",
+    "name": "Incline Dumbbell Press",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   },
+   "c_mu0g01hb": {
+    "text": "FAKE TEST NOTE for Triceps Extension Machine: seat 4, wide grip.",
+    "name": "Triceps Extension Machine",
+    "updatedAt": "2026-10-01T12:00:00.000Z"
+   }
+  },
+  "sessions": {
+   "2026-09-12_push": {
+    "date": "2026-09-12",
+    "day": "push",
+    "gym": "minto",
+    "log": {
+     "p_incline": [
+      {
+       "weight": 25,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 25,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_shoulder": [
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_chestpress": [
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "p_incline": "Incline Bench Press",
+     "p_shoulder": "Seated Shoulder Press",
+     "p_chestpress": "Chest Press Machine"
+    },
+    "updatedAt": "2026-09-12T18:00:00.000Z"
+   },
+   "2026-09-14_pull": {
+    "date": "2026-09-14",
+    "day": "pull",
+    "gym": "montpetit",
+    "log": {
+     "pl_pulldown": [
+      {
+       "weight": 27,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 27,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_row": [
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_reardelt": [
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "pl_pulldown": "Lat Pulldown",
+     "pl_row": "Seated Cable Row",
+     "pl_reardelt": "Rear Delt Reverse Fly"
+    },
+    "updatedAt": "2026-09-14T18:00:00.000Z"
+   },
+   "2026-09-16_legs": {
+    "date": "2026-09-16",
+    "day": "legs",
+    "gym": "minto",
+    "log": {
+     "lg_press": [
+      {
+       "weight": 30,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 30,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legcurl": [
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legext": [
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "lg_press": "Leg Press or Hack Squat",
+     "lg_legcurl": "Seated Leg Curl",
+     "lg_legext": "Leg Extension"
+    },
+    "updatedAt": "2026-09-16T18:00:00.000Z"
+   },
+   "2026-09-19_push": {
+    "date": "2026-09-19",
+    "day": "push",
+    "gym": "montpetit",
+    "log": {
+     "p_incline": [
+      {
+       "weight": 32,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 32,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_shoulder": [
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_chestpress": [
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "p_incline": "Incline Bench Press",
+     "p_shoulder": "Seated Shoulder Press",
+     "p_chestpress": "Chest Press Machine"
+    },
+    "updatedAt": "2026-09-19T18:00:00.000Z"
+   },
+   "2026-09-21_pull": {
+    "date": "2026-09-21",
+    "day": "pull",
+    "gym": "minto",
+    "log": {
+     "pl_pulldown": [
+      {
+       "weight": 35,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 35,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_row": [
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_reardelt": [
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "pl_pulldown": "Lat Pulldown",
+     "pl_row": "Seated Cable Row",
+     "pl_reardelt": "Rear Delt Reverse Fly"
+    },
+    "updatedAt": "2026-09-21T18:00:00.000Z"
+   },
+   "2026-09-23_legs": {
+    "date": "2026-09-23",
+    "day": "legs",
+    "gym": "montpetit",
+    "log": {
+     "lg_press": [
+      {
+       "weight": 37,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 37,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legcurl": [
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legext": [
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "lg_press": "Leg Press or Hack Squat",
+     "lg_legcurl": "Seated Leg Curl",
+     "lg_legext": "Leg Extension"
+    },
+    "updatedAt": "2026-09-23T18:00:00.000Z"
+   },
+   "2026-09-26_push": {
+    "date": "2026-09-26",
+    "day": "push",
+    "gym": "minto",
+    "log": {
+     "p_incline": [
+      {
+       "weight": 25,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 25,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_shoulder": [
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_chestpress": [
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "p_incline": "Incline Bench Press",
+     "p_shoulder": "Seated Shoulder Press",
+     "p_chestpress": "Chest Press Machine"
+    },
+    "updatedAt": "2026-09-26T18:00:00.000Z"
+   },
+   "2026-09-28_pull": {
+    "date": "2026-09-28",
+    "day": "pull",
+    "gym": "montpetit",
+    "log": {
+     "pl_pulldown": [
+      {
+       "weight": 27,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 27,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_row": [
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_reardelt": [
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "pl_pulldown": "Lat Pulldown",
+     "pl_row": "Seated Cable Row",
+     "pl_reardelt": "Rear Delt Reverse Fly"
+    },
+    "updatedAt": "2026-09-28T18:00:00.000Z"
+   },
+   "2026-09-30_legs": {
+    "date": "2026-09-30",
+    "day": "legs",
+    "gym": "minto",
+    "log": {
+     "lg_press": [
+      {
+       "weight": 30,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 30,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legcurl": [
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legext": [
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 60,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "lg_press": "Leg Press or Hack Squat",
+     "lg_legcurl": "Seated Leg Curl",
+     "lg_legext": "Leg Extension"
+    },
+    "updatedAt": "2026-09-30T18:00:00.000Z"
+   },
+   "2026-10-03_push": {
+    "date": "2026-10-03",
+    "day": "push",
+    "gym": "montpetit",
+    "log": {
+     "p_incline": [
+      {
+       "weight": 32,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 32,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_shoulder": [
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_chestpress": [
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 65,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "p_incline": "Incline Bench Press",
+     "p_shoulder": "Seated Shoulder Press",
+     "p_chestpress": "Chest Press Machine"
+    },
+    "updatedAt": "2026-10-03T18:00:00.000Z"
+   },
+   "2026-10-06_pull": {
+    "date": "2026-10-06",
+    "day": "pull",
+    "gym": "minto",
+    "log": {
+     "pl_pulldown": [
+      {
+       "weight": 35,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 35,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_row": [
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_reardelt": [
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 70,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "pl_pulldown": "Lat Pulldown",
+     "pl_row": "Seated Cable Row",
+     "pl_reardelt": "Rear Delt Reverse Fly"
+    },
+    "updatedAt": "2026-10-06T18:00:00.000Z"
+   },
+   "2026-10-09_legs": {
+    "date": "2026-10-09",
+    "day": "legs",
+    "gym": "montpetit",
+    "log": {
+     "lg_press": [
+      {
+       "weight": 37,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 37,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legcurl": [
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "lg_legext": [
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 75,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "lg_press": "Leg Press or Hack Squat",
+     "lg_legcurl": "Seated Leg Curl",
+     "lg_legext": "Leg Extension"
+    },
+    "updatedAt": "2026-10-09T18:00:00.000Z"
+   },
+   "2026-10-11_push": {
+    "date": "2026-10-11",
+    "day": "push",
+    "gym": "minto",
+    "log": {
+     "p_incline": [
+      {
+       "weight": 25,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 25,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_shoulder": [
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "p_chestpress": [
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 50,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "p_incline": "Incline Bench Press",
+     "p_shoulder": "Seated Shoulder Press",
+     "p_chestpress": "Chest Press Machine"
+    },
+    "updatedAt": "2026-10-11T18:00:00.000Z"
+   },
+   "2026-10-14_pull": {
+    "date": "2026-10-14",
+    "day": "pull",
+    "gym": "montpetit",
+    "log": {
+     "pl_pulldown": [
+      {
+       "weight": 27,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 27,
+       "reps": 9,
+       "rpe": 0
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_row": [
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ],
+     "pl_reardelt": [
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      },
+      {
+       "weight": 55,
+       "reps": 9,
+       "rpe": 8
+      }
+     ]
+    },
+    "names": {
+     "pl_pulldown": "Lat Pulldown",
+     "pl_row": "Seated Cable Row",
+     "pl_reardelt": "Rear Delt Reverse Fly"
+    },
+    "updatedAt": "2026-10-14T18:00:00.000Z"
+   }
+  },
+  "meta": {}
+ }
+}

@@ -37,11 +37,11 @@ Data is on the phone only. Use **Plan, Your data, Back up now** regularly and ke
 `tests/hosted.test.js` (45 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets. `tests/program.test.js` (33 checks): program updates, rename, add, remove, reorder, broken files, offline.
 
 ```
-SITE=. TRACKER_BACKUP=/path/to/a/backup.json NODE_PATH=$(npm root -g) node tests/hosted.test.js
-SITE=. TRACKER_BACKUP=/path/to/a/backup.json NODE_PATH=$(npm root -g) node tests/program.test.js
+SITE=. NODE_PATH=$(npm root -g) node tests/hosted.test.js
+SITE=. NODE_PATH=$(npm root -g) node tests/program.test.js
 ```
 
-It needs a real backup file with 14 workouts. Backups are personal and are never committed to this repo.
+The tests no longer need a real backup. They use `tests/fake-test-data.json`, a clearly labelled FAKE backup (14 made-up workouts, 28 progress records, 21 notes, 14 added exercises) that exists only for testing and is not anyone's real workout data. Real backups are personal and are never committed to this repo. Setting `TRACKER_BACKUP` to another file still works, but it must have the same counts.
 
 ## License
 
