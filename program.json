@@ -1,9 +1,10 @@
 {
  "format": 1,
- "version": 1,
- "updated": "2026-10-24",
- "note": "Starting program, copied from the app as it was on Oct 24 2026.",
+ "version": 2,
+ "updated": "2026-10-29",
+ "note": "Adds the Full Body day (11 exercises shared with Push, Pull and Legs) and sets warm-up to 1 set on Incline Bench Press, Lat Pulldown and Leg Press or Hack Squat.",
  "removed": [],
+ "fullBody": ["lg_press", "p_incline", "pl_pulldown", "lg_legcurl", "p_shoulder", "pl_row", "p_latraise", "pl_curl", "p_pushdown", "lg_calf", "p_abs"],
  "exercises": [
   {
    "id": "p_incline",
@@ -15,7 +16,7 @@
    "hi": 10,
    "load": "upper",
    "rest": 120,
-   "warmup": 2,
+   "warmup": 1,
    "gear": "Smith Machine",
    "cue": "Upper chest priority — go heavy while fully fresh."
   },
@@ -167,7 +168,7 @@
    "hi": 10,
    "load": "upper",
    "rest": 120,
-   "warmup": 2,
+   "warmup": 1,
    "gear": "Lat Pulldown — yellow area",
    "cue": "Pull to upper chest, drive elbows down and back."
   },
@@ -306,7 +307,7 @@
    "hi": 10,
    "load": "lower",
    "rest": 120,
-   "warmup": 2,
+   "warmup": 1,
    "gear": "Your choice on the day",
    "cue": "Either machine works — pick one and stay with it for the session."
   },
