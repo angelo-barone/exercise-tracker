@@ -1936,7 +1936,7 @@ function renderPlan() {
    phone's own storage, under one key, so nothing depends on Claude or a login.
    Backup and Restore (Plan tab) protect against a reset or deleted app. */
 
-const APP_VERSION = "2.4.0";
+const APP_VERSION = "2.5.0";
 const STORE_KEY = "pplx2:data:v1";
 
 const localDb = (function () {
@@ -1949,6 +1949,7 @@ const localDb = (function () {
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(mem)); }
     catch (e) { const x = new Error("This phone could not save the data (storage full or blocked)."); x.code = "storage"; throw x; }
+    try { syncSchedule(); } catch (e) {} // copy to Claude after a good save; can never affect saving
   }
   const clone = v => JSON.parse(JSON.stringify(v));
   return {
@@ -2130,6 +2131,8 @@ function dataSectionEl() {
   row.append(b1, b2, pick);
   sec.appendChild(row);
 
+  sec.appendChild(syncBlockEl());
+
   const ver = document.createElement("div");
   ver.className = "hint"; ver.style.marginTop = "10px";
   ver.textContent = "App version " + APP_VERSION;
@@ -2145,6 +2148,117 @@ function backupNagText() {
   return n >= 14 ? "Last backup was " + n + " days ago. Open Plan, then tap Back up now." : "";
 }
 
+/* ===================== SEND A COPY TO CLAUDE =====================
+   Optional. When a sync code is saved in the Plan tab, a copy of the data is sent
+   to Angelo's own small server a few seconds after every successful save, so Claude
+   can read his training without a backup file. The phone stays the master: this only
+   ever sends, it never changes anything here, and a failure never touches saving.
+   The code is "address#key". It is typed in once and kept only in this phone's storage,
+   so no key is ever part of this public page. */
+
+const SYNC_CODE = "pplx2:syncCode", SYNC_LAST = "pplx2:syncLast", SYNC_ERR = "pplx2:syncErr";
+let syncTimer = 0, syncBusy = false, syncSentBody = "", syncRetryMs = 60000;
+
+function syncConfig() {
+  try {
+    const v = (localStorage.getItem(SYNC_CODE) || "").trim();
+    const i = v.lastIndexOf("#");
+    if (i < 9) return null;
+    const url = v.slice(0, i).replace(/\/+$/, ""), key = v.slice(i + 1);
+    if (!/^(https:\/\/[^\s#]+|http:\/\/(localhost|127\.0\.0\.1)(:\d+)?[^\s#]*)$/.test(url) || !/^[A-Za-z0-9_-]{16,}$/.test(key)) return null;
+    return { url: url, key: key };
+  } catch (e) { return null; }
+}
+function syncSchedule(delay) {
+  if (!syncConfig()) return;
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(syncPush, typeof delay === "number" ? delay : 4000);
+}
+function syncSet(k, v) { try { if (v) localStorage.setItem(k, v); else localStorage.removeItem(k); } catch (e) {} }
+async function syncPush(force) {
+  const cfg = syncConfig();
+  if (!cfg) return;
+  if (syncBusy) { syncSchedule(3000); return; }
+  if (navigator.onLine === false) { syncShowStatus(); return; } // the "online" event tries again
+  const data = snapshotData();
+  if (!Object.keys(data.sessions || {}).length) { syncSet(SYNC_ERR, "Nothing logged yet, so nothing to send."); syncShowStatus(); return; }
+  const same = JSON.stringify(data);
+  if (force !== true && same === syncSentBody) return;
+  syncBusy = true;
+  const ac = typeof AbortController !== "undefined" ? new AbortController() : null;
+  const killer = setTimeout(() => { if (ac) ac.abort(); }, 20000);
+  try {
+    const body = JSON.stringify({ app: "pplx2-logbook", format: 1, sentAt: new Date().toISOString(), appVersion: APP_VERSION, data: data });
+    const res = await fetch(cfg.url + "/sync", {
+      method: "POST", headers: { "Authorization": "Bearer " + cfg.key, "Content-Type": "application/json" },
+      body: body, signal: ac ? ac.signal : undefined
+    });
+    if (!res.ok) throw new Error(res.status === 401 ? "the code was refused (check it)" : "server answered " + res.status);
+    syncSentBody = same; syncRetryMs = 60000;
+    syncSet(SYNC_LAST, new Date().toISOString()); syncSet(SYNC_ERR, "");
+  } catch (e) {
+    const msg = e && e.name === "AbortError" ? "no answer in time" : ((e && e.message) || "could not connect");
+    syncSet(SYNC_ERR, msg);
+    syncSchedule(syncRetryMs); syncRetryMs = Math.min(syncRetryMs * 2, 30 * 60000);
+  } finally {
+    clearTimeout(killer); syncBusy = false; syncShowStatus();
+  }
+}
+function syncStatusText() {
+  if (!syncConfig()) return "Off. Paste the sync code below to turn it on.";
+  let last = null; try { last = localStorage.getItem(SYNC_LAST); } catch (e) {}
+  let err = ""; try { err = localStorage.getItem(SYNC_ERR) || ""; } catch (e) {}
+  const mins = last ? Math.max(0, Math.round((Date.now() - new Date(last).getTime()) / 60000)) : -1;
+  const when = mins < 0 ? "not sent yet" : mins < 1 ? "just now" : mins < 60 ? mins + " min ago" : mins < 1440 ? Math.round(mins / 60) + " h ago" : Math.round(mins / 1440) + " days ago";
+  return "On. Last sent: " + when + "." + (err ? " Last problem: " + err + ". It will try again." : "");
+}
+function syncShowStatus() {
+  const e = document.getElementById("syncStatus");
+  if (e) e.textContent = syncStatusText();
+}
+window.addEventListener("online", () => { try { syncSchedule(2000); } catch (e) {} });
+document.addEventListener("visibilitychange", () => { try { if (document.visibilityState === "visible") syncSchedule(2000); } catch (e) {} });
+
+function syncBlockEl() {
+  const box = document.createElement("div");
+  box.className = "plate"; box.id = "syncBlock";
+  const title = document.createElement("div");
+  title.innerHTML = "<b>Send a copy to Claude</b> (optional). Your phone stays the master. This only sends a copy after each save so Claude can see your training without a backup file.";
+  box.appendChild(title);
+  const st = document.createElement("div");
+  st.id = "syncStatus"; st.className = "hint"; st.style.marginTop = "6px";
+  st.textContent = syncStatusText();
+  box.appendChild(st);
+  const row = document.createElement("div");
+  row.className = "btnrow";
+  if (syncConfig()) {
+    const now = document.createElement("button");
+    now.type = "button"; now.className = "save"; now.id = "syncNow"; now.textContent = "Send now";
+    now.addEventListener("click", () => { syncSet(SYNC_ERR, ""); syncPush(true); });
+    const off = document.createElement("button");
+    off.type = "button"; off.className = "cancel"; off.id = "syncOff"; off.textContent = "Turn off";
+    off.addEventListener("click", () => { [SYNC_CODE, SYNC_LAST, SYNC_ERR].forEach(k => syncSet(k, "")); syncSentBody = ""; clearTimeout(syncTimer); renderPlan(); });
+    row.append(now, off);
+  } else {
+    const inp = document.createElement("input");
+    inp.type = "text"; inp.id = "syncCodeIn"; inp.className = "textin"; inp.placeholder = "Paste the sync code";
+    inp.setAttribute("autocapitalize", "off"); inp.setAttribute("autocomplete", "off"); inp.setAttribute("autocorrect", "off"); inp.spellcheck = false;
+    inp.style.marginTop = "8px";
+    const save = document.createElement("button");
+    save.type = "button"; save.className = "save"; save.id = "syncSave"; save.textContent = "Save code";
+    save.addEventListener("click", () => {
+      const v = inp.value.replace(/\s+/g, "");
+      try { localStorage.setItem(SYNC_CODE, v); } catch (e) {}
+      if (!syncConfig()) { syncSet(SYNC_CODE, ""); st.textContent = "That code does not look right. Copy it again from the chat and paste the whole thing."; return; }
+      syncSentBody = ""; syncSet(SYNC_ERR, ""); syncPush(true); renderPlan();
+    });
+    box.appendChild(inp);
+    row.appendChild(save);
+  }
+  box.appendChild(row);
+  return box;
+}
+
 /* ===================== INSTALLABLE APP ===================== */
 
 function registerWorker() {
@@ -2156,6 +2270,7 @@ function keepStorage() {
 }
 
 init();
+syncSchedule(); // if a sync code is saved, send a fresh copy a few seconds after opening
 </script>
 </body>
 </html>

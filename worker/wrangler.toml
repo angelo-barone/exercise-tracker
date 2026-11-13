@@ -1,0 +1,9 @@
+# Only used if the Worker is ever deployed from a terminal. The dashboard route does not need it.
+name = "logbook-sync"
+main = "index.js"
+compatibility_date = "2026-01-01"
+
+# Fill in the real id after creating the KV namespace in Cloudflare.
+[[kv_namespaces]]
+binding = "LOGBOOK"
+id = "REPLACE_WITH_KV_NAMESPACE_ID"

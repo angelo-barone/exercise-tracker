@@ -15,6 +15,7 @@ A phone gym logbook for a Push / Pull / Legs split run twice a week. It installs
 - Notes per exercise (seat height, grip, form cues)
 - History and Plan views
 - Backup and Restore: save everything to a file, load it on a new phone
+- Send a copy to Claude (optional, v2.5.0): after every save the phone sends a copy of its data to a small private server (`worker/`) so Claude can read training without a backup file. Off until a sync code is pasted in the Plan tab. The phone stays the master.
 - Program file: the whole exercise program is `program.json`. When a new version is published the app shows what would change and applies it only when you tap. Logged history is never touched.
 
 ## How it is built
@@ -24,6 +25,7 @@ One HTML file, plain JavaScript, no framework, no build step.
 - `index.html` is the whole app
 - `sw.js` is a service worker that caches the app so it opens offline. It tries the network first, so updates arrive as soon as the phone has signal.
 - `program.json` is the exercise program and `PROGRAM.md` explains how to edit it
+- `worker/` is the sync server: one Cloudflare Worker with a small key-value store (free tier). It contains no keys and no data. The two keys are secrets set in the Cloudflare dashboard.
 - `manifest.webmanifest` and `icons/` make it installable with a dumbbell icon
 - Data lives in the phone's `localStorage` under one key. A small adapter gives the app a document store interface (collection, doc, get, set, delete), so the rest of the code does not care where data is kept.
 
@@ -35,11 +37,12 @@ Data is on the phone only. Use **Plan, Your data, Back up now** regularly and ke
 
 ## Tests
 
-`tests/hosted.test.js` (54 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change. `tests/program-v1.json` is a frozen copy of the first program that those tests start from.
+`tests/hosted.test.js` (67 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym, and the send-a-copy feature (run against the real Worker code with a stand-in store). `tests/worker.test.js` (21 checks): the Worker alone, keys, size limit, wipe protection. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change. `tests/program-v1.json` is a frozen copy of the first program that those tests start from.
 
 ```
 SITE=. NODE_PATH=$(npm root -g) node tests/hosted.test.js
 SITE=. NODE_PATH=$(npm root -g) node tests/program.test.js
+node tests/worker.test.js
 ```
 
 The tests no longer need a real backup. They use `tests/fake-test-data.json`, a clearly labelled FAKE backup (14 made-up workouts, 28 progress records, 21 notes, 14 added exercises) that exists only for testing and is not anyone's real workout data. Real backups are personal and are never committed to this repo. Setting `TRACKER_BACKUP` to another file still works, but it must have the same counts.

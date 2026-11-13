@@ -5,7 +5,7 @@ Owner: Angelo Barone. No coding experience, does not read code. Explain every ch
 ## What this is
 A hosted phone app: PPL x2 gym logbook. Repo angelo-barone/exercise-tracker, branch master, served by GitHub Pages at https://angelo-barone.github.io/exercise-tracker/ . All paths are relative so it works under the repo subpath.
 
-Files: index.html (whole app, plain JS), sw.js, manifest.webmanifest, icons/, .nojekyll, program.json (the exercise program), PROGRAM.md (rules for whoever edits it), tests/hosted.test.js and tests/program.test.js, README.md, HANDOFF.txt (plain language guide for Angelo).
+Files: index.html (whole app, plain JS), worker/ (sync server, see Sync), sw.js, manifest.webmanifest, icons/, .nojekyll, program.json (the exercise program), PROGRAM.md (rules for whoever edits it), tests/hosted.test.js and tests/program.test.js, README.md, HANDOFF.txt (plain language guide for Angelo).
 
 The old Claude artifact "PPL x2 Logbook" still exists but is retired. It only saves inside the Claude app. Do not send him back to it.
 
@@ -35,10 +35,17 @@ Release order matters when program.json depends on new app code: push the app fi
 
 Tests start a throwaway python web server on a random port and stop it when they finish (tests/program-v1.json is the frozen starting program).
 
+## Sync to Claude (added v2.5.0)
+Goal: Claude can read his training data at any time with no backup file. The app sends, Claude reads. The phone stays the master; sync never changes phone data and a failure never touches saving.
+- Server: `worker/index.js`, a Cloudflare Worker with a KV namespace bound as LOGBOOK, free tier. `POST /sync` (Bearer WRITE_KEY) stores the app's backup format as `latest`. `GET /data` and `GET /status` (Bearer READ_KEY) read it back. `?copy=previous` reads the larger copy kept aside when a send has fewer workouts than the stored one (protects against a wipe). CORS allows only ALLOWED_ORIGIN (default https://angelo-barone.github.io). Keys WRITE_KEY and READ_KEY are Worker secrets set in the dashboard. No key, address or data is in this repo.
+- App: `syncSchedule()` is called after every good `localDb.save()` and once on open, and sends 4 seconds after the last save (`syncPush`). The address and write key are one pasted "sync code" (`https://address#key`), stored in `localStorage` as `pplx2:syncCode`, never in the page file. Other keys: `pplx2:syncLast`, `pplx2:syncErr`. Nothing is sent while no code is saved or while there are no workouts. Failures retry with growing waits and show in the Plan tab block "Send a copy to Claude". On Plan: Save code, Send now, Turn off.
+- Tests: section M of tests/hosted.test.js runs the real Worker code behind a throwaway server; tests/worker.test.js tests the Worker alone. Both use only the FAKE data.
+- The data held on the server is his workout data. Never copy it into this repo.
+
 ## Releasing a change
 1. Edit index.html.
 2. Bump APP_VERSION in index.html and CACHE_VERSION in sw.js. If CACHE_VERSION is not bumped, phones may keep an old copy.
-3. Run tests/hosted.test.js and tests/program.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
+3. Run tests/hosted.test.js, tests/program.test.js and tests/worker.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
 4. Ask Angelo, then commit and push to master. Pages redeploys in about a minute.
 5. On his phone: open the app twice (first load fetches, second runs the new version).
 

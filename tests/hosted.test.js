@@ -216,6 +216,79 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
   ok('I: blocked storage shows a warning, not silence', (await pC.isVisible('#dbBanner')) && (await pC.textContent('#dbBanner')).includes('NOT being saved'));
   await ctxC.close();
 
+  // ---------- M send a copy to Claude (uses the real Worker code with a stand-in store) ----------
+  const workerMod = await import(path.join(__dirname, '..', 'worker', 'index.js'));
+  const kv = new Map();
+  const fakeKV = { async get(k, t) { const v = kv.get(k); return v === undefined ? null : (t === 'json' ? JSON.parse(v) : v); }, async put(k, v) { kv.set(k, v); } };
+  const WKEY = 'writekey-0123456789abcdef', RKEY = 'readkey-0123456789abcdefg';
+  const wenv = { LOGBOOK: fakeKV, WRITE_KEY: WKEY, READ_KEY: RKEY, ALLOWED_ORIGIN: 'http://localhost:' + PORT };
+  let hits = 0;
+  const wsrv = require('http').createServer(async (req, res) => {
+    const chunks = []; for await (const c of req) chunks.push(c);
+    hits++;
+    const r = await workerMod.default.fetch(new Request('http://localhost' + req.url, { method: req.method, headers: req.headers, body: ['GET', 'HEAD'].includes(req.method) ? undefined : Buffer.concat(chunks) }), wenv);
+    const h = {}; r.headers.forEach((v, k) => { h[k] = v; });
+    res.writeHead(r.status, h); res.end(Buffer.from(await r.arrayBuffer()));
+  });
+  await new Promise(r => wsrv.listen(0, r));
+  const WP = wsrv.address().port;
+  const latest = () => kv.has('latest') ? JSON.parse(kv.get('latest')) : null;
+  const until = async (fn, ms = 15000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { if (fn()) return true; await sleep(200); } return false; };
+
+  const ctxM = await newCtx(); const pM = await ctxM.newPage(); hook(pM);
+  await pM.goto(URL_); await pick(pM, 'minto'); await settle(pM);
+  await pM.click('#nav button[data-tab="plan"]');
+  await pM.setInputFiles('#restoreFile', BACKUP); await pM.waitForSelector('#restoreYes');
+  await Promise.all([pM.waitForNavigation(), pM.click('#restoreYes')]);
+  await pick(pM, 'minto'); await settle(pM);
+  ok('M: with no code nothing is ever sent', hits === 0 && !latest());
+  await pM.click('#nav button[data-tab="plan"]');
+  ok('M: Plan shows the sync block, off', (await pM.textContent('#syncStatus')).startsWith('Off'));
+  await pM.fill('#syncCodeIn', 'not a code'); await pM.click('#syncSave');
+  ok('M: a bad code is refused with a plain message and not kept', (await pM.textContent('#syncStatus')).includes('does not look right') && !(await pM.evaluate(() => localStorage.getItem('pplx2:syncCode'))) && hits === 0);
+
+  await pM.fill('#syncCodeIn', 'http://localhost:' + WP + '#' + WKEY); await pM.click('#syncSave');
+  ok('M: first copy arrives after saving the code', await until(() => latest()));
+  let L = latest();
+  ok('M: the copy is exactly the phone data (14 workouts)', L && JSON.stringify(L.data.sessions) === JSON.stringify(real.sessions) && JSON.stringify(L.data.notes) === JSON.stringify(real.notes) && L.appVersion === '2.5.0', L ? Object.keys(L.data.sessions).length + ' sessions' : 'none');
+  await pM.waitForSelector('#syncOff');
+  ok('M: status says last sent, with Send now and Turn off', (await pM.textContent('#syncStatus')).includes('Last sent: just now') && (await pM.isVisible('#syncNow')));
+  ok('M: the key is kept on the phone only, never in the page file', !fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8').includes(WKEY) && !/workers\.dev/.test(fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8')));
+
+  // log a set: a new copy follows by itself
+  await pM.click('#nav button[data-tab="today"]');
+  await pM.click('#daySeg button[data-day="push"]');
+  await pM.click('.exhead:has(.exname:text-is("Chest Press Machine"))');
+  await pM.fill('.ex.open .setrow.active input[aria-label="Weight in pounds"]', '100');
+  await pM.fill('.ex.open .setrow.active input[aria-label="Repetitions"]', '8');
+  await pM.click('.ex.open .setrow.active .rpegrid button:text-is("8")');
+  await pM.click('.ex.open .setrow.active .logbtn'); await pM.click('#restSkip'); await settle(pM);
+  ok('M: logging a set sends a new copy by itself', await until(() => { const x = latest(); return x && Object.keys(x.data.sessions).length === 15; }));
+  L = latest();
+  const nk = Object.keys(L.data.sessions).find(k => !real.sessions[k]);
+  ok('M: the new copy holds the new set', nk && L.data.sessions[nk].log.p_chestpress[0].weight === 100);
+
+  // wrong key
+  const before = kv.get('latest');
+  await pM.click('#nav button[data-tab="plan"]'); await pM.click('#syncOff');
+  ok('M: Turn off removes the code', !(await pM.evaluate(() => localStorage.getItem('pplx2:syncCode'))) && (await pM.textContent('#syncStatus')).startsWith('Off'));
+  await pM.fill('#syncCodeIn', 'http://localhost:' + WP + '#wrongkey-0123456789abcdef'); await pM.click('#syncSave');
+  ok('M: a refused key is explained and nothing is overwritten', await pM.waitForFunction(() => document.getElementById('syncStatus').textContent.includes('refused'), null, { timeout: 8000 }).then(() => true, () => false) && kv.get('latest') === before);
+
+  // sync problems must never touch logging
+  await pM.click('#syncOff');
+  await pM.fill('#syncCodeIn', 'http://localhost:1#' + WKEY); await pM.click('#syncSave');
+  await pM.click('#nav button[data-tab="today"]');
+  await pM.click('.ex.open .setrow.active .logbtn').catch(() => {});
+  await pM.fill('.ex.open .setrow.active input[aria-label="Repetitions"]', '9').catch(() => {});
+  await pM.click('.ex.open .setrow.active .logbtn').catch(() => {});
+  if (await pM.isVisible('#restSkip')) await pM.click('#restSkip');
+  await settle(pM);
+  ok('M: with the server unreachable, saving still says All saved', (await pM.textContent('#sync')) === 'All saved');
+  await pM.click('#nav button[data-tab="plan"]');
+  ok('M: and the problem is shown in plain words', await pM.waitForFunction(() => /Last problem/.test(document.getElementById('syncStatus').textContent), null, { timeout: 8000 }).then(() => true, () => false));
+  await ctxM.close(); wsrv.close();
+
   const real2 = errs.filter(e=>!/ERR_TUNNEL|fonts\.g|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED|Failed to load resource/.test(e));
   ok('no page errors', real2.length===0, real2.join(' | '));
   

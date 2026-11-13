@@ -31,6 +31,9 @@ Then open the app with signal. A banner says a new program is ready. Tap it, rea
 Nothing changes until you tap Apply. Your logged workouts are never touched. You can still edit single exercises in the app yourself, but the program file is the master list.
 First time only: in the Health and Wellness chat, use Add folder and pick Dev\exercise-tracker so it can see program.json.
 
+SEND A COPY TO CLAUDE (optional)
+Plan tab, "Send a copy to Claude". Paste the sync code once and tap Save code. After that, every time you save a set, a copy goes to your own private server a few seconds later, so Claude can see your training without you making a backup file. Your phone is still the master and nothing on it is ever changed by this. If there is no signal it tries again by itself. "Turn off" removes the code. This does not replace backups.
+
 UPDATES
 I update the app on GitHub. Close it fully and open it twice to get the newest version. Your data is never touched by an update.
 
