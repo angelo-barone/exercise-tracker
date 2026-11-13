@@ -1,16 +1,21 @@
 /* Logbook sync Worker (Cloudflare Workers, free tier).
    The phone app sends a copy of its data here after every save. Claude reads it back.
-   Holds no secrets in this file: the two keys are set as secrets in the Cloudflare dashboard.
+   Holds no secrets in this file: the keys live in the KV store (see Keys below).
 
    Needs, in the dashboard:
      KV namespace binding   LOGBOOK
-     Secret                 WRITE_KEY   (the phone uses it to send)
-     Secret                 READ_KEY    (Claude uses it to read)
      Variable (optional)    ALLOWED_ORIGIN   default https://angelo-barone.github.io
 
-   POST /sync    Authorization: Bearer WRITE_KEY   body: the app's backup format
-   GET  /data    Authorization: Bearer READ_KEY    returns the latest copy
-   GET  /status  Authorization: Bearer READ_KEY    returns counts and times only
+   Keys: nobody types a key anywhere. The first visit to /setup makes two random keys,
+   stores them in KV under "keys", shows them once, and /setup is closed after that.
+     write key: the phone uses it to send     read key: Claude uses it to read
+   To change the keys: delete the "keys" entry in the KV namespace, then visit /setup again.
+   (Secrets WRITE_KEY and READ_KEY, if ever set on the Worker, take priority over KV.)
+
+   GET  /setup   first time only: makes the keys and returns the sync code for the phone
+   POST /sync    Authorization: Bearer <write key>   body: the app's backup format
+   GET  /data    Authorization: Bearer <read key>    returns the latest copy
+   GET  /status  Authorization: Bearer <read key>    returns counts and times only
 */
 
 const MAX_BYTES = 4 * 1024 * 1024;
@@ -41,6 +46,20 @@ function sameSecret(a, b) {
   const n = Math.max(a.length, b.length);
   for (let i = 0; i < n; i++) diff |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0);
   return diff === 0;
+}
+
+function randomKey() {
+  const b = new Uint8Array(32);
+  crypto.getRandomValues(b);
+  let s = "";
+  for (const x of b) s += String.fromCharCode(x);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+async function getKeys(env) {
+  if (env.WRITE_KEY && env.READ_KEY) return { write: env.WRITE_KEY, read: env.READ_KEY };
+  const k = await env.LOGBOOK.get("keys", "json");
+  return k && k.write && k.read ? k : { write: "", read: "" };
 }
 
 function bearer(request) {
@@ -77,8 +96,22 @@ export default {
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(env) });
 
+    if (request.method === "GET" && url.pathname === "/setup") {
+      if ((env.WRITE_KEY && env.READ_KEY) || await env.LOGBOOK.get("keys")) {
+        return reply(env, 410, { ok: false, error: "already set up; delete the keys entry in KV to make new keys" });
+      }
+      const k = { write: randomKey(), read: randomKey(), createdAt: new Date().toISOString() };
+      await env.LOGBOOK.put("keys", JSON.stringify(k));
+      return reply(env, 200, {
+        ok: true,
+        note: "Shown once. syncCode goes in the Logbook app (Plan, Send a copy to Claude). readKey is for Claude.",
+        syncCode: url.origin + "#" + k.write,
+        readKey: k.read
+      });
+    }
+
     if (request.method === "POST" && url.pathname === "/sync") {
-      if (!sameSecret(bearer(request), env.WRITE_KEY)) return reply(env, 401, { ok: false, error: "unauthorized" });
+      if (!sameSecret(bearer(request), (await getKeys(env)).write)) return reply(env, 401, { ok: false, error: "unauthorized" });
       const len = Number(request.headers.get("Content-Length") || 0);
       if (len > MAX_BYTES) return reply(env, 413, { ok: false, error: "too large" });
       const text = await request.text();
@@ -108,7 +141,7 @@ export default {
     }
 
     if (request.method === "GET" && (url.pathname === "/data" || url.pathname === "/status")) {
-      if (!sameSecret(bearer(request), env.READ_KEY)) return reply(env, 401, { ok: false, error: "unauthorized" });
+      if (!sameSecret(bearer(request), (await getKeys(env)).read)) return reply(env, 401, { ok: false, error: "unauthorized" });
       const which = url.searchParams.get("copy") === "previous" ? "previous" : "latest";
       const rec = await env.LOGBOOK.get(which, "json");
       if (!rec) return reply(env, 404, { ok: false, error: "nothing stored yet" });

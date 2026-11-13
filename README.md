@@ -25,7 +25,7 @@ One HTML file, plain JavaScript, no framework, no build step.
 - `index.html` is the whole app
 - `sw.js` is a service worker that caches the app so it opens offline. It tries the network first, so updates arrive as soon as the phone has signal.
 - `program.json` is the exercise program and `PROGRAM.md` explains how to edit it
-- `worker/` is the sync server: one Cloudflare Worker with a small key-value store (free tier). It contains no keys and no data. The two keys are secrets set in the Cloudflare dashboard.
+- `worker/` is the sync server: one Cloudflare Worker with a small key-value store (free tier). It contains no keys and no data. On its first visit to /setup it makes its own two keys (one to send, one to read) and then closes that door, so no key is ever typed or committed.
 - `manifest.webmanifest` and `icons/` make it installable with a dumbbell icon
 - Data lives in the phone's `localStorage` under one key. A small adapter gives the app a document store interface (collection, doc, get, set, delete), so the rest of the code does not care where data is kept.
 
@@ -37,7 +37,7 @@ Data is on the phone only. Use **Plan, Your data, Back up now** regularly and ke
 
 ## Tests
 
-`tests/hosted.test.js` (67 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym, and the send-a-copy feature (run against the real Worker code with a stand-in store). `tests/worker.test.js` (21 checks): the Worker alone, keys, size limit, wipe protection. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change. `tests/program-v1.json` is a frozen copy of the first program that those tests start from.
+`tests/hosted.test.js` (67 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym, and the send-a-copy feature (run against the real Worker code with a stand-in store). `tests/worker.test.js` (29 checks): the Worker alone, keys, the one time setup, size limit, wipe protection. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change. `tests/program-v1.json` is a frozen copy of the first program that those tests start from.
 
 ```
 SITE=. NODE_PATH=$(npm root -g) node tests/hosted.test.js

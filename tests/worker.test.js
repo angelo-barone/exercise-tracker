@@ -80,6 +80,29 @@ class FakeKV {
   r = await worker.fetch(new Request('https://w.example/sync', { method: 'POST', headers: { Authorization: 'Bearer ' }, body: JSON.stringify(good) }), env3);
   ok('with no keys configured nothing is accepted', r.status === 401);
 
+  // keys made by /setup, no secrets typed anywhere
+  const env4 = { LOGBOOK: new FakeKV() };
+  const w4 = (method, p, key, body) => worker.fetch(new Request('https://logbook-sync.example.workers.dev' + p, { method, headers: Object.assign({ 'Content-Type': 'application/json' }, key ? { Authorization: 'Bearer ' + key } : {}), body: body ? JSON.stringify(body) : undefined }), env4);
+  r = await w4('POST', '/sync', '', good);
+  ok('setup: before setup nothing is accepted', r.status === 401);
+  r = await w4('GET', '/setup');
+  j = await r.json();
+  const wk = (j.syncCode || '').split('#')[1] || '';
+  ok('setup: first visit makes a sync code and a read key', r.status === 200 && j.syncCode.startsWith('https://logbook-sync.example.workers.dev#') && /^[A-Za-z0-9_-]{40,}$/.test(wk) && /^[A-Za-z0-9_-]{40,}$/.test(j.readKey) && wk !== j.readKey, j.syncCode);
+  r = await w4('GET', '/setup');
+  ok('setup: second visit is closed and shows no keys', r.status === 410 && !JSON.stringify(await r.json()).includes(wk));
+  r = await w4('POST', '/sync', wk, good);
+  ok('setup: the new write key sends', r.status === 200);
+  r = await w4('GET', '/data', wk);
+  ok('setup: the write key cannot read', r.status === 401);
+  r = await w4('GET', '/status', j.readKey);
+  const st = await r.json();
+  ok('setup: the new read key reads', r.status === 200 && st.summary.sessions === nSessions);
+  r = await w4('POST', '/sync', j.readKey, good);
+  ok('setup: the read key cannot send', r.status === 401);
+  r = await worker.fetch(new Request('https://w.example/setup'), env);
+  ok('setup: closed when keys are set as secrets', r.status === 410);
+
   console.log(results.map(x => x.join('  ')).join('\n'));
   console.log(results.filter(x => x[0] === 'FAIL').length + ' failed of ' + results.length);
   process.exit(results.some(x => x[0] === 'FAIL') ? 1 : 0);
