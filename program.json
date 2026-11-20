@@ -1,10 +1,24 @@
 {
  "format": 1,
- "version": 2,
- "updated": "2026-10-29",
- "note": "Adds the Full Body day (11 exercises shared with Push, Pull and Legs) and sets warm-up to 1 set on Incline Bench Press, Lat Pulldown and Leg Press or Hack Squat.",
- "removed": [],
- "fullBody": ["lg_press", "p_incline", "pl_pulldown", "lg_legcurl", "p_shoulder", "pl_row", "p_latraise", "pl_curl", "p_pushdown", "lg_calf", "p_abs"],
+ "version": 3,
+ "updated": "2026-11-20",
+ "note": "Adds machine dropdowns (Closed Grip Row, Rear Delts, Incline Press, Leg Press or Hack Squat, Cable Curls), removes Seated Cable Row, tags the Minto only machines, and takes yellow area out of the equipment text. Keeps the edits you made on your phone since Nov 5.",
+ "removed": [
+  "pl_row"
+ ],
+ "fullBody": [
+  "lg_press",
+  "p_incline",
+  "pl_pulldown",
+  "lg_legcurl",
+  "p_shoulder",
+  "c_mw02qgc9",
+  "p_latraise",
+  "pl_curl",
+  "p_pushdown",
+  "lg_calf",
+  "p_abs"
+ ],
  "exercises": [
   {
    "id": "p_incline",
@@ -19,6 +33,26 @@
    "warmup": 1,
    "gear": "Smith Machine",
    "cue": "Upper chest priority — go heavy while fully fresh."
+  },
+  {
+   "id": "c_mu0fanxt",
+   "name": "Incline Dumbbell Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 6,
+   "hi": 10,
+   "load": "upper"
+  },
+  {
+   "id": "c_mu6a0yyd",
+   "name": "Incline Bench (no machine)",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 9,
+   "hi": 12,
+   "load": "upper"
   },
   {
    "id": "p_shoulder",
@@ -38,7 +72,7 @@
    "name": "Chest Press Machine",
    "day": "push",
    "gym": "both",
-   "sets": 2,
+   "sets": 3,
    "lo": 8,
    "hi": 10,
    "load": "upper",
@@ -50,7 +84,7 @@
    "id": "p_latraise",
    "name": "Cable Lateral Raise",
    "day": "push",
-   "gym": "both",
+   "gym": "montpetit",
    "sets": 2,
    "lo": 12,
    "hi": 15,
@@ -99,16 +133,6 @@
    "cue": "Controlled — squeeze abs at the top of every rep."
   },
   {
-   "id": "c_mu0fanxt",
-   "name": "Incline Dumbbell Press",
-   "day": "push",
-   "gym": "both",
-   "sets": 2,
-   "lo": 6,
-   "hi": 10,
-   "load": "upper"
-  },
-  {
    "id": "c_mu0g01hb",
    "name": "Triceps Extension Machine",
    "day": "push",
@@ -129,16 +153,6 @@
    "load": "upper"
   },
   {
-   "id": "c_mu6a0yyd",
-   "name": "Incline Bench (no machine)",
-   "day": "push",
-   "gym": "both",
-   "sets": 3,
-   "lo": 9,
-   "hi": 12,
-   "load": "upper"
-  },
-  {
    "id": "c_mv0beegu",
    "name": "Chest Fly Machine",
    "day": "push",
@@ -150,7 +164,7 @@
   },
   {
    "id": "c_mv8r564p",
-   "name": "Seated Shoulder Press",
+   "name": "Seated Shoulder Press XL2-700",
    "day": "push",
    "gym": "both",
    "sets": 2,
@@ -163,27 +177,54 @@
    "name": "Lat Pulldown",
    "day": "pull",
    "gym": "both",
-   "sets": 3,
-   "lo": 6,
+   "sets": 2,
+   "lo": 7,
    "hi": 10,
    "load": "upper",
    "rest": 120,
    "warmup": 1,
-   "gear": "Lat Pulldown — yellow area",
+   "gear": "Lat Pulldown",
    "cue": "Pull to upper chest, drive elbows down and back."
   },
   {
-   "id": "pl_row",
-   "name": "Seated Cable Row",
+   "id": "c_mw02qgc9",
+   "name": "Seated Row: AP 2500",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper"
+  },
+  {
+   "id": "c_mu21v74p",
+   "name": "Seated Row: SP-5900",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 6,
+   "hi": 10,
+   "load": "upper"
+  },
+  {
+   "id": "c_mubm1edn",
+   "name": "Seated Row: FUSE XL",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper"
+  },
+  {
+   "id": "c_mv18thxb",
+   "name": "Dumbbell Rows",
    "day": "pull",
    "gym": "both",
    "sets": 2,
-   "lo": 8,
+   "lo": 7,
    "hi": 10,
-   "load": "upper",
-   "rest": 120,
-   "gear": "Cable Row — yellow area",
-   "cue": "Lead with the elbows, chest stays tall."
+   "load": "upper"
   },
   {
    "id": "pl_reardelt",
@@ -199,6 +240,26 @@
    "cue": "Light weight, arms nearly straight, squeeze the rear delts."
   },
   {
+   "id": "c_mu22ps4p",
+   "name": "Single Arm Rear Delt Reverse Flys",
+   "day": "pull",
+   "gym": "both",
+   "sets": 4,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper"
+  },
+  {
+   "id": "c_mubmpybd",
+   "name": "Seated Row FUSE XL (rear delts)",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 4,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper"
+  },
+  {
    "id": "pl_curl",
    "name": "Cable Bicep Curl",
    "day": "pull",
@@ -210,6 +271,16 @@
    "rest": 90,
    "gear": "Low Pulley",
    "cue": "Full extension at the bottom, no swinging."
+  },
+  {
+   "id": "c_mu227o0i",
+   "name": "Cable Rope Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper"
   },
   {
    "id": "pl_hammer",
@@ -238,78 +309,29 @@
    "cue": "Overhand grip, full extension — direct forearm builder."
   },
   {
-   "id": "c_mu21v74p",
-   "name": "Seated Row Machine -MNT",
-   "day": "pull",
-   "gym": "both",
-   "sets": 2,
-   "lo": 6,
-   "hi": 10,
-   "load": "upper"
-  },
-  {
-   "id": "c_mu227o0i",
-   "name": "Cable Rope Curls",
-   "day": "pull",
-   "gym": "both",
-   "sets": 2,
-   "lo": 8,
-   "hi": 12,
-   "load": "upper"
-  },
-  {
-   "id": "c_mu22ps4p",
-   "name": "Single Arm Rear Delt Reverse Flys",
-   "day": "pull",
-   "gym": "both",
-   "sets": 4,
-   "lo": 8,
-   "hi": 12,
-   "load": "upper"
-  },
-  {
-   "id": "c_mubm1edn",
-   "name": "Seated Row FUSE XL",
-   "day": "pull",
-   "gym": "both",
-   "sets": 2,
-   "lo": 7,
-   "hi": 10,
-   "load": "upper"
-  },
-  {
-   "id": "c_mubmpybd",
-   "name": "Seated Row FUSE XL -  rd",
-   "day": "pull",
-   "gym": "both",
-   "sets": 4,
-   "lo": 8,
-   "hi": 10,
-   "load": "upper"
-  },
-  {
-   "id": "c_mv18thxb",
-   "name": "Dumbbell Rows",
-   "day": "pull",
-   "gym": "both",
-   "sets": 2,
-   "lo": 7,
-   "hi": 10,
-   "load": "upper"
-  },
-  {
    "id": "lg_press",
-   "name": "Leg Press or Hack Squat",
+   "name": "Leg Press",
    "day": "legs",
-   "gym": "both",
+   "gym": "montpetit",
    "sets": 3,
    "lo": 8,
    "hi": 10,
    "load": "lower",
    "rest": 120,
    "warmup": 1,
-   "gear": "Your choice on the day",
-   "cue": "Either machine works — pick one and stay with it for the session."
+   "gear": "",
+   "cue": ""
+  },
+  {
+   "id": "c_mux7l5fd",
+   "name": "Hack Squat",
+   "day": "legs",
+   "gym": "minto",
+   "sets": 3,
+   "lo": 6,
+   "hi": 10,
+   "load": "lower",
+   "warmup": 1
   },
   {
    "id": "lg_legcurl",
@@ -321,7 +343,7 @@
    "hi": 12,
    "load": "lower",
    "rest": 90,
-   "gear": "Leg Curl — yellow area",
+   "gear": "Leg Curl",
    "cue": "Control the lowering phase, full stretch at the bottom."
   },
   {
@@ -334,7 +356,7 @@
    "hi": 15,
    "load": "lower",
    "rest": 60,
-   "gear": "Leg Extension — yellow area",
+   "gear": "Leg Extension",
    "cue": "Pause and squeeze hard at the top for 1 second."
   },
   {
@@ -377,16 +399,6 @@
    "cue": "Full stretch at the bottom, pause at the top."
   },
   {
-   "id": "c_mux7l5fd",
-   "name": "Hack Squat",
-   "day": "legs",
-   "gym": "both",
-   "sets": 3,
-   "lo": 6,
-   "hi": 10,
-   "load": "lower"
-  },
-  {
    "id": "c_mv2tiby0",
    "name": "Standing Calf Raise",
    "day": "legs",
@@ -395,6 +407,52 @@
    "lo": 10,
    "hi": 12,
    "load": "lower"
+  }
+ ],
+ "groups": [
+  {
+   "id": "g_row",
+   "name": "Closed Grip Row",
+   "members": [
+    "c_mw02qgc9",
+    "c_mu21v74p",
+    "c_mubm1edn",
+    "c_mv18thxb"
+   ]
+  },
+  {
+   "id": "g_reardelt",
+   "name": "Rear Delts",
+   "members": [
+    "pl_reardelt",
+    "c_mu22ps4p",
+    "c_mubmpybd"
+   ]
+  },
+  {
+   "id": "g_incline",
+   "name": "Incline Press",
+   "members": [
+    "p_incline",
+    "c_mu0fanxt",
+    "c_mu6a0yyd"
+   ]
+  },
+  {
+   "id": "g_legpress",
+   "name": "Leg Press or Hack Squat",
+   "members": [
+    "lg_press",
+    "c_mux7l5fd"
+   ]
+  },
+  {
+   "id": "g_cablecurl",
+   "name": "Cable Curls",
+   "members": [
+    "pl_curl",
+    "c_mu227o0i"
+   ]
   }
  ]
 }

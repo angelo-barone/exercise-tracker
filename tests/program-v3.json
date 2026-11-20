@@ -1,8 +1,8 @@
 {
  "format": 1,
  "version": 3,
- "updated": "2026-11-05",
- "note": "Adds machine dropdowns (Closed Grip Row, Rear Delts, Incline Press, Leg Press or Hack Squat, Cable Curls), removes Seated Cable Row, tags the Minto only machines, and takes yellow area out of the equipment text.",
+ "updated": "2026-11-20",
+ "note": "Adds machine dropdowns (Closed Grip Row, Rear Delts, Incline Press, Leg Press or Hack Squat, Cable Curls), removes Seated Cable Row, tags the Minto only machines, and takes yellow area out of the equipment text. Keeps the edits you made on your phone since Nov 5.",
  "removed": [
   "pl_row"
  ],
@@ -72,7 +72,7 @@
    "name": "Chest Press Machine",
    "day": "push",
    "gym": "both",
-   "sets": 2,
+   "sets": 3,
    "lo": 8,
    "hi": 10,
    "load": "upper",
@@ -84,7 +84,7 @@
    "id": "p_latraise",
    "name": "Cable Lateral Raise",
    "day": "push",
-   "gym": "both",
+   "gym": "montpetit",
    "sets": 2,
    "lo": 12,
    "hi": 15,
@@ -164,7 +164,7 @@
   },
   {
    "id": "c_mv8r564p",
-   "name": "Seated Shoulder Press",
+   "name": "Seated Shoulder Press XL2-700",
    "day": "push",
    "gym": "both",
    "sets": 2,
@@ -177,8 +177,8 @@
    "name": "Lat Pulldown",
    "day": "pull",
    "gym": "both",
-   "sets": 3,
-   "lo": 6,
+   "sets": 2,
+   "lo": 7,
    "hi": 10,
    "load": "upper",
    "rest": 120,

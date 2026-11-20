@@ -172,7 +172,7 @@ const killSrv = () => { try { if (srv) { if (process.platform === 'win32') requi
 
   // G9 Full Body
   await day(page, 'fullbody'); n = await names(page);
-  ok('G9: Full Body shows 11 cards and the row group only once', n.length === 11 && n.filter(x => /^Seated Row/.test(x)).length === 1 && !n.includes('Seated Cable Row'), n.join(' | '));
+  ok('G9: Full Body at Minto shows 10 cards (Cable Lateral Raise is tagged Montpetit) and the row group only once', n.length === 10 && !n.includes('Cable Lateral Raise') && n.filter(x => /^Seated Row/.test(x)).length === 1 && !n.includes('Seated Cable Row'), n.join(' | '));
   await byName(page, 'Seated Row: AP 2500');
   ok('G9: Full Body card has the dropdown with the Minto machines', (await optTexts(page)).length === 4);
   const open9 = await page.textContent('.ex.open');
@@ -230,7 +230,7 @@ const killSrv = () => { try { if (srv) { if (process.platform === 'win32') requi
   const s15 = await store(page);
   ok('G15: AP 2500 deleted, its Full Body slot passes to the next machine', !s15.custom.c_mw02qgc9 && s15.custom.c_mu21v74p.fb === 60 && Object.values(s15.custom).filter(d => d.fb != null).length === 11, JSON.stringify([s15.custom.c_mu21v74p.fb]));
   await day(page, 'fullbody'); n = await names(page);
-  ok('G15: Full Body still has 11 cards and now opens the row on SP-5900', n.length === 11 && n.filter(x => /^Seated Row/.test(x)).join() === 'Seated Row: SP-5900', n.join(' | '));
+  ok('G15: Full Body at Minto still has 10 cards and now opens the row on SP-5900', n.length === 10 && n.filter(x => /^Seated Row/.test(x)).join() === 'Seated Row: SP-5900', n.join(' | '));
   ok('G15: History for AP 2500 sets is kept', (await store(page)).sessions[today + '_pull'].log.c_mw02qgc9.length === 1);
 
   const real = errs.filter(e => !/ERR_|fonts|Failed to load/.test(e));
