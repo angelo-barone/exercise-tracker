@@ -39,6 +39,18 @@ His logged sets, notes and history are never touched by an update.
 - On the Full Body tab the app hides Delete, Move up, Move down and + Add exercise, so this list changes only through this file. Everything else on an exercise (sets, reps, notes) can still be edited there.
 - Warm-up sets (`warmup`) belong to the exercise, so they show on Full Body too.
 
+## Machine groups
+`groups` puts several machines of one exercise behind one card with a Machine dropdown. Example: `{"id": "g_row", "name": "Closed Grip Row", "members": ["c_a", "c_b", "c_c"]}`.
+- `members` are existing exercise ids, BEST FIRST. The position is the rank. The same order applies at every gym.
+- Each machine stays its own exercise: own id, own history, notes, sets and reps. Nothing is merged. Never change a member's id.
+- At least 2 members. All members on the same day (push, pull or legs, not any). An exercise is in one group only. A member cannot be in `removed`. The group `id` is unique and the `name` is plain text.
+- Gym tags decide what shows. Each gym shows only the members that gym allows, opened on the best one. If only one member shows at a gym, it is a plain card. If none shows, the group is hidden. Other and All gyms list every member.
+- `fullBody` may name at most ONE member of a group. The whole group then appears at that slot.
+- Leave `groups` out to keep the phone's groups as they are. `[]` removes all groups (the exercises stay).
+- Order in the file: list a group's members next to each other in `exercises`, best first, so the day shows them together.
+- Old app versions ignore `groups`. Push the app first, wait for Angelo to confirm it on his phone, then push the program with `groups`.
+- An error in any group makes the app refuse the whole file.
+
 ## Rules
 - Never change an existing `id`. The id carries the exercise's history. Rename it by changing `name` only.
 - New exercise: invent a new id like `x_kneeling_crunch`. Letters, numbers, underscore, dash, max 40 characters, never reused.

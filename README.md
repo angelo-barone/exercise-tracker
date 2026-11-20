@@ -11,6 +11,7 @@ A phone gym logbook for a Push / Pull / Legs split run twice a week. It installs
 - Asks which gym you are at (Minto, Montpetit or Other) and shows the exercises for that gym. Other shows every exercise and is saved on each session. History is shared per exercise.
 - Rename, reorder, add and delete any exercise
 - Full Body: a fourth day, outside the weekly schedule, that reuses exercises from Push, Pull and Legs so history is shared. Its list comes from `program.json` only
+- Machine groups: one exercise can have a dropdown of machines, best first (for example Closed Grip Row). Each machine keeps its own history, notes and targets. The card opens on the best machine the chosen gym has. Groups come from `program.json` only (`groups`, added in v2.6.0)
 - Suggests next session's weight from progressive overload rules
 - Notes per exercise (seat height, grip, form cues)
 - History and Plan views
@@ -37,11 +38,14 @@ Data is on the phone only. Use **Plan, Your data, Back up now** regularly and ke
 
 ## Tests
 
-`tests/hosted.test.js` (67 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym, and the send-a-copy feature (run against the real Worker code with a stand-in store). `tests/worker.test.js` (29 checks): the Worker alone, keys, the one time setup, size limit, wipe protection. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change. `tests/program-v1.json` is a frozen copy of the first program that those tests start from.
+`tests/hosted.test.js` (67 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym, and the send-a-copy feature (run against the real Worker code with a stand-in store). `tests/worker.test.js` (29 checks): the Worker alone, keys, the one time setup, size limit, wipe protection. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change.
+
+`tests/groups.test.js` (65 checks): machine groups, refused group files, defaults per gym, logging on another machine, remembered pick, Full Body, Plan tab, move, delete, backup and restore. `tests/program-v1.json` and `tests/program-v2.json` are frozen copies of earlier programs that the tests start from; `tests/program-v3.json` is the program with machine groups.
 
 ```
 SITE=. NODE_PATH=$(npm root -g) node tests/hosted.test.js
 SITE=. NODE_PATH=$(npm root -g) node tests/program.test.js
+SITE=. NODE_PATH=$(npm root -g) node tests/groups.test.js
 node tests/worker.test.js
 ```
 

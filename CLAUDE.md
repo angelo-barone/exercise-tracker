@@ -33,6 +33,8 @@ Full Body (v2.4.0): `fullBody` in program.json is an ordered list of existing ex
 
 Release order matters when program.json depends on new app code: push the app first, confirm on the phone, then push program.json. An older app ignores `fullBody` but would still offer the warm-up changes, and Apply would then mark the version done without the list.
 
+Machine groups (v2.6.0): optional `grp`, `gname`, `rank` on `custom` docs, set from the top level `groups` list in program.json (members best first). One card with a Machine select; each machine keeps its own id and history. Default machine: manual pick, else a machine already logged this session, else the best one the gym allows (Other: best tagged both, else rank 1; All: rank 1). The pick is saved as `pick` on the session doc. Move moves the whole block; Delete removes one machine (Full Body slot passes to the next); Belongs to detaches. Old apps ignore `groups`, so push the app first. Rules in PROGRAM.md. Test: tests/groups.test.js (frozen programs tests/program-v1/v2/v3.json).
+
 Tests start a throwaway python web server on a random port and stop it when they finish (tests/program-v1.json is the frozen starting program).
 
 ## Sync to Claude (added v2.5.0)
@@ -46,7 +48,7 @@ Goal: Claude can read his training data at any time with no backup file. The app
 ## Releasing a change
 1. Edit index.html.
 2. Bump APP_VERSION in index.html and CACHE_VERSION in sw.js. If CACHE_VERSION is not bumped, phones may keep an old copy.
-3. Run tests/hosted.test.js, tests/program.test.js and tests/worker.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
+3. Run tests/hosted.test.js, tests/program.test.js, tests/groups.test.js and tests/worker.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
 4. Ask Angelo, then commit and push to master. Pages redeploys in about a minute.
 5. On his phone: open the app twice (first load fetches, second runs the new version).
 

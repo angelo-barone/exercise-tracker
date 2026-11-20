@@ -8,9 +8,9 @@ const BACKUP = path.resolve(process.env.TRACKER_BACKUP || path.join(__dirname, '
 const SITE = path.resolve(process.env.SITE || '.');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'progsite-'));
 fs.cpSync(SITE, TMP, { recursive: true, filter: s => !/[\\/](\.git|tests|private)([\\/]|$)/.test(s) });
-// base is the frozen version 1 starting program. current is the real program.json being released.
+// base is the frozen version 1 starting program. current is the frozen version 2 (Full Body list and warm-up change). program-v3.json is the machine groups update, tested in groups.test.js.
 const base = JSON.parse(fs.readFileSync(path.join(__dirname, 'program-v1.json')));
-const current = JSON.parse(fs.readFileSync(path.join(SITE, 'program.json')));
+const current = JSON.parse(fs.readFileSync(path.join(__dirname, 'program-v2.json')));
 const setProg = o => fs.writeFileSync(path.join(TMP, 'program.json'), JSON.stringify(o));
 const clone = o => JSON.parse(JSON.stringify(o));
 const results = [];

@@ -461,6 +461,7 @@ const state = {
   progress: {}, notes: {}, custom: {}, session: {}, meta: {}, gym: null, warned: false, restorePending: null,
   outbox: {}, syncing: false, syncFailed: false,
   program: null,
+  picks: {},
   drafts: {}, steps: {},
   open: null, editingNote: null, noteDraft: "",
   form: null, formFor: null, armedDelete: null,
@@ -612,6 +613,8 @@ async function loadSession() {
     const snap = await state.db.doc("sessions/" + sid).get();
     if (sessionId(state.date, state.day) !== sid || pendingSession(sid)) return;
     state.session = snap.exists ? (snap.data().log || {}) : {};
+    const savedPick = snap.exists ? snap.data().pick : null;
+    if (savedPick && typeof savedPick === "object") { state.picks[sid] = Object.assign({}, savedPick, state.picks[sid] || {}); savePicks(); }
     cacheSession(sid, state.session);
     render();
   } catch (e) {
@@ -823,6 +826,7 @@ function toEx(id, c) {
   return {
     id: id, name: c.name, custom: true, day: c.day, gym: c.gym || "both",
     order: (c.order == null ? 5000 : c.order), fb: (c.fb == null ? null : c.fb), createdAt: c.createdAt || "",
+    grp: c.grp || null, gname: c.gname || "", rank: c.rank || 0,
     gear: c.gear || "", cue: c.cue || "",
     sets: c.sets, lo: c.lo, hi: c.hi, load: c.load || "upper",
     rest: c.rest || 90, warmup: c.warmup || 0
@@ -835,7 +839,81 @@ function allEx() {
 function gymOk(ex) { return !state.gym || state.gym === "all" || state.gym === "other" || ex.gym === "both" || ex.gym === state.gym; }
 /* Full Body points at exercises that belong to Push, Pull or Legs (field fb = its place in the list). */
 function fullBodyEx() { return allEx().filter(e => e.fb != null).sort((a, b) => a.fb - b.fb); }
-function visibleFor(day) { return (day === "fullbody" ? fullBodyEx() : allEx().filter(e => e.day === day)).filter(gymOk); }
+
+/* ---- machine groups ----
+   Machines for the same exercise share a group (fields grp, gname, rank on each exercise doc, 1 = best).
+   A group is ONE card with a Machine dropdown. Every machine keeps its own id, history, notes and targets,
+   so logging works exactly as before on whichever machine is selected. */
+function byRank(a, b) { return ((a.rank || 9999) - (b.rank || 9999)) || (a.order - b.order); }
+function curPicks() { const sid = sessionId(state.date, state.day); return state.picks[sid] || (state.picks[sid] = {}); }
+function savePicks() {
+  const keys = Object.keys(state.picks).sort();
+  while (keys.length > 20) delete state.picks[keys.shift()];
+  cacheWrite({ picks: state.picks });
+}
+/* Which machine a group card opens on. opts are the machines this gym has, best first. */
+function pickMember(opts, grp) {
+  const want = curPicks()[grp];
+  const chosen = want && opts.find(e => e.id === want);
+  if (chosen) return chosen;
+  const logged = opts.find(e => (state.session[e.id] || []).some(Boolean));
+  if (logged) return logged;
+  if (state.gym === "other") return opts.find(e => e.gym === "both") || opts[0];
+  return opts[0];
+}
+/* One entry per card on a day: { ex: the machine shown, opts: every machine you can pick, grp } */
+function cardsFor(day) {
+  const base = day === "fullbody" ? fullBodyEx() : allEx().filter(e => e.day === day);
+  const cards = [], seen = {};
+  base.forEach(e => {
+    if (e.grp) {
+      if (seen[e.grp]) return;
+      seen[e.grp] = true;
+      const opts = allEx().filter(x => x.grp === e.grp && (day === "fullbody" || x.day === day)).filter(gymOk).sort(byRank);
+      if (opts.length) cards.push({ ex: pickMember(opts, e.grp), opts: opts, grp: e.grp });
+      return;
+    }
+    if (gymOk(e)) cards.push({ ex: e, opts: [e], grp: null });
+  });
+  return cards;
+}
+function groupOptions(ex) {
+  if (!ex.grp) return null;
+  const c = cardsFor(state.day).find(k => k.ex.id === ex.id);
+  return c && c.opts.length > 1 ? c.opts : null;
+}
+function isExDone(ex) {
+  const full = e => (state.session[e.id] || []).filter(Boolean).length >= e.sets + (e.warmup || 0);
+  if (full(ex)) return true;
+  const o = groupOptions(ex);
+  return !!(o && o.some(full));
+}
+/* Every machine of each group on a day stays together as one unit, in rank order. */
+function dayUnits(day) {
+  const seen = {}, units = [];
+  allEx().filter(e => e.day === day).forEach(e => {
+    if (e.grp) {
+      if (seen[e.grp]) return;
+      seen[e.grp] = true;
+      units.push(allEx().filter(x => x.day === day && x.grp === e.grp).sort(byRank));
+    } else units.push([e]);
+  });
+  return units;
+}
+function fullBodyUnits() {
+  const seen = {}, units = [];
+  fullBodyEx().forEach(e => {
+    if (e.grp) {
+      if (seen[e.grp]) return;
+      seen[e.grp] = true;
+      units.push(allEx().filter(x => x.grp === e.grp).sort(byRank));
+    } else units.push([e]);
+  });
+  return units;
+}
+function detachGroup(doc) { delete doc.grp; delete doc.gname; delete doc.rank; return doc; }
+
+function visibleFor(day) { return cardsFor(day).map(c => c.ex); }
 function looseEx() { return allEx().filter(e => e.day === "any" && gymOk(e)); }
 function trackedFor(day) { return visibleFor(day); }
 function shownFor(day) { return day === "fullbody" ? visibleFor(day) : visibleFor(day).concat(looseEx()); }
@@ -942,6 +1020,40 @@ function progProblem(file) {
     const bad = fb.find(id => removed.indexOf(id) >= 0 || (!seen[id] && !state.custom[id]));
     if (bad) return "The Full Body list names " + bad + ", which is not an exercise.";
   }
+  // machine groups: several machines for one exercise, listed best first
+  const groupOfId = {};
+  if (file.groups !== undefined) {
+    if (!Array.isArray(file.groups)) return "Its machine groups are not a list.";
+    const fileEx = {};
+    file.exercises.forEach(e => { fileEx[e.id] = e; });
+    const dayAfter = id => (fileEx[id] && fileEx[id].day !== undefined) ? fileEx[id].day : (state.custom[id] || {}).day;
+    const gids = {};
+    for (const g of file.groups) {
+      if (!g || typeof g !== "object" || !isId(g.id)) return "A machine group has a missing or invalid id.";
+      if (gids[g.id]) return "The machine group id " + g.id + " appears twice.";
+      gids[g.id] = true;
+      if (!isText(g.name, 80)) return "The machine group " + g.id + " has an invalid name.";
+      if (!Array.isArray(g.members) || g.members.length < 2 || !g.members.every(isId)) return "The machine group " + g.name + " needs a list of at least 2 exercise ids.";
+      for (const id of g.members) {
+        if (removed.indexOf(id) >= 0 || (!seen[id] && !state.custom[id])) return "The machine group " + g.name + " names " + id + ", which is not an exercise.";
+        if (groupOfId[id]) return "The exercise " + id + " is in more than one machine group, or twice in one.";
+        groupOfId[id] = g.id;
+      }
+      const days = g.members.map(dayAfter);
+      if (days.some(d => d !== days[0]) || ["push", "pull", "legs"].indexOf(days[0]) < 0) return "The machine group " + g.name + " has machines on different days, or is not on Push, Pull or Legs.";
+    }
+  } else {
+    Object.keys(state.custom).forEach(id => { if (state.custom[id].grp) groupOfId[id] = state.custom[id].grp; });
+  }
+  if (file.fullBody !== undefined) {
+    const used = {};
+    for (const id of file.fullBody) {
+      const g = groupOfId[id];
+      if (!g) continue;
+      if (used[g]) return "The Full Body list has two machines of the same group (" + id + "). Name only one of them.";
+      used[g] = true;
+    }
+  }
   return "";
 }
 
@@ -964,6 +1076,25 @@ function progBuild(file) {
   const at = id => (next[id].order == null ? 5000 : next[id].order);
   Object.keys(next).filter(id => !inFile[id]).sort((a, b) => (at(a) - at(b)) || String(next[a].createdAt || "").localeCompare(String(next[b].createdAt || "")))
     .forEach(id => { if (seq[next[id].day]) seq[next[id].day].push(id); });
+  // machine groups: grp, gname and rank go on each machine's doc; the machines of a group sit together, best first
+  if (file.groups !== undefined) {
+    Object.keys(next).forEach(id => { delete next[id].grp; delete next[id].gname; delete next[id].rank; });
+    file.groups.forEach(g => g.members.forEach((id, i) => { next[id].grp = g.id; next[id].gname = g.name.trim(); next[id].rank = i + 1; }));
+  }
+  const members = {};
+  Object.keys(next).filter(id => next[id].grp).forEach(id => { (members[next[id].grp] = members[next[id].grp] || []).push(id); });
+  Object.keys(members).forEach(g => members[g].sort((a, b) => (next[a].rank || 9999) - (next[b].rank || 9999)));
+  PROG_DAYS.forEach(d => {
+    const done = {}, out = [];
+    seq[d].forEach(id => {
+      const g = next[id].grp;
+      if (!g) { out.push(id); return; }
+      if (done[g]) return;
+      done[g] = true;
+      members[g].forEach(m => { if (next[m].day === d) out.push(m); });
+    });
+    seq[d] = out;
+  });
   PROG_DAYS.forEach(d => seq[d].forEach((id, i) => { next[id].order = (i + 1) * 10; }));
   if (file.fullBody !== undefined) {
     Object.keys(next).forEach(id => { delete next[id].fb; });
@@ -975,7 +1106,7 @@ function progBuild(file) {
 const GYMWORDS = { both: "both gyms", minto: "Minto only", montpetit: "Montpetit only" };
 function progPlan(file) {
   const b = progBuild(file);
-  const plan = { version: file.version, note: typeof file.note === "string" ? file.note : "", added: [], changed: [], removed: [], reorder: [], fullBody: null, kept: [], any: false };
+  const plan = { version: file.version, note: typeof file.note === "string" ? file.note : "", added: [], changed: [], removed: [], reorder: [], fullBody: null, groups: null, kept: [], any: false };
 
   file.exercises.forEach(e => {
     const prev = state.custom[e.id];
@@ -1009,11 +1140,27 @@ function progPlan(file) {
   });
 
   if (file.fullBody !== undefined && fullBodyEx().map(e => e.id).join() !== file.fullBody.join()) {
-    plan.fullBody = file.fullBody.map(id => b.next[id].name);
+    plan.fullBody = file.fullBody.map(id => b.next[id].gname || b.next[id].name);
+  }
+
+  if (file.groups !== undefined) {
+    const sig = docs => {
+      const g = {};
+      Object.keys(docs).forEach(id => { const d = docs[id]; if (d.grp) (g[d.grp] = g[d.grp] || []).push([d.rank || 9999, id, d.gname || ""]); });
+      return Object.keys(g).sort().map(k => k + "|" + g[k].sort((x, y) => x[0] - y[0]).map(x => x[1] + ":" + x[2]).join(",")).join(";");
+    };
+    if (sig(state.custom) !== sig(b.next)) {
+      const label = id => b.next[id].name + ((b.next[id].gym && b.next[id].gym !== "both" && GYMS[b.next[id].gym]) ? " (" + GYMS[b.next[id].gym] + ")" : "");
+      plan.groups = file.groups.map(g => g.name.trim() + ": " + g.members.map((id, i) => (i + 1) + ". " + label(id)).join(", "));
+      const keep = {}; file.groups.forEach(g => { keep[g.id] = true; });
+      const gone = {};
+      Object.keys(state.custom).forEach(id => { const d = state.custom[id]; if (d.grp && !keep[d.grp]) gone[d.grp] = d.gname || d.grp; });
+      Object.keys(gone).forEach(k => plan.groups.push("Group removed: " + gone[k]));
+    }
   }
 
   Object.keys(b.next).filter(id => !b.inFile[id]).forEach(id => plan.kept.push(b.next[id].name + " (" + DAYLABEL[b.next[id].day] + ")"));
-  plan.any = !!(plan.added.length || plan.changed.length || plan.removed.length || plan.reorder.length || plan.fullBody);
+  plan.any = !!(plan.added.length || plan.changed.length || plan.removed.length || plan.reorder.length || plan.fullBody || plan.groups);
   return plan;
 }
 
@@ -1104,6 +1251,7 @@ function programSectionEl() {
   group("Changed", p.changed);
   group("Removed", p.removed);
   p.reorder.forEach(r => group("New order on " + DAYLABEL[r.day], [r.names.join(", ")]));
+  if (p.groups) group("Machine groups, best machine first (each exercise opens on the best machine your gym has)", p.groups);
   if (p.fullBody) group("Full Body list, in this order (the same exercises and history as Push, Pull and Legs)", p.fullBody.map((n, i) => (i + 1) + ". " + n));
   group("Only on this phone, so they stay", p.kept);
 
@@ -1132,6 +1280,7 @@ function init() {
   state.notes = cached.notes || {};
   state.custom = cached.custom || {};
   state.meta = cached.meta || {};
+  state.picks = cached.picks || {};
   applyOutbox();
   migrate(false);
   const sid = sessionId(state.date, state.day);
@@ -1256,9 +1405,7 @@ function render() {
   const vis = visibleFor(state.day);
   let setsLogged = 0, exDone = 0;
   Object.keys(state.session).forEach(id => { setsLogged += (state.session[id] || []).filter(Boolean).length; });
-  vis.forEach(ex => {
-    if ((state.session[ex.id] || []).filter(Boolean).length >= ex.sets + (ex.warmup || 0)) exDone++;
-  });
+  vis.forEach(ex => { if (isExDone(ex)) exDone++; });
   el("tally").textContent = exDone + "/" + vis.length + " done · " + setsLogged + " sets";
 
   const sched = scheduledDay(state.date);
@@ -1329,12 +1476,13 @@ function render() {
 function exCard(ex, label) {
   const total = ex.sets + (ex.warmup || 0);
   const logged = state.session[ex.id] || [];
-  const doneCount = logged.filter(Boolean).length;
+  const opts = groupOptions(ex);
+  const isDone = isExDone(ex);
   const open = state.open === ex.id;
   const p = state.progress[ex.id];
 
   const card = document.createElement("section");
-  card.className = "ex" + (open ? " open" : "") + (doneCount >= total ? " done" : "");
+  card.className = "ex" + (open ? " open" : "") + (isDone ? " done" : "");
 
   const head = document.createElement("button");
   head.type = "button"; head.className = "exhead";
@@ -1352,9 +1500,10 @@ function exCard(ex, label) {
   const subParts = [ex.sets + " × " + ex.lo + "–" + ex.hi];
   if (ex.gear) subParts.push(esc(ex.gear));
   if (ex.gym !== "both" && GYMS[ex.gym]) subParts.push(GYMS[ex.gym] + " only");
+  if (opts) subParts.push(opts.length + " machines");
 
   head.innerHTML =
-    '<span class="exnum">' + (doneCount >= total ? "✓" : label) + '</span>' +
+    '<span class="exnum">' + (isDone ? "✓" : label) + '</span>' +
     '<span class="exmain"><span class="exname">' + esc(ex.name) + '</span>' +
     '<span class="exsub">' + subParts.join(" · ") + '</span></span>' +
     '<span class="exlast">' + lastHtml + '</span>';
@@ -1375,6 +1524,8 @@ function exCard(ex, label) {
     card.appendChild(body);
     return card;
   }
+
+  if (opts) body.appendChild(machinePicker(ex, opts));
 
   if (ex.cue) {
     const cue = document.createElement("p");
@@ -1404,6 +1555,38 @@ function exCard(ex, label) {
 
   card.appendChild(body);
   return card;
+}
+
+/* The Machine dropdown on a group card. Machines are the ones this gym has, best first. */
+function machinePicker(ex, opts) {
+  const wrap = document.createElement("div");
+  const lab = document.createElement("label");
+  lab.className = "flabel"; lab.setAttribute("for", "msel"); lab.textContent = "Machine";
+  const sel = document.createElement("select");
+  sel.id = "msel"; sel.className = "textin";
+  opts.forEach(o => {
+    const op = document.createElement("option");
+    op.value = o.id;
+    op.textContent = o.name + ((o.gym !== "both" && GYMS[o.gym]) ? " (" + GYMS[o.gym] + ")" : "");
+    if (o.id === ex.id) op.selected = true;
+    sel.appendChild(op);
+  });
+  sel.addEventListener("change", () => setPick(ex.grp, sel.value));
+  wrap.append(lab, sel);
+  const others = opts.filter(o => o.id !== ex.id && (state.session[o.id] || []).some(Boolean));
+  if (others.length) {
+    const p = document.createElement("p");
+    p.className = "cue"; p.style.marginTop = "6px";
+    p.textContent = "Also logged today: " + others.map(o => o.name).join(", ");
+    wrap.appendChild(p);
+  }
+  return wrap;
+}
+function setPick(grp, id) {
+  curPicks()[grp] = id;
+  savePicks();
+  state.open = id; state.armedDelete = null; state.editingNote = null;
+  render();
 }
 
 /*@@customForm*/
@@ -1512,6 +1695,7 @@ function saveCustom(ex) {
     name: f.name.trim(), day: f.day, gym: f.gym || "both", sets: f.sets, lo: f.lo, hi: f.hi, load: f.load,
     order: order, createdAt: prev.createdAt || now, updatedAt: now
   });
+  if (ex && prev.day !== f.day) detachGroup(doc);
   state.custom[id] = doc;
   cacheWrite({ custom: state.custom });
   state.form = null; state.formFor = null;
@@ -1524,12 +1708,15 @@ function saveCustom(ex) {
 }
 
 function moveEx(ex, dir) {
-  const vis = visibleFor(ex.day);
-  const i = vis.findIndex(e => e.id === ex.id), j = i + dir;
-  if (i < 0 || j < 0 || j >= vis.length) return;
-  const all = allEx().filter(e => e.day === ex.day);
-  const ia = all.findIndex(e => e.id === vis[i].id), ib = all.findIndex(e => e.id === vis[j].id);
-  const t = all[ia]; all[ia] = all[ib]; all[ib] = t;
+  // a group moves as one block (all its machines together)
+  const units = dayUnits(ex.day);
+  const shown = visibleFor(ex.day).map(e => e.id);
+  const vu = units.filter(u => u.some(m => shown.indexOf(m.id) >= 0));
+  const i = vu.findIndex(u => u.some(m => m.id === ex.id)), j = i + dir;
+  if (i < 0 || j < 0 || j >= vu.length) return;
+  const ia = units.indexOf(vu[i]), ib = units.indexOf(vu[j]);
+  const t = units[ia]; units[ia] = units[ib]; units[ib] = t;
+  const all = units.reduce((acc, u) => acc.concat(u), []);
   all.forEach((e, k) => {
     const d = state.custom[e.id];
     if (d.order !== (k + 1) * 10) {
@@ -1566,7 +1753,7 @@ function customFoot(ex) {
   foot.appendChild(lab);
   foot.appendChild(daySeg(ex.day, d => {
     if (d === ex.day) return;
-    const doc = Object.assign({}, state.custom[ex.id], { day: d, order: maxOrder(d) + 10, updatedAt: new Date().toISOString() });
+    const doc = detachGroup(Object.assign({}, state.custom[ex.id], { day: d, order: maxOrder(d) + 10, updatedAt: new Date().toISOString() }));
     state.custom[ex.id] = doc;
     cacheWrite({ custom: state.custom });
     if (d !== state.day && d !== "any") { state.open = null; note(ex.name + " moved to " + DAYLABEL[d] + "."); }
@@ -1593,7 +1780,15 @@ function customFoot(ex) {
       setTimeout(() => { if (state.armedDelete === ex.id) { state.armedDelete = null; render(); } }, 4000);
       return;
     }
+    // if this machine held the group's place on the Full Body list, hand the place to the best machine left
+    const gone = state.custom[ex.id];
+    const heir = (gone && gone.grp && gone.fb != null)
+      ? allEx().filter(e => e.grp === gone.grp && e.id !== ex.id).sort(byRank)[0] : null;
     delete state.custom[ex.id];
+    if (heir) {
+      state.custom[heir.id] = Object.assign({}, state.custom[heir.id], { fb: gone.fb, updatedAt: new Date().toISOString() });
+      queue("custom/" + heir.id, state.custom[heir.id]);
+    }
     cacheWrite({ custom: state.custom });
     state.armedDelete = null; state.open = null;
     render();
@@ -1764,6 +1959,7 @@ function logSet(ex, idx, draft) {
     if (drops.length) rec.drops = drops;
     arr[idx] = rec;
     state.session[ex.id] = arr;
+    if (ex.grp) { curPicks()[ex.grp] = ex.id; savePicks(); }
 
     const total = ex.sets + (ex.warmup || 0);
     delete state.drafts[ex.id + ":" + idx];
@@ -1792,10 +1988,12 @@ function logSet(ex, idx, draft) {
       const e = exById(id);
       names[id] = e ? e.name : ((state.progress[id] || {}).name || "Removed exercise");
     });
-    queue("sessions/" + sid, {
+    const sessionDoc = {
       date: state.date, day: state.day, gym: (state.gym && state.gym !== "all") ? state.gym : null,
       log: state.session, names: names, updatedAt: new Date().toISOString()
-    });
+    };
+    if (Object.keys(curPicks()).length) sessionDoc.pick = Object.assign({}, curPicks());
+    queue("sessions/" + sid, sessionDoc);
     if (workingSets.length) queue("progress/" + ex.id, state.progress[ex.id]);
   } catch (e) {
     note("Could not log this set: " + ((e && e.message) || e) + ". Try again.");
@@ -1890,18 +2088,27 @@ function renderPlan() {
     [ex.gear ? esc(ex.gear) : "", (ex.gym !== "both" && GYMS[ex.gym]) ? GYMS[ex.gym] + " only" : ""].filter(Boolean).join(" · ") +
     '</div></td><td class="w">' + ex.sets + ' × ' + ex.lo + '–' + ex.hi + '</td></tr>';
 
+  // a machine group is one row with its machines listed under it, best first
+  const unitRows = units => units.map(u => {
+    if (u.length < 2) return exRow(u[0]);
+    return '<tr><td><div class="tname">' + esc(u[0].gname || u[0].name) + '</div><div class="tsub">' + u.length + ' machines, best first</div></td>' +
+      '<td class="w">' + u[0].sets + ' × ' + u[0].lo + '–' + u[0].hi + '</td></tr>' +
+      u.map((m, i) => '<tr><td style="padding-left:14px"><div class="tsub">' + (i + 1) + '. ' + esc(m.name) +
+        ((m.gym !== "both" && GYMS[m.gym]) ? ' (' + GYMS[m.gym] + ' only)' : '') + '</div></td><td class="w"></td></tr>').join("");
+  }).join("");
+
   DAYS.forEach(k => {
     const d = PROGRAM[k];
     html += '<div class="sect"><div class="secthead">' + d.label + ' · ' + d.muscles + '</div>' +
       '<div class="tablescroll"><table class="ref"><thead><tr><th>Exercise</th><th style="text-align:right">Sets × reps</th></tr></thead><tbody>' +
-      allEx().filter(e => e.day === k).map(exRow).join("") +
+      unitRows(dayUnits(k)) +
       '</tbody></table></div><div class="plate">' + d.goal + ' Change the list from the Today tab: open an exercise to move, edit or delete it.</div></div>';
   });
 
   const fb = fullBodyEx();
   html += '<div class="sect"><div class="secthead">Full Body · not part of the week</div>' +
     '<div class="tablescroll"><table class="ref"><thead><tr><th>Exercise</th><th style="text-align:right">Sets × reps</th></tr></thead><tbody>' +
-    (fb.length ? fb.map(exRow).join("") : '<tr><td>No list yet</td><td class="w"></td></tr>') +
+    (fb.length ? unitRows(fullBodyUnits()) : '<tr><td>No list yet</td><td class="w"></td></tr>') +
     '</tbody></table></div><div class="plate">The same exercises and history as Push, Pull and Legs. This list changes only through the program file.</div></div>';
 
   const loose = allEx().filter(e => e.day === "any");
@@ -1936,7 +2143,7 @@ function renderPlan() {
    phone's own storage, under one key, so nothing depends on Claude or a login.
    Backup and Restore (Plan tab) protect against a reset or deleted app. */
 
-const APP_VERSION = "2.5.0";
+const APP_VERSION = "2.6.0";
 const STORE_KEY = "pplx2:data:v1";
 
 const localDb = (function () {
