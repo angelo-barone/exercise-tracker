@@ -1,8 +1,8 @@
 {
  "format": 1,
- "version": 4,
- "updated": "2026-11-20",
- "note": "Merges duplicates into one card with a Machine dropdown: Seated Shoulder Press (3 machines + dumbbell), Dumbbell Incline into Incline Press, Seated Hammer Curls into Hammer Curls, Real Delt Reverse Flies into Rear Delts. No history changes. Keeps all your phone edits.",
+ "version": 5,
+ "updated": "2026-11-21",
+ "note": "More hip work on Legs days: Hip Abductor and Hip Adductor go from 2 sets to 3 sets of 12 to 15. Nothing else changes. Keeps all your phone edits.",
  "removed": [
   "pl_row"
  ],
@@ -364,7 +364,7 @@
    "name": "Hip Abductor",
    "day": "legs",
    "gym": "both",
-   "sets": 2,
+   "sets": 3,
    "lo": 12,
    "hi": 15,
    "load": "lower",
@@ -377,7 +377,7 @@
    "name": "Hip Adductor",
    "day": "legs",
    "gym": "both",
-   "sets": 2,
+   "sets": 3,
    "lo": 12,
    "hi": 15,
    "load": "lower",

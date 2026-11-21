@@ -19,6 +19,9 @@ A phone gym logbook for a Push / Pull / Legs split run twice a week. It installs
 - Send a copy to Claude (optional, v2.5.0): after every save the phone sends a copy of its data to a small private server (`worker/`) so Claude can read training without a backup file. Off until a sync code is pasted in the Plan tab. The phone stays the master.
 - Program file: the whole exercise program is `program.json`. When a new version is published the app shows what would change and applies it only when you tap. Logged history is never touched.
 
+## Body tab (v2.7.0)
+A fourth tab, Body. A daily protein counter with quick add buttons (+10 to +40, or type grams) against an editable target and floor (starts at 130 g and 95 g), Undo last, and the last 7 days. A bodyweight log (one weigh-in per date, lb) shown as weekly averages (Monday to Sunday) with a small line and the change per week. Calories are not tracked. The data lives in three new collections in the same phone store: `body`, `food`, `goals`. They travel in backups and in the copy sent to Claude. Nothing existing is changed or migrated.
+
 ## How it is built
 
 One HTML file, plain JavaScript, no framework, no build step.
@@ -40,12 +43,15 @@ Data is on the phone only. Use **Plan, Your data, Back up now** regularly and ke
 
 `tests/hosted.test.js` (67 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym, and the send-a-copy feature (run against the real Worker code with a stand-in store). `tests/worker.test.js` (29 checks): the Worker alone, keys, the one time setup, size limit, wipe protection. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change.
 
+`tests/body.test.js` (34 checks): the Body tab (protein counter, weigh-ins, weekly trend, targets), old data left untouched, backup and restore of the Body data, phone width. `tests/program-v4.json` and `tests/program-v5.json` are the later programs.
+
 `tests/groups.test.js` (65 checks): machine groups, refused group files, defaults per gym, logging on another machine, remembered pick, Full Body, Plan tab, move, delete, backup and restore. `tests/program-v1.json` and `tests/program-v2.json` are frozen copies of earlier programs that the tests start from; `tests/program-v3.json` is the program with machine groups.
 
 ```
 SITE=. NODE_PATH=$(npm root -g) node tests/hosted.test.js
 SITE=. NODE_PATH=$(npm root -g) node tests/program.test.js
 SITE=. NODE_PATH=$(npm root -g) node tests/groups.test.js
+SITE=. NODE_PATH=$(npm root -g) node tests/body.test.js
 node tests/worker.test.js
 ```
 

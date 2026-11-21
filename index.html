@@ -227,7 +227,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   background:var(--surface); border-top:1px solid var(--line);
   padding-bottom:env(safe-area-inset-bottom);
 }
-.nav-inner { max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(3,1fr); }
+.nav-inner { max-width:520px; margin:0 auto; display:grid; grid-template-columns:repeat(4,1fr); }
 .nav button { padding:12px 0 14px; font-size:13px; font-weight:500; color:var(--faint); }
 .nav button[aria-pressed="true"] { color:var(--text); font-weight:600; }
 
@@ -288,6 +288,29 @@ table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-va
 .warnbanner button { margin-left:6px; font-weight:600; text-decoration:underline; text-underline-offset:3px; color:var(--text); }
 .whyoff { margin:6px 0 0; min-height:16px; font-size:12px; color:var(--warn); }
 .exfoot .acts.move button:disabled { opacity:.35; cursor:not-allowed; text-decoration:none; }
+.bodyhead { display:flex; align-items:center; gap:12px; margin:16px 0 18px; }
+.bodyhead h1 { margin:0; font-size:21px; font-weight:700; letter-spacing:-.015em; line-height:1.2; }
+.bodyhead .datefield { margin-left:auto; }
+.bigcount { font-size:30px; font-weight:700; letter-spacing:-.02em; font-variant-numeric:tabular-nums; line-height:1.15; }
+.bigcount span { font-size:15px; font-weight:500; color:var(--faint); letter-spacing:0; }
+.meter { position:relative; height:10px; border-radius:5px; background:var(--surface-2); border:1px solid var(--line); overflow:hidden; margin:10px 0 6px; }
+.meter i { display:block; height:100%; background:var(--dim); }
+.meter.hit i { background:var(--good); }
+.meter u { position:absolute; top:0; bottom:0; width:2px; background:var(--text); opacity:.55; }
+.quick { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:12px; }
+.quick button { padding:11px 0; border-radius:6px; border:1px solid var(--line-strong); background:var(--surface); font-size:14px; font-weight:600; font-variant-numeric:tabular-nums; }
+.addline { display:flex; gap:8px; margin-top:8px; }
+.addline .textin { flex:1; min-width:0; }
+.addline button { padding:0 16px; border-radius:6px; background:var(--accent); color:var(--on-accent); font-weight:600; font-size:14px; }
+.chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; align-items:center; }
+.chips span { border:1px solid var(--line); border-radius:5px; padding:2px 8px; font-size:12.5px; background:var(--surface); font-variant-numeric:tabular-nums; }
+.chips button { font-size:12.5px; color:var(--dim); text-decoration:underline; text-underline-offset:3px; padding:2px 4px; }
+.trend { width:100%; height:auto; display:block; margin-top:10px; }
+.trend .ln { fill:none; stroke:var(--text); stroke-width:2; stroke-linejoin:round; stroke-linecap:round; }
+.trend .pt { fill:var(--ground); stroke:var(--text); stroke-width:2; }
+.trend text { fill:var(--faint); font-size:10px; font-family:inherit; }
+.row2 .then .x { margin-left:10px; font-size:12px; color:var(--faint); text-decoration:underline; text-underline-offset:3px; }
+.good { color:var(--good); }
 @media (prefers-reduced-motion: reduce) { * { transition:none !important; animation:none !important; } }
 </style>
 </head>
@@ -324,6 +347,7 @@ table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-va
   </main>
 
   <main id="history" hidden></main>
+  <main id="body" hidden></main>
   <main id="plan" hidden></main>
 </div>
 
@@ -356,6 +380,7 @@ table.ref td.w { text-align:right; white-space:nowrap; color:var(--dim); font-va
   <div class="nav-inner" id="nav">
     <button type="button" data-tab="today" aria-pressed="true">Today</button>
     <button type="button" data-tab="history" aria-pressed="false">History</button>
+    <button type="button" data-tab="body" aria-pressed="false">Body</button>
     <button type="button" data-tab="plan" aria-pressed="false">Plan</button>
   </div>
 </nav>
@@ -458,7 +483,7 @@ const DUMBBELL_REF = [
 const state = {
   db: null, dbReady: false,
   date: todayISO(), day: "push",
-  progress: {}, notes: {}, custom: {}, session: {}, meta: {}, gym: null, warned: false, restorePending: null,
+  progress: {}, notes: {}, custom: {}, session: {}, meta: {}, weights: {}, food: {}, goals: {}, bodyDate: "", gym: null, warned: false, restorePending: null,
   outbox: {}, syncing: false, syncFailed: false,
   program: null,
   picks: {},
@@ -571,6 +596,9 @@ function applyOutbox() {
     if (col === "notes") { if (d) state.notes[id] = d.text || ""; else delete state.notes[id]; }
     if (col === "custom") { if (d) state.custom[id] = d; else delete state.custom[id]; }
     if (col === "meta") { if (d) state.meta[id] = true; }
+    if (col === "body") { if (d) state.weights[id] = d; else delete state.weights[id]; }
+    if (col === "food") { if (d) state.food[id] = d; else delete state.food[id]; }
+    if (col === "goals") { if (d) state.goals[id] = d; else delete state.goals[id]; }
   }
 }
 function pendingSession(sid) {
@@ -1280,6 +1308,9 @@ function init() {
   state.notes = cached.notes || {};
   state.custom = cached.custom || {};
   state.meta = cached.meta || {};
+  state.weights = cached.weights || {};
+  state.food = cached.food || {};
+  state.goals = cached.goals || {};
   state.picks = cached.picks || {};
   applyOutbox();
   migrate(false);
@@ -1309,7 +1340,9 @@ function init() {
     el("today").hidden = state.tab !== "today";
     el("history").hidden = state.tab !== "history";
     el("plan").hidden = state.tab !== "plan";
+    el("body").hidden = state.tab !== "body";
     document.querySelector(".topbar").hidden = state.tab !== "today";
+    if (state.tab === "body") { state.bodyDate = todayISO(); renderBody(); }
     if (state.tab === "history") renderHistory();
     if (state.tab === "plan") renderPlan();
     if (state.tab === "today") render();
@@ -1323,6 +1356,7 @@ function init() {
   el("programBanner").addEventListener("click", () => el("nav").querySelector('button[data-tab="plan"]').click());
 
   el("sync").addEventListener("click", () => { clearTimeout(retryTimer); flush(); });
+  bodyWire();
   el("restSkip").addEventListener("click", stopRest);
   el("restPlus").addEventListener("click", () => { state.restEnd += 30000; tickRest(); });
   setInterval(tickRest, 250);
@@ -1374,7 +1408,11 @@ async function connectDb() {
       db.collection("progress").get(),
       db.collection("notes").get(),
       db.collection("custom").get(),
-      db.collection("meta").get().catch(() => { metaOk = false; return { docs: [] }; })
+      db.collection("meta").get().catch(() => { metaOk = false; return { docs: [] }; }),
+      // the Body tab collections are optional: if one cannot be read, the copy already on the phone is kept
+      db.collection("body").get().catch(() => null),
+      db.collection("food").get().catch(() => null),
+      db.collection("goals").get().catch(() => null)
     ]);
     const p = {}, n = {}, c = {}, m = {};
     snaps[0].docs.forEach(d => { p[d.id] = d.data(); });
@@ -1382,8 +1420,11 @@ async function connectDb() {
     snaps[2].docs.forEach(d => { c[d.id] = d.data(); });
     snaps[3].docs.forEach(d => { m[d.id] = true; });
     state.progress = p; state.notes = n; state.custom = c; state.meta = m;
+    const bodyOf = (snap, keep) => { if (!snap) return keep; const o = {}; snap.docs.forEach(d => { o[d.id] = d.data(); }); return o; };
+    state.weights = bodyOf(snaps[4], state.weights); state.food = bodyOf(snaps[5], state.food); state.goals = bodyOf(snaps[6], state.goals);
     applyOutbox();
-    cacheWrite({ progress: state.progress, notes: state.notes, custom: state.custom, meta: state.meta });
+    cacheWrite({ progress: state.progress, notes: state.notes, custom: state.custom, meta: state.meta, weights: state.weights, food: state.food, goals: state.goals });
+    if (state.tab === "body") renderBody();
     loaded = metaOk;
   } catch (e) {
     // offline: keep the local copy we painted from
@@ -2127,7 +2168,7 @@ function renderPlan() {
 
   html += '<div class="sect"><div class="secthead">Standing orders</div><div class="rows">' +
     '<div class="row2"><span class="when">Warm-up</span><span class="then">One light set on the first exercise only — no cardio</span></div>' +
-    '<div class="row2"><span class="when">Protein</span><span class="then">130 g target · 100 g floor</span></div>' +
+    '<div class="row2"><span class="when">Protein</span><span class="then">' + nutGoals().protein + ' g target · ' + nutGoals().floor + ' g floor</span></div>' +
     '<div class="row2"><span class="when">Creatine</span><span class="then">5 g daily</span></div>' +
     '</div></div>';
 
@@ -2137,13 +2178,204 @@ function renderPlan() {
   if (prog) root.insertBefore(prog, root.firstChild);
 }
 
+/* ===================== BODY TAB =====================
+   Bodyweight and daily protein, kept small on purpose.
+   Three collections in the same phone store as everything else, so they travel with
+   backups and the copy sent to Claude: body (one weigh-in per date, lb), food (one
+   doc per date with each protein add in grams), goals (the protein target and floor).
+   Nothing here touches workouts, notes or the exercise list. */
+
+function isoOf(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
+function addDays(iso, n) { const d = parseISO(iso); d.setDate(d.getDate() + n); return isoOf(d); }
+function weekStartISO(iso) { const d = parseISO(iso); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return isoOf(d); }
+function shortDate(iso) { const d = parseISO(iso); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][d.getMonth()] + " " + d.getDate(); }
+function r1(n) { return Math.round(n * 10) / 10; }
+
+function nutGoals() {
+  const g = (state.goals && state.goals.nutrition) || {};
+  const p = Number(g.protein), f = Number(g.floor);
+  const protein = p >= 40 && p <= 400 ? p : 130;
+  const floor = f >= 20 && f <= protein ? f : Math.min(95, protein);
+  return { protein: protein, floor: floor };
+}
+function foodDay(iso) {
+  const f = state.food[iso];
+  const entries = f && Array.isArray(f.entries) ? f.entries.filter(x => typeof x === "number" && x > 0) : [];
+  return { date: iso, entries: entries, total: r1(entries.reduce((a, b) => a + b, 0)) };
+}
+function saveFood(iso, entries) {
+  const path = "food/" + iso;
+  if (!entries.length) { delete state.food[iso]; cacheWrite({ food: state.food }); queue(path, null); return; }
+  const doc = { date: iso, entries: entries, total: r1(entries.reduce((a, b) => a + b, 0)), updatedAt: new Date().toISOString() };
+  state.food[iso] = doc; cacheWrite({ food: state.food }); queue(path, doc);
+}
+function addProtein(iso, raw) {
+  const g = r1(Number(raw));
+  if (!(g > 0 && g <= 300)) { note("Enter grams between 1 and 300."); return; }
+  saveFood(iso, foodDay(iso).entries.concat([g]).slice(-80));
+  renderBody();
+}
+function undoProtein(iso) {
+  const e = foodDay(iso).entries; e.pop(); saveFood(iso, e); renderBody();
+}
+function saveWeight(iso, raw) {
+  const w = r1(Number(raw));
+  if (!(w >= 60 && w <= 400)) { note("Enter a weight between 60 and 400 lb."); return; }
+  const doc = { date: iso, weight: w, updatedAt: new Date().toISOString() };
+  state.weights[iso] = doc; cacheWrite({ weights: state.weights }); queue("body/" + iso, doc);
+  renderBody();
+}
+function deleteWeight(iso) {
+  delete state.weights[iso]; cacheWrite({ weights: state.weights }); queue("body/" + iso, null);
+  renderBody();
+}
+function saveGoals(rawP, rawF) {
+  const p = Math.round(Number(rawP)), f = Math.round(Number(rawF));
+  if (!(p >= 40 && p <= 400)) { note("The protein target must be 40 to 400 g."); return; }
+  if (!(f >= 20 && f <= p)) { note("The floor must be 20 g or more, and not above the target."); return; }
+  const doc = { protein: p, floor: f, updatedAt: new Date().toISOString() };
+  state.goals.nutrition = doc; cacheWrite({ goals: state.goals }); queue("goals/nutrition", doc);
+  renderBody();
+}
+
+// weekly averages, Monday to Sunday, oldest first, only weeks that have a weigh-in
+function weeklyAverages() {
+  const by = {};
+  Object.keys(state.weights).forEach(k => {
+    const w = state.weights[k]; if (!w || !(w.weight > 0)) return;
+    const ws = weekStartISO(k); (by[ws] = by[ws] || []).push(w.weight);
+  });
+  return Object.keys(by).sort().map(ws => ({ week: ws, n: by[ws].length, avg: r1(by[ws].reduce((a, b) => a + b, 0) / by[ws].length) }));
+}
+function weeksBetween(a, b) { return Math.round((parseISO(b) - parseISO(a)) / (7 * 86400000)); }
+
+function trendSvg(weeks) {
+  if (weeks.length < 2) return "";
+  const W = 300, H = 96, padX = 16, padT = 14, padB = 22;
+  const vals = weeks.map(w => w.avg), lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+  const span = Math.max(hi - lo, 1);
+  const x = i => padX + (weeks.length === 1 ? 0 : i * (W - 2 * padX) / (weeks.length - 1));
+  const y = v => padT + (hi - v) / span * (H - padT - padB);
+  const pts = weeks.map((w, i) => x(i).toFixed(1) + "," + y(w.avg).toFixed(1));
+  let svg = '<svg class="trend" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Weekly average bodyweight">' +
+    '<polyline class="ln" points="' + pts.join(" ") + '"/>';
+  weeks.forEach((w, i) => { svg += '<circle class="pt" cx="' + x(i).toFixed(1) + '" cy="' + y(w.avg).toFixed(1) + '" r="3.5"/>'; });
+  svg += '<text x="' + x(0).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="start">' + shortDate(weeks[0].week) + '</text>' +
+    '<text x="' + x(weeks.length - 1).toFixed(1) + '" y="' + (H - 6) + '" text-anchor="end">' + shortDate(weeks[weeks.length - 1].week) + '</text></svg>';
+  return svg;
+}
+
+function renderBody() {
+  const root = el("body");
+  if (!root) return;
+  const iso = state.bodyDate || (state.bodyDate = todayISO());
+  const g = nutGoals(), day = foodDay(iso), total = day.total;
+  const pct = Math.min(100, Math.round(total / g.protein * 100)), floorPct = Math.round(g.floor / g.protein * 100);
+  let status;
+  if (total >= g.protein) status = '<span class="good"><b>Target hit.</b></span>' + (total > g.protein ? " " + fmtW(total - g.protein) + " g over." : "");
+  else if (total >= g.floor) status = "Floor passed. <b>" + fmtW(g.protein - total) + " g</b> to the target.";
+  else status = "<b>" + fmtW(g.floor - total) + " g</b> to the floor, " + fmtW(g.protein - total) + " g to the target.";
+
+  // protein, last 7 days ending on the date shown
+  let sum7 = 0, logged7 = 0, rows7 = "";
+  for (let i = 0; i < 7; i++) {
+    const d = addDays(iso, -i), f = foodDay(d), t = f.total;
+    if (t > 0) { sum7 += t; logged7++; }
+    const tag = t <= 0 ? "" : t >= g.protein ? " ✓" : t >= g.floor ? "" : " · under floor";
+    rows7 += '<div class="row2"><span class="when">' + DAYNAME[parseISO(d).getDay()].slice(0, 3) + " " + shortDate(d) + '</span><span class="then' + (t <= 0 ? ' off' : '') + '">' +
+      (t > 0 ? fmtW(t) + " g" + tag : "nothing logged") + '</span></div>';
+  }
+
+  // bodyweight
+  const keys = Object.keys(state.weights).filter(k => state.weights[k] && state.weights[k].weight > 0).sort();
+  const latest = keys.length ? state.weights[keys[keys.length - 1]] : null;
+  const wk = weeklyAverages(), last8 = wk.slice(-8);
+  let trendTxt = "";
+  if (wk.length >= 2) {
+    const a = wk[wk.length - 1], b = wk[wk.length - 2];
+    trendTxt = "Latest week averages <b>" + fmtW(a.avg) + " lb</b> (" + a.n + (a.n === 1 ? " weigh-in" : " weigh-ins") + "), " +
+      (a.avg - b.avg >= 0 ? "+" : "") + fmtW(a.avg - b.avg) + " lb against the week before.";
+    const recent = wk.filter(w => weeksBetween(w.week, wk[wk.length - 1].week) <= 4);
+    if (recent.length >= 2) {
+      const f = recent[0], l = recent[recent.length - 1], span = weeksBetween(f.week, l.week);
+      if (span > 0) { const rate = (l.avg - f.avg) / span; trendTxt += " Over the last " + span + (span === 1 ? " week" : " weeks") + ": " + (rate >= 0 ? "+" : "") + fmtW(rate) + " lb a week."; }
+    }
+  } else if (wk.length === 1) {
+    trendTxt = "This week averages <b>" + fmtW(wk[0].avg) + " lb</b> (" + wk[0].n + (wk[0].n === 1 ? " weigh-in" : " weigh-ins") + "). The trend starts once a second week has a weigh-in.";
+  } else trendTxt = "No weigh-ins yet. A few a week is enough: same time of day, same scale.";
+
+  const weekRows = last8.slice().reverse().map((w, i, arr) => {
+    const prev = arr[i + 1];
+    const d = prev ? (w.avg - prev.avg >= 0 ? "+" : "") + fmtW(w.avg - prev.avg) : "";
+    return '<div class="row2"><span class="when">Week of ' + shortDate(w.week) + ' <span class="hint">(' + w.n + ')</span></span><span class="then">' + fmtW(w.avg) + ' lb' + (d ? ' <span class="hint">' + d + '</span>' : '') + '</span></div>';
+  }).join("");
+  const recentRows = keys.slice(-7).reverse().map(k =>
+    '<div class="row2"><span class="when">' + DAYNAME[parseISO(k).getDay()].slice(0, 3) + " " + shortDate(k) + '</span><span class="then">' + fmtW(state.weights[k].weight) +
+    ' lb<button type="button" class="x" data-wdel="' + esc(k) + '">delete</button></span></div>').join("");
+
+  const thisW = state.weights[iso] && state.weights[iso].weight;
+  root.innerHTML =
+    '<div class="bodyhead"><h1>Body</h1><input type="date" class="datefield" id="bodyDate" aria-label="Date to log" value="' + esc(iso) + '"></div>' +
+
+    '<div class="sect"><div class="secthead">Protein · ' + (iso === todayISO() ? "today" : shortDate(iso)) + '</div>' +
+    '<div class="bigcount" id="pTotal">' + fmtW(total) + ' <span>/ ' + g.protein + ' g</span></div>' +
+    '<div class="meter' + (total >= g.protein ? ' hit' : '') + '" aria-hidden="true"><i style="width:' + pct + '%"></i><u style="left:' + floorPct + '%"></u></div>' +
+    '<div class="hint" id="pStatus">' + status + ' Floor ' + g.floor + ' g.</div>' +
+    '<div class="quick">' + [10, 20, 25, 30, 40].map(n => '<button type="button" data-padd="' + n + '">+' + n + '</button>').join("") + '</div>' +
+    '<div class="addline"><input type="number" inputmode="decimal" class="textin" id="pCustom" placeholder="Other grams" min="1" max="300" step="any" aria-label="Grams of protein">' +
+    '<button type="button" id="pCustomAdd">Add</button></div>' +
+    (day.entries.length ? '<div class="chips" id="pChips">' + day.entries.map(e => '<span>' + fmtW(e) + '</span>').join("") + '<button type="button" id="pUndo">Undo last</button></div>' : '') +
+    '</div>' +
+
+    '<div class="sect"><div class="secthead">Bodyweight</div>' +
+    (latest ? '<div class="bigcount" id="wLatest">' + fmtW(latest.weight) + ' <span>lb · ' + shortDate(latest.date) + '</span></div>' : '') +
+    '<div class="hint" id="wTrend" style="margin-top:6px">' + trendTxt + '</div>' +
+    '<div class="addline"><input type="number" inputmode="decimal" class="textin" id="wIn" placeholder="Weight in lb for ' + (iso === todayISO() ? 'today' : shortDate(iso)) + '" min="60" max="400" step="any" aria-label="Bodyweight in pounds" value="' + (thisW ? esc(thisW) : '') + '">' +
+    '<button type="button" id="wSave">' + (thisW ? 'Update' : 'Save') + '</button></div>' +
+    trendSvg(last8) +
+    (weekRows ? '<div class="rows" style="margin-top:12px" id="wWeeks">' + weekRows + '</div>' : '') +
+    (recentRows ? '<div class="minihead" style="margin:16px 0 6px">Recent weigh-ins</div><div class="rows" id="wRecent">' + recentRows + '</div>' : '') +
+    '</div>' +
+
+    '<div class="sect"><div class="secthead">Protein, last 7 days</div><div class="rows">' + rows7 + '</div>' +
+    '<div class="hint" id="p7" style="margin-top:8px">' + (logged7 ? "Average on days logged: " + fmtW(sum7 / logged7) + " g (" + logged7 + " of 7 days)." : "Nothing logged in the last 7 days.") + '</div></div>' +
+
+    '<div class="sect"><div class="secthead">Targets</div>' +
+    '<div class="fieldgrid"><div class="field"><label for="tIn">Protein target <em>g a day</em></label><input type="number" inputmode="numeric" class="textin" id="tIn" value="' + g.protein + '"></div>' +
+    '<div class="field"><label for="fIn">Floor <em>g, the minimum</em></label><input type="number" inputmode="numeric" class="textin" id="fIn" value="' + g.floor + '"></div></div>' +
+    '<div class="btnrow"><button type="button" class="save" id="tSave">Save targets</button></div>' +
+    '<div class="plate">Starting values came from your notes. Change them here any time. Calories are not tracked yet.</div></div>';
+}
+
+function bodyWire() {
+  const root = el("body");
+  root.addEventListener("click", e => {
+    const t = e.target.closest("button"); if (!t) return;
+    const iso = state.bodyDate || todayISO();
+    if (t.dataset.padd) addProtein(iso, t.dataset.padd);
+    else if (t.id === "pCustomAdd") addProtein(iso, el("pCustom").value);
+    else if (t.id === "pUndo") undoProtein(iso);
+    else if (t.id === "wSave") saveWeight(iso, el("wIn").value);
+    else if (t.dataset.wdel) deleteWeight(t.dataset.wdel);
+    else if (t.id === "tSave") saveGoals(el("tIn").value, el("fIn").value);
+  });
+  root.addEventListener("change", e => {
+    if (e.target.id === "bodyDate") { state.bodyDate = e.target.value || todayISO(); renderBody(); }
+  });
+  root.addEventListener("keydown", e => {
+    if (e.key !== "Enter") return;
+    if (e.target.id === "pCustom") addProtein(state.bodyDate || todayISO(), e.target.value);
+    if (e.target.id === "wIn") saveWeight(state.bodyDate || todayISO(), e.target.value);
+  });
+}
+
 /* ===================== PHONE STORAGE =====================
    The app talks to a small document store (collection / doc / get / set / delete).
    On the Claude artifact that store lived in the cloud. Here it lives in this
    phone's own storage, under one key, so nothing depends on Claude or a login.
    Backup and Restore (Plan tab) protect against a reset or deleted app. */
 
-const APP_VERSION = "2.6.0";
+const APP_VERSION = "2.7.0";
 const STORE_KEY = "pplx2:data:v1";
 
 const localDb = (function () {
@@ -2220,7 +2452,7 @@ function hasAnyData() { return Object.keys(state.progress).length > 0 || Object.
 
 function snapshotData() {
   const d = localDb.dump();
-  ["custom", "progress", "notes", "sessions", "meta"].forEach(c => { d[c] = d[c] || {}; });
+  ["custom", "progress", "notes", "sessions", "meta", "body", "food", "goals"].forEach(c => { d[c] = d[c] || {}; });
   Object.keys(state.outbox).forEach(path => {
     const p = path.split("/"), e = state.outbox[path];
     if (!d[p[0]]) d[p[0]] = {};
@@ -2261,12 +2493,14 @@ function readBackupFile(file) {
     try {
       const obj = JSON.parse(String(reader.result));
       if (!obj || obj.app !== "pplx2-logbook" || !obj.data || typeof obj.data !== "object") throw new Error("This is not a tracker backup file.");
-      ["custom", "progress", "notes", "sessions", "meta"].forEach(c => { if (!obj.data[c] || typeof obj.data[c] !== "object") obj.data[c] = {}; });
+      ["custom", "progress", "notes", "sessions", "meta", "body", "food", "goals"].forEach(c => { if (!obj.data[c] || typeof obj.data[c] !== "object") obj.data[c] = {}; });
       state.restorePending = {
         data: obj.data, exportedAt: obj.exportedAt || "",
         sessions: Object.keys(obj.data.sessions).length,
         exercises: Object.keys(obj.data.custom).length,
-        notes: Object.keys(obj.data.notes).length
+        notes: Object.keys(obj.data.notes).length,
+        weighIns: Object.keys(obj.data.body).length,
+        proteinDays: Object.keys(obj.data.food).length
       };
     } catch (e) {
       state.restorePending = null;
@@ -2310,7 +2544,7 @@ function dataSectionEl() {
     const box = document.createElement("div");
     box.className = "plate"; box.style.borderColor = "var(--warn)";
     box.innerHTML = "<b>Replace everything on this phone?</b> The backup has " + rp.sessions + " workouts, " + rp.exercises +
-      " added exercises and " + rp.notes + " notes" + (rp.exportedAt ? " (made " + esc(rp.exportedAt.slice(0, 10)) + ")" : "") +
+      " added exercises, " + rp.notes + " notes, " + rp.weighIns + " weigh-ins and " + rp.proteinDays + " days of protein" + (rp.exportedAt ? " (made " + esc(rp.exportedAt.slice(0, 10)) + ")" : "") +
       ". What is on this phone now is replaced.";
     const acts = document.createElement("div"); acts.className = "btnrow";
     const yes = document.createElement("button");

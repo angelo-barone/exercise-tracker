@@ -21,7 +21,7 @@ The old Claude artifact "PPL x2 Logbook" still exists but is retired. It only sa
 - Storage: `localDb` adapter in index.html, localStorage key `pplx2:data:v1`. Same API shape the app always used: collection(...).orderBy().limit().get(), doc("col/id").get/set/delete. A failed save throws an Error with code "storage" and the header shows "not saved" with a retry.
 - `window.claude.use("db")` is shimmed to return localDb, so the app code did not change.
 - App cache keys `pplx2:v1` and `pplx2:outbox` are a read cache and a retry queue. The store is the truth. Restore clears them.
-- Collections: custom (every exercise, built in ones seeded with ids), sessions (doc per date_day, has gym, log, names), progress, notes, meta/v2 (migration flag).
+- Collections: custom (every exercise, built in ones seeded with ids), sessions (doc per date_day, has gym, log, names), progress, notes, meta/v2 (migration flag). Since v2.7.0 also body (doc per date: weight in lb), food (doc per date: entries in grams, total), goals (doc nutrition: protein, floor). They are optional: a backup without them still restores, and the Worker passes any extra collections through.
 - Backup file: {app:"pplx2-logbook", format:1, exportedAt, appVersion, data:{custom,progress,notes,sessions,meta}}. Restore replaces everything, saves the old data to `pplx2:before-restore`, then reloads. Last backup time is `pplx2:lastBackup`.
 - Gym tags: exercise.gym is "minto", "montpetit" or empty (empty = both). History is per exercise id, shared across gyms.
 - Gym picker (added v2.3.0): Minto, Montpetit, Other, plus the link "Show every exercise". Other (`state.gym === "other"`) shows every exercise like "all" but is saved on the session as gym "other" and shown in History. "all" saves no gym. No exercise is ever tagged "other".
@@ -37,6 +37,8 @@ Machine groups (v2.6.0): optional `grp`, `gname`, `rank` on `custom` docs, set f
 
 Tests start a throwaway python web server on a random port and stop it when they finish (tests/program-v1.json is the frozen starting program).
 
+Body tab (v2.7.0, Nov 21 2026): fourth tab with a protein counter (quick add buttons, target 130 g and floor 95 g by default, from his notes, editable in goals/nutrition) and a bodyweight log shown as Monday to Sunday weekly averages. Calories deliberately left out until his weight trend stalls. Never reshapes existing collections. Test: tests/body.test.js.
+
 ## Sync to Claude (added v2.5.0)
 Goal: Claude can read his training data at any time with no backup file. The app sends, Claude reads. The phone stays the master; sync never changes phone data and a failure never touches saving.
 - Server: `worker/index.js`, a Cloudflare Worker with a KV namespace bound as LOGBOOK, free tier. `POST /sync` (Bearer WRITE_KEY) stores the app's backup format as `latest`. `GET /data` and `GET /status` (Bearer READ_KEY) read it back. `?copy=previous` reads the larger copy kept aside when a send has fewer workouts than the stored one (protects against a wipe). CORS allows only ALLOWED_ORIGIN (default https://angelo-barone.github.io). Keys: nobody types them. The first GET /setup makes a random write key and read key, stores them in KV under `keys`, returns the sync code and read key once, then answers 410 forever. To change keys, delete the `keys` entry in the KV namespace and visit /setup again (then give him the new sync code and update the Sunday Gym panel refresh task, which holds the read key). Worker secrets WRITE_KEY and READ_KEY, if ever set, take priority. No key or data is in this repo.
@@ -48,7 +50,7 @@ Goal: Claude can read his training data at any time with no backup file. The app
 ## Releasing a change
 1. Edit index.html.
 2. Bump APP_VERSION in index.html and CACHE_VERSION in sw.js. If CACHE_VERSION is not bumped, phones may keep an old copy.
-3. Run tests/hosted.test.js, tests/program.test.js, tests/groups.test.js and tests/worker.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
+3. Run tests/hosted.test.js, tests/program.test.js, tests/groups.test.js, tests/body.test.js and tests/worker.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
 4. Ask Angelo, then commit and push to master. Pages redeploys in about a minute.
 5. On his phone: open the app twice (first load fetches, second runs the new version).
 

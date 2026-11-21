@@ -17,6 +17,7 @@ EVERY DAY USE
 - Change an exercise: open it, tap "Edit name, gym, sets & reps". Arrows move it up or down. Delete asks twice.
 - Add an exercise: tap the add button at the bottom of the day.
 - Full Body: tap Full Body next to Legs. It is its own workout, not part of the week, and it never changes your rest day. It uses the same exercises as Push, Pull and Legs, so your history is shared. There you cannot delete, move or add; that list changes only through the program file.
+- Body tab: the fourth button at the bottom. Protein: tap +10, +20, +25, +30 or +40 each time you eat protein, or type your own grams. It shows how far you are from your minimum (floor) and your daily target. Undo last fixes a mistake. Bodyweight: type your weight a few times a week and tap Save. It shows the weekly average, so one heavy or light day does not matter. Targets at the bottom can be changed any time (they start at 130 g and 95 g). Everything is saved on the phone, in backups and in the copy sent to Claude.
 - Machine dropdown: some exercises (like Closed Grip Row) have a box called Machine at the top of the open card. Pick the machine you are using. The best machine your gym has is chosen for you. Each machine keeps its own weights, notes and history. If you log on two machines in one workout, both are saved.
 - The top right shows "All saved". If it says "not saved", tap it to retry and tell me.
 
