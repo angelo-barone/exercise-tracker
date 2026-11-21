@@ -1,8 +1,8 @@
 {
  "format": 1,
- "version": 3,
+ "version": 4,
  "updated": "2026-11-20",
- "note": "Adds machine dropdowns (Closed Grip Row, Rear Delts, Incline Press, Leg Press or Hack Squat, Cable Curls), removes Seated Cable Row, tags the Minto only machines, and takes yellow area out of the equipment text. Keeps the edits you made on your phone since Nov 5.",
+ "note": "Merges duplicates into one card with a Machine dropdown: Seated Shoulder Press (3 machines + dumbbell), Dumbbell Incline into Incline Press, Seated Hammer Curls into Hammer Curls, Real Delt Reverse Flies into Rear Delts. No history changes. Keeps all your phone edits.",
  "removed": [
   "pl_row"
  ],
@@ -407,6 +407,56 @@
    "lo": 10,
    "hi": 12,
    "load": "lower"
+  },
+  {
+   "id": "c_mw49827s",
+   "name": "Seated Shoulder Press Machine",
+   "day": "push",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper"
+  },
+  {
+   "id": "c_mw9osbjk",
+   "name": "Dumbell Incline",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper"
+  },
+  {
+   "id": "c_mw9ot0po",
+   "name": "Dumbell Shoulder Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper"
+  },
+  {
+   "id": "c_mw034m1b",
+   "name": "Seated Hammer Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper"
+  },
+  {
+   "id": "c_mw72m8df",
+   "name": "Real Delt Reverse Flies",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper"
   }
  ],
  "groups": [
@@ -426,7 +476,8 @@
    "members": [
     "pl_reardelt",
     "c_mu22ps4p",
-    "c_mubmpybd"
+    "c_mubmpybd",
+    "c_mw72m8df"
    ]
   },
   {
@@ -435,7 +486,8 @@
    "members": [
     "p_incline",
     "c_mu0fanxt",
-    "c_mu6a0yyd"
+    "c_mu6a0yyd",
+    "c_mw9osbjk"
    ]
   },
   {
@@ -452,6 +504,24 @@
    "members": [
     "pl_curl",
     "c_mu227o0i"
+   ]
+  },
+  {
+   "id": "g_shoulder",
+   "name": "Seated Shoulder Press",
+   "members": [
+    "p_shoulder",
+    "c_mv8r564p",
+    "c_mw49827s",
+    "c_mw9ot0po"
+   ]
+  },
+  {
+   "id": "g_hammer",
+   "name": "Hammer Curls",
+   "members": [
+    "pl_hammer",
+    "c_mw034m1b"
    ]
   }
  ]
