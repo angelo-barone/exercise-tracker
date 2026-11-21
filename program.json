@@ -1,8 +1,8 @@
 {
  "format": 1,
- "version": 5,
+ "version": 6,
  "updated": "2026-11-21",
- "note": "More hip work on Legs days: Hip Abductor and Hip Adductor go from 2 sets to 3 sets of 12 to 15. Nothing else changes. Keeps all your phone edits.",
+ "note": "Each day is now split by muscle. Push: Chest, Shoulders, Triceps, Core. Pull: Back, Rear Delts, Biceps, Forearms. Legs: Squat Movements (Hack Squat, with Leg Press as the alternative in a dropdown), Quads, Hamstrings, Hips, Calves. Dips moves under Triceps. Pullups moves to Pull under Back. Your phone only exercises are now in the file. Leg Press is now at both gyms. Sets and reps stay as you have them.",
  "removed": [
   "pl_row"
  ],
@@ -32,7 +32,8 @@
    "rest": 120,
    "warmup": 1,
    "gear": "Smith Machine",
-   "cue": "Upper chest priority — go heavy while fully fresh."
+   "cue": "Upper chest priority \u2014 go heavy while fully fresh.",
+   "muscle": "Chest"
   },
   {
    "id": "c_mu0fanxt",
@@ -42,7 +43,8 @@
    "sets": 2,
    "lo": 6,
    "hi": 10,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Chest"
   },
   {
    "id": "c_mu6a0yyd",
@@ -52,20 +54,19 @@
    "sets": 3,
    "lo": 9,
    "hi": 12,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Chest"
   },
   {
-   "id": "p_shoulder",
-   "name": "Seated Shoulder Press",
+   "id": "c_mw9osbjk",
+   "name": "Dumbell Incline",
    "day": "push",
    "gym": "both",
-   "sets": 2,
+   "sets": 3,
    "lo": 8,
-   "hi": 10,
+   "hi": 12,
    "load": "upper",
-   "rest": 120,
-   "gear": "Shoulder Press Machine",
-   "cue": "Full lockout at top — chest is resting from the incline."
+   "muscle": "Chest"
   },
   {
    "id": "p_chestpress",
@@ -78,7 +79,77 @@
    "load": "upper",
    "rest": 120,
    "gear": "Chest Press Machine",
-   "cue": "Push hard — chest is rested from the shoulder press."
+   "cue": "Push hard \u2014 chest is rested from the shoulder press.",
+   "muscle": "Chest"
+  },
+  {
+   "id": "c_mw9p8kpd",
+   "name": "Flat Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Chest"
+  },
+  {
+   "id": "c_mv0beegu",
+   "name": "Chest Fly Machine",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Chest"
+  },
+  {
+   "id": "p_shoulder",
+   "name": "Seated Shoulder Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "rest": 120,
+   "gear": "Shoulder Press Machine",
+   "cue": "Full lockout at top \u2014 chest is resting from the incline.",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mv8r564p",
+   "name": "Seated Shoulder Press XL2-700",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mw49827s",
+   "name": "Seated Shoulder Press Machine",
+   "day": "push",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mw9ot0po",
+   "name": "Dumbell Shoulder Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Shoulders"
   },
   {
    "id": "p_latraise",
@@ -90,8 +161,20 @@
    "hi": 15,
    "load": "upper",
    "rest": 60,
-   "gear": "Low Pulley — single arm",
-   "cue": "Single arm, raise to shoulder height."
+   "gear": "Low Pulley \u2014 single arm",
+   "cue": "Single arm, raise to shoulder height.",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mw9pjksz",
+   "name": "Dips",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Triceps"
   },
   {
    "id": "p_pushdown",
@@ -103,8 +186,9 @@
    "hi": 12,
    "load": "upper",
    "rest": 90,
-   "gear": "High Pulley — rope",
-   "cue": "Elbows pinned, spread the rope at the bottom."
+   "gear": "High Pulley \u2014 rope",
+   "cue": "Elbows pinned, spread the rope at the bottom.",
+   "muscle": "Triceps"
   },
   {
    "id": "p_kickback",
@@ -117,7 +201,19 @@
    "load": "upper",
    "rest": 60,
    "gear": "Cable or Dumbbell",
-   "cue": "Full extension at top, squeeze for 1 second."
+   "cue": "Full extension at top, squeeze for 1 second.",
+   "muscle": "Triceps"
+  },
+  {
+   "id": "c_mu0g01hb",
+   "name": "Triceps Extension Machine",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Triceps"
   },
   {
    "id": "p_abs",
@@ -130,17 +226,8 @@
    "load": "upper",
    "rest": 60,
    "gear": "Ab Crunch Machine",
-   "cue": "Controlled — squeeze abs at the top of every rep."
-  },
-  {
-   "id": "c_mu0g01hb",
-   "name": "Triceps Extension Machine",
-   "day": "push",
-   "gym": "both",
-   "sets": 2,
-   "lo": 8,
-   "hi": 12,
-   "load": "upper"
+   "cue": "Controlled \u2014 squeeze abs at the top of every rep.",
+   "muscle": "Core"
   },
   {
    "id": "c_mu0gm1ql",
@@ -150,27 +237,19 @@
    "sets": 2,
    "lo": 8,
    "hi": 12,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Core"
   },
   {
-   "id": "c_mv0beegu",
-   "name": "Chest Fly Machine",
+   "id": "c_mwmgrreu",
+   "name": "decline situp",
    "day": "push",
-   "gym": "both",
-   "sets": 2,
+   "gym": "montpetit",
+   "sets": 3,
    "lo": 8,
-   "hi": 10,
-   "load": "upper"
-  },
-  {
-   "id": "c_mv8r564p",
-   "name": "Seated Shoulder Press XL2-700",
-   "day": "push",
-   "gym": "both",
-   "sets": 2,
-   "lo": 7,
-   "hi": 10,
-   "load": "upper"
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Core"
   },
   {
    "id": "pl_pulldown",
@@ -184,7 +263,19 @@
    "rest": 120,
    "warmup": 1,
    "gear": "Lat Pulldown",
-   "cue": "Pull to upper chest, drive elbows down and back."
+   "cue": "Pull to upper chest, drive elbows down and back.",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mwgzonul",
+   "name": "Pullups",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 6,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Back"
   },
   {
    "id": "c_mw02qgc9",
@@ -194,7 +285,8 @@
    "sets": 2,
    "lo": 7,
    "hi": 10,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Back"
   },
   {
    "id": "c_mu21v74p",
@@ -204,7 +296,8 @@
    "sets": 2,
    "lo": 6,
    "hi": 10,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Back"
   },
   {
    "id": "c_mubm1edn",
@@ -214,7 +307,8 @@
    "sets": 2,
    "lo": 7,
    "hi": 10,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Back"
   },
   {
    "id": "c_mv18thxb",
@@ -224,7 +318,19 @@
    "sets": 2,
    "lo": 7,
    "hi": 10,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mwmgqk1l",
+   "name": "upper back rows",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Back"
   },
   {
    "id": "pl_reardelt",
@@ -237,7 +343,8 @@
    "load": "upper",
    "rest": 60,
    "gear": "Pec Deck, reversed",
-   "cue": "Light weight, arms nearly straight, squeeze the rear delts."
+   "cue": "Light weight, arms nearly straight, squeeze the rear delts.",
+   "muscle": "Rear Delts"
   },
   {
    "id": "c_mu22ps4p",
@@ -247,7 +354,8 @@
    "sets": 4,
    "lo": 8,
    "hi": 12,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Rear Delts"
   },
   {
    "id": "c_mubmpybd",
@@ -257,7 +365,19 @@
    "sets": 4,
    "lo": 8,
    "hi": 10,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Rear Delts"
+  },
+  {
+   "id": "c_mw72m8df",
+   "name": "Real Delt Reverse Flies",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Rear Delts"
   },
   {
    "id": "pl_curl",
@@ -270,7 +390,8 @@
    "load": "upper",
    "rest": 90,
    "gear": "Low Pulley",
-   "cue": "Full extension at the bottom, no swinging."
+   "cue": "Full extension at the bottom, no swinging.",
+   "muscle": "Biceps"
   },
   {
    "id": "c_mu227o0i",
@@ -280,7 +401,8 @@
    "sets": 2,
    "lo": 8,
    "hi": 12,
-   "load": "upper"
+   "load": "upper",
+   "muscle": "Biceps"
   },
   {
    "id": "pl_hammer",
@@ -292,8 +414,31 @@
    "hi": 12,
    "load": "upper",
    "rest": 90,
-   "gear": "Low Pulley — rope",
-   "cue": "Neutral grip — brachialis and forearm thickness."
+   "gear": "Low Pulley \u2014 rope",
+   "cue": "Neutral grip \u2014 brachialis and forearm thickness.",
+   "muscle": "Biceps"
+  },
+  {
+   "id": "c_mw034m1b",
+   "name": "Seated Hammer Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Biceps"
+  },
+  {
+   "id": "c_mwl7twys",
+   "name": "Dumbell Standup Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Biceps"
   },
   {
    "id": "pl_revcurl",
@@ -305,22 +450,9 @@
    "hi": 15,
    "load": "upper",
    "rest": 60,
-   "gear": "Low Pulley — bar",
-   "cue": "Overhand grip, full extension — direct forearm builder."
-  },
-  {
-   "id": "lg_press",
-   "name": "Leg Press",
-   "day": "legs",
-   "gym": "montpetit",
-   "sets": 3,
-   "lo": 8,
-   "hi": 10,
-   "load": "lower",
-   "rest": 120,
-   "warmup": 1,
-   "gear": "",
-   "cue": ""
+   "gear": "Low Pulley \u2014 bar",
+   "cue": "Overhand grip, full extension \u2014 direct forearm builder.",
+   "muscle": "Forearms"
   },
   {
    "id": "c_mux7l5fd",
@@ -331,20 +463,23 @@
    "lo": 6,
    "hi": 10,
    "load": "lower",
-   "warmup": 1
+   "warmup": 1,
+   "muscle": "Squat Movements"
   },
   {
-   "id": "lg_legcurl",
-   "name": "Seated Leg Curl",
+   "id": "lg_press",
+   "name": "Leg Press",
    "day": "legs",
    "gym": "both",
-   "sets": 2,
-   "lo": 10,
-   "hi": 12,
+   "sets": 3,
+   "lo": 8,
+   "hi": 10,
    "load": "lower",
-   "rest": 90,
-   "gear": "Leg Curl",
-   "cue": "Control the lowering phase, full stretch at the bottom."
+   "rest": 120,
+   "warmup": 1,
+   "gear": "",
+   "cue": "",
+   "muscle": "Squat Movements"
   },
   {
    "id": "lg_legext",
@@ -357,7 +492,22 @@
    "load": "lower",
    "rest": 60,
    "gear": "Leg Extension",
-   "cue": "Pause and squeeze hard at the top for 1 second."
+   "cue": "Pause and squeeze hard at the top for 1 second.",
+   "muscle": "Quads"
+  },
+  {
+   "id": "lg_legcurl",
+   "name": "Seated Leg Curl",
+   "day": "legs",
+   "gym": "both",
+   "sets": 2,
+   "lo": 10,
+   "hi": 12,
+   "load": "lower",
+   "rest": 90,
+   "gear": "Leg Curl",
+   "cue": "Control the lowering phase, full stretch at the bottom.",
+   "muscle": "Hamstrings"
   },
   {
    "id": "lg_abd",
@@ -370,7 +520,8 @@
    "load": "lower",
    "rest": 60,
    "gear": "Abductor/Adductor Machine",
-   "cue": "Push knees outward — glute med and outer hip."
+   "cue": "Push knees outward \u2014 glute med and outer hip.",
+   "muscle": "Hips"
   },
   {
    "id": "lg_add",
@@ -383,7 +534,8 @@
    "load": "lower",
    "rest": 60,
    "gear": "Abductor/Adductor Machine",
-   "cue": "Squeeze knees inward — run it back to back with the abductor."
+   "cue": "Squeeze knees inward \u2014 run it back to back with the abductor.",
+   "muscle": "Hips"
   },
   {
    "id": "lg_calf",
@@ -396,7 +548,8 @@
    "load": "lower",
    "rest": 60,
    "gear": "Calf Extension Machine",
-   "cue": "Full stretch at the bottom, pause at the top."
+   "cue": "Full stretch at the bottom, pause at the top.",
+   "muscle": "Calves"
   },
   {
    "id": "c_mv2tiby0",
@@ -406,57 +559,19 @@
    "sets": 2,
    "lo": 10,
    "hi": 12,
-   "load": "lower"
+   "load": "lower",
+   "muscle": "Calves"
   },
   {
-   "id": "c_mw49827s",
-   "name": "Seated Shoulder Press Machine",
-   "day": "push",
+   "id": "c_mw1hni8p",
+   "name": "Seated Calf Raise",
+   "day": "legs",
    "gym": "minto",
    "sets": 2,
    "lo": 8,
-   "hi": 10,
-   "load": "upper"
-  },
-  {
-   "id": "c_mw9osbjk",
-   "name": "Dumbell Incline",
-   "day": "push",
-   "gym": "both",
-   "sets": 3,
-   "lo": 8,
    "hi": 12,
-   "load": "upper"
-  },
-  {
-   "id": "c_mw9ot0po",
-   "name": "Dumbell Shoulder Press",
-   "day": "push",
-   "gym": "both",
-   "sets": 3,
-   "lo": 8,
-   "hi": 12,
-   "load": "upper"
-  },
-  {
-   "id": "c_mw034m1b",
-   "name": "Seated Hammer Curls",
-   "day": "pull",
-   "gym": "both",
-   "sets": 2,
-   "lo": 8,
-   "hi": 12,
-   "load": "upper"
-  },
-  {
-   "id": "c_mw72m8df",
-   "name": "Real Delt Reverse Flies",
-   "day": "pull",
-   "gym": "both",
-   "sets": 2,
-   "lo": 8,
-   "hi": 12,
-   "load": "upper"
+   "load": "lower",
+   "muscle": "Calves"
   }
  ],
  "groups": [
@@ -491,14 +606,6 @@
    ]
   },
   {
-   "id": "g_legpress",
-   "name": "Leg Press or Hack Squat",
-   "members": [
-    "lg_press",
-    "c_mux7l5fd"
-   ]
-  },
-  {
    "id": "g_cablecurl",
    "name": "Cable Curls",
    "members": [
@@ -522,6 +629,14 @@
    "members": [
     "pl_hammer",
     "c_mw034m1b"
+   ]
+  },
+  {
+   "id": "g_legpress",
+   "name": "Hack Squat / Leg Press",
+   "members": [
+    "c_mux7l5fd",
+    "lg_press"
    ]
   }
  ]
