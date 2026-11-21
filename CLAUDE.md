@@ -37,6 +37,8 @@ Machine groups (v2.6.0): optional `grp`, `gname`, `rank` on `custom` docs, set f
 
 Tests start a throwaway python web server on a random port and stop it when they finish (tests/program-v1.json is the frozen starting program).
 
+Muscle headings (v2.8.0, Nov 21 2026): optional `muscle` text on `custom` docs, set from each exercise in program.json (PROG_FIELDS, progProblem, progPlan). Today and Plan show a heading whenever the muscle changes down the list (`hasMuscles`, `muscleOf`, `.grouphead`, `.musclehead`); no muscle shows as "Other" once the day has any; Full Body shows none. The add/edit form has a Muscle select from `MUSCLES` per day; a new exercise is placed at the end of its muscle block (`orderForMuscle`); changing the day on an exercise clears its muscle. Program v6: Legs has a Squat Movements block, with Hack Squat (Minto) and Leg Press (both gyms, the alternative) kept as machine group g_legpress, Dips under Triceps. Old apps ignore `muscle`, so push the app first. Test: tests/muscle.test.js (frozen tests/program-v6.json).
+
 Body tab (v2.7.0, Nov 21 2026): fourth tab with a protein counter (quick add buttons, target 130 g and floor 95 g by default, from his notes, editable in goals/nutrition) and a bodyweight log shown as Monday to Sunday weekly averages. Calories deliberately left out until his weight trend stalls. Never reshapes existing collections. Test: tests/body.test.js.
 
 ## Sync to Claude (added v2.5.0)
@@ -50,7 +52,7 @@ Goal: Claude can read his training data at any time with no backup file. The app
 ## Releasing a change
 1. Edit index.html.
 2. Bump APP_VERSION in index.html and CACHE_VERSION in sw.js. If CACHE_VERSION is not bumped, phones may keep an old copy.
-3. Run tests/hosted.test.js, tests/program.test.js, tests/groups.test.js, tests/body.test.js and tests/worker.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
+3. Run tests/hosted.test.js, tests/program.test.js, tests/groups.test.js, tests/body.test.js, tests/muscle.test.js and tests/worker.test.js (see README; Node.js and Playwright must be installed). They use tests/fake-test-data.json, a labelled FAKE backup, so no real backup is needed. All checks must pass.
 4. Ask Angelo, then commit and push to master. Pages redeploys in about a minute.
 5. On his phone: open the app twice (first load fetches, second runs the new version).
 

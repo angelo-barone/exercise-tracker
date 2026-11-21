@@ -100,6 +100,7 @@ button:focus-visible, input:focus-visible, textarea:focus-visible {
   font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
   color:var(--faint); margin:18px 0 0; padding-bottom:2px;
 }
+.musclehead { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); padding-top:14px; }
 .ex { background:var(--surface); border:1px solid var(--line); border-radius:var(--r); }
 .ex.open { border-color:var(--line-strong); }
 
@@ -854,7 +855,7 @@ function toEx(id, c) {
   return {
     id: id, name: c.name, custom: true, day: c.day, gym: c.gym || "both",
     order: (c.order == null ? 5000 : c.order), fb: (c.fb == null ? null : c.fb), createdAt: c.createdAt || "",
-    grp: c.grp || null, gname: c.gname || "", rank: c.rank || 0,
+    grp: c.grp || null, gname: c.gname || "", rank: c.rank || 0, muscle: c.muscle || "",
     gear: c.gear || "", cue: c.cue || "",
     sets: c.sets, lo: c.lo, hi: c.hi, load: c.load || "upper",
     rest: c.rest || 90, warmup: c.warmup || 0
@@ -954,6 +955,21 @@ function maxOrder(day) {
   const o = allEx().filter(e => e.day === day).map(e => e.order);
   return o.length ? Math.max.apply(null, o) : 0;
 }
+/* Muscle headings (v2.8.0). Each exercise may carry a muscle name. Today and Plan show a heading
+   whenever the muscle changes down the list. The names below only fill the add/edit dropdown;
+   any name the program file sets is shown as it is. */
+const MUSCLES = {
+  push: ["Chest", "Shoulders", "Triceps", "Core"],
+  pull: ["Back", "Rear Delts", "Biceps", "Forearms"],
+  legs: ["Squat Movements", "Quads", "Hamstrings", "Hips", "Calves"]
+};
+function hasMuscles(exs) { return exs.some(e => e.muscle); }
+function muscleOf(ex) { return ex.muscle || "Other"; }
+/* Order number that puts a new exercise at the end of its muscle's block (or the end of the day). */
+function orderForMuscle(day, muscle, skipId) {
+  const same = muscle ? allEx().filter(e => e.day === day && e.muscle === muscle && e.id !== skipId) : [];
+  return same.length ? Math.max.apply(null, same.map(e => e.order)) + 5 : maxOrder(day) + 10;
+}
 
 /* One time move: built in exercises become ordinary editable documents.
    Runs once (meta/v2). Never re-adds an exercise you deleted. */
@@ -996,7 +1012,7 @@ function migrate(queueIt) {
 const PA = "pplx2:programApplied";
 const PROG_DAYS = ["push", "pull", "legs", "any"];
 const PROG_GYMS = ["both", "minto", "montpetit"];
-const PROG_FIELDS = ["name", "day", "gym", "sets", "lo", "hi", "load", "rest", "warmup", "gear", "cue"];
+const PROG_FIELDS = ["name", "day", "gym", "sets", "lo", "hi", "load", "rest", "warmup", "gear", "cue", "muscle"];
 
 function appliedVersion() {
   try { const v = parseInt(localStorage.getItem(PA), 10); return v > 0 ? v : 0; } catch (e) { return 0; }
@@ -1036,6 +1052,7 @@ function progProblem(file) {
     if (e.warmup !== undefined && !isInt(e.warmup, 0, 5)) return who + " has an invalid number of warm-up sets.";
     if (e.gear !== undefined && typeof e.gear !== "string") return who + " has invalid equipment text.";
     if (e.cue !== undefined && typeof e.cue !== "string") return who + " has an invalid tip.";
+    if (e.muscle !== undefined && !isText(e.muscle, 30)) return who + " has an invalid muscle name.";
     const lo = e.lo !== undefined ? e.lo : (prev || {}).lo, hi = e.hi !== undefined ? e.hi : (prev || {}).hi;
     if (lo > hi) return who + " has a low rep number above its high rep number.";
   }
@@ -1140,7 +1157,7 @@ function progPlan(file) {
     const prev = state.custom[e.id];
     const doc = b.next[e.id];
     if (!prev) {
-      plan.added.push(doc.name + " (" + DAYLABEL[doc.day] + ", " + doc.sets + " × " + doc.lo + "–" + doc.hi +
+      plan.added.push(doc.name + " (" + DAYLABEL[doc.day] + (doc.muscle ? ", " + doc.muscle : "") + ", " + doc.sets + " × " + doc.lo + "–" + doc.hi +
         (doc.gym && doc.gym !== "both" ? ", " + GYMWORDS[doc.gym] : "") + ")");
       return;
     }
@@ -1154,6 +1171,7 @@ function progPlan(file) {
     if (e.warmup !== undefined && (doc.warmup || 0) !== (prev.warmup || 0)) bits.push("warm-up sets " + (prev.warmup || 0) + " to " + doc.warmup);
     if (e.gear !== undefined && (doc.gear || "") !== (prev.gear || "")) bits.push("equipment text changed");
     if (e.cue !== undefined && (doc.cue || "") !== (prev.cue || "")) bits.push("tip text changed");
+    if (e.muscle !== undefined && (doc.muscle || "") !== (prev.muscle || "")) bits.push("muscle: " + (prev.muscle || "none") + " to " + doc.muscle);
     const renamed = doc.name !== prev.name;
     if (renamed || bits.length) plan.changed.push((renamed ? prev.name + " → " + doc.name : doc.name) + (bits.length ? ": " + bits.join("; ") : ""));
   });
@@ -1480,7 +1498,12 @@ function render() {
 
   const list = el("exlist");
   list.innerHTML = "";
-  vis.forEach((ex, i) => list.appendChild(exCard(ex, i + 1)));
+  const heads = state.day !== "fullbody" && hasMuscles(vis);
+  let lastMuscle = null;
+  vis.forEach((ex, i) => {
+    if (heads && muscleOf(ex) !== lastMuscle) { lastMuscle = muscleOf(ex); list.appendChild(groupHead(lastMuscle)); }
+    list.appendChild(exCard(ex, i + 1));
+  });
   if (!vis.length) {
     const e = document.createElement("div");
     e.className = "empty";
@@ -1504,7 +1527,7 @@ function render() {
     const add = document.createElement("button");
     add.type = "button"; add.className = "addbtn"; add.textContent = "+ Add exercise";
     add.addEventListener("click", () => {
-      state.form = { name:"", day:state.day, gym:"both", sets:3, lo:8, hi:12, load: state.day === "legs" ? "lower" : "upper" };
+      state.form = { name:"", day:state.day, gym:"both", sets:3, lo:8, hi:12, load: state.day === "legs" ? "lower" : "upper", muscle:"" };
       state.formFor = "new"; state.open = null; state.editingNote = null;
       render();
       const n = document.querySelector(".cform .textin"); if (n) n.focus();
@@ -1652,8 +1675,25 @@ function customForm(ex) {
 
   const dayWrap = document.createElement("div");
   dayWrap.innerHTML = '<span class="flabel">Day</span>';
-  dayWrap.appendChild(daySeg(f.day, v => { f.day = v; render(); }, f.day === "any"));
+  dayWrap.appendChild(daySeg(f.day, v => { if (v !== f.day) f.muscle = ""; f.day = v; render(); }, f.day === "any"));
   box.appendChild(dayWrap);
+
+  if (MUSCLES[f.day]) {
+    const mWrap = document.createElement("div");
+    mWrap.innerHTML = '<label class="flabel" for="cmuscle">Muscle <em>— the heading it sits under</em></label>';
+    const sel = document.createElement("select");
+    sel.id = "cmuscle"; sel.className = "textin";
+    const names = MUSCLES[f.day].slice();
+    if (f.muscle && names.indexOf(f.muscle) < 0) names.push(f.muscle);
+    [["", "None"]].concat(names.map(n => [n, n])).forEach(o => {
+      const op = document.createElement("option"); op.value = o[0]; op.textContent = o[1];
+      if (o[0] === (f.muscle || "")) op.selected = true;
+      sel.appendChild(op);
+    });
+    sel.addEventListener("change", () => { f.muscle = sel.value; });
+    mWrap.appendChild(sel);
+    box.appendChild(mWrap);
+  }
 
   const gymWrap = document.createElement("div");
   gymWrap.innerHTML = '<span class="flabel">Gym <em>— Both shows it at Minto and Montpetit</em></span>';
@@ -1731,11 +1771,14 @@ function saveCustom(ex) {
   const prev = state.custom[id] || {};
   const now = new Date().toISOString();
   let order = prev.order;
-  if (!ex || prev.day !== f.day || order == null) order = maxOrder(f.day) + 10;
+  const muscle = MUSCLES[f.day] ? (f.muscle || "") : "";
+  if (!ex || prev.day !== f.day || order == null) order = orderForMuscle(f.day, muscle, id);
+  else if ((prev.muscle || "") !== muscle && !prev.grp) order = orderForMuscle(f.day, muscle, id);
   const doc = Object.assign({}, prev, {
     name: f.name.trim(), day: f.day, gym: f.gym || "both", sets: f.sets, lo: f.lo, hi: f.hi, load: f.load,
     order: order, createdAt: prev.createdAt || now, updatedAt: now
   });
+  if (muscle) doc.muscle = muscle; else delete doc.muscle;
   if (ex && prev.day !== f.day) detachGroup(doc);
   state.custom[id] = doc;
   cacheWrite({ custom: state.custom });
@@ -1795,6 +1838,7 @@ function customFoot(ex) {
   foot.appendChild(daySeg(ex.day, d => {
     if (d === ex.day) return;
     const doc = detachGroup(Object.assign({}, state.custom[ex.id], { day: d, order: maxOrder(d) + 10, updatedAt: new Date().toISOString() }));
+    delete doc.muscle;
     state.custom[ex.id] = doc;
     cacheWrite({ custom: state.custom });
     if (d !== state.day && d !== "any") { state.open = null; note(ex.name + " moved to " + DAYLABEL[d] + "."); }
@@ -1807,7 +1851,7 @@ function customFoot(ex) {
   edit.type = "button"; edit.textContent = "Edit name, gym, sets & reps";
   edit.addEventListener("click", () => {
     const c = state.custom[ex.id];
-    state.form = { name:c.name, day:c.day, gym:c.gym || "both", sets:c.sets, lo:c.lo, hi:c.hi, load:c.load || "upper" };
+    state.form = { name:c.name, day:c.day, gym:c.gym || "both", sets:c.sets, lo:c.lo, hi:c.hi, load:c.load || "upper", muscle:c.muscle || "" };
     state.formFor = ex.id;
     render();
   });
@@ -2130,19 +2174,24 @@ function renderPlan() {
     '</div></td><td class="w">' + ex.sets + ' × ' + ex.lo + '–' + ex.hi + '</td></tr>';
 
   // a machine group is one row with its machines listed under it, best first
-  const unitRows = units => units.map(u => {
-    if (u.length < 2) return exRow(u[0]);
-    return '<tr><td><div class="tname">' + esc(u[0].gname || u[0].name) + '</div><div class="tsub">' + u.length + ' machines, best first</div></td>' +
+  const unitRows = (units, heads) => { let last = null; return units.map(u => {
+    let head = "";
+    if (heads && hasMuscles(units.map(x => x[0])) && muscleOf(u[0]) !== last) {
+      last = muscleOf(u[0]);
+      head = '<tr><td colspan="2" class="musclehead">' + esc(last) + '</td></tr>';
+    }
+    if (u.length < 2) return head + exRow(u[0]);
+    return head + '<tr><td><div class="tname">' + esc(u[0].gname || u[0].name) + '</div><div class="tsub">' + u.length + ' machines, best first</div></td>' +
       '<td class="w">' + u[0].sets + ' × ' + u[0].lo + '–' + u[0].hi + '</td></tr>' +
       u.map((m, i) => '<tr><td style="padding-left:14px"><div class="tsub">' + (i + 1) + '. ' + esc(m.name) +
         ((m.gym !== "both" && GYMS[m.gym]) ? ' (' + GYMS[m.gym] + ' only)' : '') + '</div></td><td class="w"></td></tr>').join("");
-  }).join("");
+  }).join(""); };
 
   DAYS.forEach(k => {
     const d = PROGRAM[k];
     html += '<div class="sect"><div class="secthead">' + d.label + ' · ' + d.muscles + '</div>' +
       '<div class="tablescroll"><table class="ref"><thead><tr><th>Exercise</th><th style="text-align:right">Sets × reps</th></tr></thead><tbody>' +
-      unitRows(dayUnits(k)) +
+      unitRows(dayUnits(k), true) +
       '</tbody></table></div><div class="plate">' + d.goal + ' Change the list from the Today tab: open an exercise to move, edit or delete it.</div></div>';
   });
 
@@ -2375,7 +2424,7 @@ function bodyWire() {
    phone's own storage, under one key, so nothing depends on Claude or a login.
    Backup and Restore (Plan tab) protect against a reset or deleted app. */
 
-const APP_VERSION = "2.7.0";
+const APP_VERSION = "2.8.0";
 const STORE_KEY = "pplx2:data:v1";
 
 const localDb = (function () {

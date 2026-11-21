@@ -28,6 +28,7 @@ His logged sets, notes and history are never touched by an update.
 - `gym`: both (default), minto or montpetit. A gym tag hides the exercise at the other gym.
 - `rest` seconds, `warmup` number of warm-up sets, `gear` and `cue` are optional text. Leave a field out to leave it as it is on the phone.
 - The ORDER of exercises in the file, within each day, is the order in the app.
+- `muscle` (optional text, up to 30 letters, for example "Back" or "Rear Delts"): the heading the exercise sits under on Today and in Plan. Keep exercises of one muscle next to each other in the file, because the app shows a new heading each time the muscle changes down the list. Machines of one group should share the same muscle. Exercises with no muscle show under "Other" once any exercise of that day has a muscle. Full Body shows no headings. Current muscles: Push (Chest, Shoulders, Triceps, Core), Pull (Back, Rear Delts, Biceps, Forearms), Legs (Squat Movements, Quads, Hamstrings, Hips, Calves). Main lift of a muscle goes first. Old apps ignore `muscle`, so push the app first (it is 2.8.0 or later).
 
 ## The Full Body tab
 `fullBody` is the list for the Full Body tab: an ordered list of exercise ids, in the order he does them.

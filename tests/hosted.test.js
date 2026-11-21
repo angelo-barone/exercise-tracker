@@ -250,7 +250,7 @@ const sleep = ms => new Promise(r=>setTimeout(r,ms));
   await pM.fill('#syncCodeIn', 'http://localhost:' + WP + '#' + WKEY); await pM.click('#syncSave');
   ok('M: first copy arrives after saving the code', await until(() => latest()));
   let L = latest();
-  ok('M: the copy is exactly the phone data (14 workouts)', L && JSON.stringify(L.data.sessions) === JSON.stringify(real.sessions) && JSON.stringify(L.data.notes) === JSON.stringify(real.notes) && L.appVersion === '2.7.0', L ? Object.keys(L.data.sessions).length + ' sessions' : 'none');
+  ok('M: the copy is exactly the phone data (14 workouts)', L && JSON.stringify(L.data.sessions) === JSON.stringify(real.sessions) && JSON.stringify(L.data.notes) === JSON.stringify(real.notes) && L.appVersion === '2.8.0', L ? Object.keys(L.data.sessions).length + ' sessions' : 'none');
   await pM.waitForSelector('#syncOff');
   ok('M: status says last sent, with Send now and Turn off', (await pM.textContent('#syncStatus')).includes('Last sent: just now') && (await pM.isVisible('#syncNow')));
   ok('M: the key is kept on the phone only, never in the page file', !fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8').includes(WKEY) && !/workers\.dev/.test(fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8')));
