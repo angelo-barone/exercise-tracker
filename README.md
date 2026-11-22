@@ -46,7 +46,7 @@ Data is on the phone only. Use **Plan, Your data, Back up now** regularly and ke
 
 `tests/hosted.test.js` (67 checks): install files, restore, backup round trip, offline use, storage failures, exercise editing, drop sets, the Other gym, and the send-a-copy feature (run against the real Worker code with a stand-in store). `tests/worker.test.js` (29 checks): the Worker alone, keys, the one time setup, size limit, wipe protection. `tests/program.test.js` (56 checks): program updates, rename, add, remove, reorder, broken files, offline, the Full Body list and warm-up change.
 
-`tests/muscle.test.js` (30 checks): muscle headings on Today, Plan and the add form, refused muscle names, program version 6 applied to the fake data, history untouched. `tests/program-v6.json` is the program with muscles.
+`tests/muscle.test.js` (39 checks): muscle headings on Today, Plan and the add form, refused muscle names, program version 6 applied to the fake data, then version 7 (Ab Crunch removed, history untouched). `tests/program-v6.json` and `tests/program-v7.json` are frozen copies.
 
 `tests/body.test.js` (34 checks): the Body tab (protein counter, weigh-ins, weekly trend, targets), old data left untouched, backup and restore of the Body data, phone width. `tests/program-v4.json` and `tests/program-v5.json` are the later programs.
 

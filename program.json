@@ -1,10 +1,11 @@
 {
  "format": 1,
- "version": 6,
- "updated": "2026-11-21",
- "note": "Each day is now split by muscle. Push: Chest, Shoulders, Triceps, Core. Pull: Back, Rear Delts, Biceps, Forearms. Legs: Squat Movements (Hack Squat, with Leg Press as the alternative in a dropdown), Quads, Hamstrings, Hips, Calves. Dips moves under Triceps. Pullups moves to Pull under Back. Your phone only exercises are now in the file. Leg Press is now at both gyms. Sets and reps stay as you have them.",
+ "version": 7,
+ "updated": "2026-11-22",
+ "note": "Ab Crunch Machine is removed (your note said remove it; any past logs stay safe). Dumbell Standup Curls joins the Cable Curls dropdown and upper back rows joins the Closed Grip Row dropdown. The other incline presses now have 1 warm up set like the Incline Bench Press. Everything from version 6 is included: days split by muscle, Squat Movements (Hack Squat with Leg Press as the alternative), Dips under Triceps, Pullups on Pull, Leg Press at both gyms.",
  "removed": [
-  "pl_row"
+  "pl_row",
+  "p_abs"
  ],
  "fullBody": [
   "lg_press",
@@ -16,8 +17,7 @@
   "p_latraise",
   "pl_curl",
   "p_pushdown",
-  "lg_calf",
-  "p_abs"
+  "lg_calf"
  ],
  "exercises": [
   {
@@ -44,7 +44,8 @@
    "lo": 6,
    "hi": 10,
    "load": "upper",
-   "muscle": "Chest"
+   "muscle": "Chest",
+   "warmup": 1
   },
   {
    "id": "c_mu6a0yyd",
@@ -55,7 +56,8 @@
    "lo": 9,
    "hi": 12,
    "load": "upper",
-   "muscle": "Chest"
+   "muscle": "Chest",
+   "warmup": 1
   },
   {
    "id": "c_mw9osbjk",
@@ -66,7 +68,8 @@
    "lo": 8,
    "hi": 12,
    "load": "upper",
-   "muscle": "Chest"
+   "muscle": "Chest",
+   "warmup": 1
   },
   {
    "id": "p_chestpress",
@@ -214,20 +217,6 @@
    "hi": 12,
    "load": "upper",
    "muscle": "Triceps"
-  },
-  {
-   "id": "p_abs",
-   "name": "Ab Crunch Machine",
-   "day": "push",
-   "gym": "both",
-   "sets": 2,
-   "lo": 12,
-   "hi": 15,
-   "load": "upper",
-   "rest": 60,
-   "gear": "Ab Crunch Machine",
-   "cue": "Controlled \u2014 squeeze abs at the top of every rep.",
-   "muscle": "Core"
   },
   {
    "id": "c_mu0gm1ql",
@@ -405,6 +394,17 @@
    "muscle": "Biceps"
   },
   {
+   "id": "c_mwl7twys",
+   "name": "Dumbell Standup Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Biceps"
+  },
+  {
    "id": "pl_hammer",
    "name": "Cable Hammer Curl",
    "day": "pull",
@@ -421,17 +421,6 @@
   {
    "id": "c_mw034m1b",
    "name": "Seated Hammer Curls",
-   "day": "pull",
-   "gym": "both",
-   "sets": 2,
-   "lo": 8,
-   "hi": 12,
-   "load": "upper",
-   "muscle": "Biceps"
-  },
-  {
-   "id": "c_mwl7twys",
-   "name": "Dumbell Standup Curls",
    "day": "pull",
    "gym": "both",
    "sets": 2,
@@ -582,7 +571,8 @@
     "c_mw02qgc9",
     "c_mu21v74p",
     "c_mubm1edn",
-    "c_mv18thxb"
+    "c_mv18thxb",
+    "c_mwmgqk1l"
    ]
   },
   {
@@ -610,7 +600,8 @@
    "name": "Cable Curls",
    "members": [
     "pl_curl",
-    "c_mu227o0i"
+    "c_mu227o0i",
+    "c_mwl7twys"
    ]
   },
   {

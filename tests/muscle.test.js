@@ -128,6 +128,25 @@ const killSrv = () => { try { if (srv) srv.kill(); } catch (e) {} };
   ok('R1: sessions, notes and progress still untouched', keep(before) === keep(fin));
   ok('R1: no page errors', errs.length === 0, errs.join(' | '));
 
+  // ---- version 7: Ab Crunch removed, history kept, two machines join dropdowns ----
+  const v7 = rd('program-v7.json');
+  const hadAbsLog = Object.values(fin.sessions || {}).filter(x => x.log && x.log.p_abs).length;
+  setProg(v7); await reload(page);
+  ok('V7: update banner shows', await page.isVisible('#programBanner'));
+  await page.click('#programBanner'); await page.waitForSelector('#programYes');
+  ok('V7: update lists Ab Crunch Machine as removed', (await page.textContent('#plan')).includes('Ab Crunch Machine'));
+  await page.click('#programYes'); await settle(page);
+  const s7 = await store(page);
+  ok('V7: Ab Crunch exercise is gone', !s7.custom.p_abs);
+  ok('V7: its past logs are still in the sessions', Object.values(s7.sessions || {}).filter(x => x.log && x.log.p_abs).length === hadAbsLog);
+  ok('V7: sessions, notes and progress untouched', keep(fin) === keep(s7));
+  ok('V7: Standup Curls joined Cable Curls, upper back rows joined the row group', s7.custom.c_mwl7twys && s7.custom.c_mwl7twys.grp === 'g_cablecurl' && s7.custom.c_mwmgqk1l && s7.custom.c_mwmgqk1l.grp === 'g_row');
+  ok('V7: other incline presses warm up 1', ['c_mu0fanxt', 'c_mu6a0yyd', 'c_mw9osbjk'].every(i => !s7.custom[i] || s7.custom[i].warmup === 1));
+  await day(page, 'push'); f = await flow(page);
+  ok('V7: Core now has no Ab Crunch', !f.includes('Ab Crunch Machine'));
+  await reload(page); await day(page, 'fullbody');
+  ok('V7: Full Body still opens', (await names(page)).length >= 8);
+
   await browser.close(); killSrv();
   const fails = results.filter(r => r[0] === 'FAIL');
   results.forEach(r => console.log(r[0] + '  ' + r[1] + (r[2] && r[0] === 'FAIL' ? '  -> ' + r[2] : '')));

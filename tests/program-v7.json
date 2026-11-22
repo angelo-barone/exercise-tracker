@@ -1,0 +1,634 @@
+{
+ "format": 1,
+ "version": 7,
+ "updated": "2026-11-22",
+ "note": "Ab Crunch Machine is removed (your note said remove it; any past logs stay safe). Dumbell Standup Curls joins the Cable Curls dropdown and upper back rows joins the Closed Grip Row dropdown. The other incline presses now have 1 warm up set like the Incline Bench Press. Everything from version 6 is included: days split by muscle, Squat Movements (Hack Squat with Leg Press as the alternative), Dips under Triceps, Pullups on Pull, Leg Press at both gyms.",
+ "removed": [
+  "pl_row",
+  "p_abs"
+ ],
+ "fullBody": [
+  "lg_press",
+  "p_incline",
+  "pl_pulldown",
+  "lg_legcurl",
+  "p_shoulder",
+  "c_mw02qgc9",
+  "p_latraise",
+  "pl_curl",
+  "p_pushdown",
+  "lg_calf"
+ ],
+ "exercises": [
+  {
+   "id": "p_incline",
+   "name": "Incline Bench Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 6,
+   "hi": 10,
+   "load": "upper",
+   "rest": 120,
+   "warmup": 1,
+   "gear": "Smith Machine",
+   "cue": "Upper chest priority \u2014 go heavy while fully fresh.",
+   "muscle": "Chest"
+  },
+  {
+   "id": "c_mu0fanxt",
+   "name": "Incline Dumbbell Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 6,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Chest",
+   "warmup": 1
+  },
+  {
+   "id": "c_mu6a0yyd",
+   "name": "Incline Bench (no machine)",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 9,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Chest",
+   "warmup": 1
+  },
+  {
+   "id": "c_mw9osbjk",
+   "name": "Dumbell Incline",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Chest",
+   "warmup": 1
+  },
+  {
+   "id": "p_chestpress",
+   "name": "Chest Press Machine",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "rest": 120,
+   "gear": "Chest Press Machine",
+   "cue": "Push hard \u2014 chest is rested from the shoulder press.",
+   "muscle": "Chest"
+  },
+  {
+   "id": "c_mw9p8kpd",
+   "name": "Flat Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Chest"
+  },
+  {
+   "id": "c_mv0beegu",
+   "name": "Chest Fly Machine",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Chest"
+  },
+  {
+   "id": "p_shoulder",
+   "name": "Seated Shoulder Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "rest": 120,
+   "gear": "Shoulder Press Machine",
+   "cue": "Full lockout at top \u2014 chest is resting from the incline.",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mv8r564p",
+   "name": "Seated Shoulder Press XL2-700",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mw49827s",
+   "name": "Seated Shoulder Press Machine",
+   "day": "push",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mw9ot0po",
+   "name": "Dumbell Shoulder Press",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "p_latraise",
+   "name": "Cable Lateral Raise",
+   "day": "push",
+   "gym": "montpetit",
+   "sets": 2,
+   "lo": 12,
+   "hi": 15,
+   "load": "upper",
+   "rest": 60,
+   "gear": "Low Pulley \u2014 single arm",
+   "cue": "Single arm, raise to shoulder height.",
+   "muscle": "Shoulders"
+  },
+  {
+   "id": "c_mw9pjksz",
+   "name": "Dips",
+   "day": "push",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Triceps"
+  },
+  {
+   "id": "p_pushdown",
+   "name": "Cable Tricep Pushdown",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 10,
+   "hi": 12,
+   "load": "upper",
+   "rest": 90,
+   "gear": "High Pulley \u2014 rope",
+   "cue": "Elbows pinned, spread the rope at the bottom.",
+   "muscle": "Triceps"
+  },
+  {
+   "id": "p_kickback",
+   "name": "Single Arm Tricep Kickback",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 12,
+   "hi": 15,
+   "load": "upper",
+   "rest": 60,
+   "gear": "Cable or Dumbbell",
+   "cue": "Full extension at top, squeeze for 1 second.",
+   "muscle": "Triceps"
+  },
+  {
+   "id": "c_mu0g01hb",
+   "name": "Triceps Extension Machine",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Triceps"
+  },
+  {
+   "id": "c_mu0gm1ql",
+   "name": "Declined Dumbbell Crunch",
+   "day": "push",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Core"
+  },
+  {
+   "id": "c_mwmgrreu",
+   "name": "decline situp",
+   "day": "push",
+   "gym": "montpetit",
+   "sets": 3,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Core"
+  },
+  {
+   "id": "pl_pulldown",
+   "name": "Lat Pulldown",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "rest": 120,
+   "warmup": 1,
+   "gear": "Lat Pulldown",
+   "cue": "Pull to upper chest, drive elbows down and back.",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mwgzonul",
+   "name": "Pullups",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 6,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mw02qgc9",
+   "name": "Seated Row: AP 2500",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mu21v74p",
+   "name": "Seated Row: SP-5900",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 6,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mubm1edn",
+   "name": "Seated Row: FUSE XL",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mv18thxb",
+   "name": "Dumbbell Rows",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 7,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Back"
+  },
+  {
+   "id": "c_mwmgqk1l",
+   "name": "upper back rows",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Back"
+  },
+  {
+   "id": "pl_reardelt",
+   "name": "Rear Delt Reverse Fly",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 12,
+   "hi": 15,
+   "load": "upper",
+   "rest": 60,
+   "gear": "Pec Deck, reversed",
+   "cue": "Light weight, arms nearly straight, squeeze the rear delts.",
+   "muscle": "Rear Delts"
+  },
+  {
+   "id": "c_mu22ps4p",
+   "name": "Single Arm Rear Delt Reverse Flys",
+   "day": "pull",
+   "gym": "both",
+   "sets": 4,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Rear Delts"
+  },
+  {
+   "id": "c_mubmpybd",
+   "name": "Seated Row FUSE XL (rear delts)",
+   "day": "pull",
+   "gym": "minto",
+   "sets": 4,
+   "lo": 8,
+   "hi": 10,
+   "load": "upper",
+   "muscle": "Rear Delts"
+  },
+  {
+   "id": "c_mw72m8df",
+   "name": "Real Delt Reverse Flies",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Rear Delts"
+  },
+  {
+   "id": "pl_curl",
+   "name": "Cable Bicep Curl",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 10,
+   "hi": 12,
+   "load": "upper",
+   "rest": 90,
+   "gear": "Low Pulley",
+   "cue": "Full extension at the bottom, no swinging.",
+   "muscle": "Biceps"
+  },
+  {
+   "id": "c_mu227o0i",
+   "name": "Cable Rope Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Biceps"
+  },
+  {
+   "id": "c_mwl7twys",
+   "name": "Dumbell Standup Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Biceps"
+  },
+  {
+   "id": "pl_hammer",
+   "name": "Cable Hammer Curl",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 10,
+   "hi": 12,
+   "load": "upper",
+   "rest": 90,
+   "gear": "Low Pulley \u2014 rope",
+   "cue": "Neutral grip \u2014 brachialis and forearm thickness.",
+   "muscle": "Biceps"
+  },
+  {
+   "id": "c_mw034m1b",
+   "name": "Seated Hammer Curls",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "upper",
+   "muscle": "Biceps"
+  },
+  {
+   "id": "pl_revcurl",
+   "name": "Cable Reverse Curl",
+   "day": "pull",
+   "gym": "both",
+   "sets": 2,
+   "lo": 12,
+   "hi": 15,
+   "load": "upper",
+   "rest": 60,
+   "gear": "Low Pulley \u2014 bar",
+   "cue": "Overhand grip, full extension \u2014 direct forearm builder.",
+   "muscle": "Forearms"
+  },
+  {
+   "id": "c_mux7l5fd",
+   "name": "Hack Squat",
+   "day": "legs",
+   "gym": "minto",
+   "sets": 3,
+   "lo": 6,
+   "hi": 10,
+   "load": "lower",
+   "warmup": 1,
+   "muscle": "Squat Movements"
+  },
+  {
+   "id": "lg_press",
+   "name": "Leg Press",
+   "day": "legs",
+   "gym": "both",
+   "sets": 3,
+   "lo": 8,
+   "hi": 10,
+   "load": "lower",
+   "rest": 120,
+   "warmup": 1,
+   "gear": "",
+   "cue": "",
+   "muscle": "Squat Movements"
+  },
+  {
+   "id": "lg_legext",
+   "name": "Leg Extension",
+   "day": "legs",
+   "gym": "both",
+   "sets": 2,
+   "lo": 12,
+   "hi": 15,
+   "load": "lower",
+   "rest": 60,
+   "gear": "Leg Extension",
+   "cue": "Pause and squeeze hard at the top for 1 second.",
+   "muscle": "Quads"
+  },
+  {
+   "id": "lg_legcurl",
+   "name": "Seated Leg Curl",
+   "day": "legs",
+   "gym": "both",
+   "sets": 2,
+   "lo": 10,
+   "hi": 12,
+   "load": "lower",
+   "rest": 90,
+   "gear": "Leg Curl",
+   "cue": "Control the lowering phase, full stretch at the bottom.",
+   "muscle": "Hamstrings"
+  },
+  {
+   "id": "lg_abd",
+   "name": "Hip Abductor",
+   "day": "legs",
+   "gym": "both",
+   "sets": 3,
+   "lo": 12,
+   "hi": 15,
+   "load": "lower",
+   "rest": 60,
+   "gear": "Abductor/Adductor Machine",
+   "cue": "Push knees outward \u2014 glute med and outer hip.",
+   "muscle": "Hips"
+  },
+  {
+   "id": "lg_add",
+   "name": "Hip Adductor",
+   "day": "legs",
+   "gym": "both",
+   "sets": 3,
+   "lo": 12,
+   "hi": 15,
+   "load": "lower",
+   "rest": 60,
+   "gear": "Abductor/Adductor Machine",
+   "cue": "Squeeze knees inward \u2014 run it back to back with the abductor.",
+   "muscle": "Hips"
+  },
+  {
+   "id": "lg_calf",
+   "name": "Calf Extension",
+   "day": "legs",
+   "gym": "both",
+   "sets": 3,
+   "lo": 12,
+   "hi": 15,
+   "load": "lower",
+   "rest": 60,
+   "gear": "Calf Extension Machine",
+   "cue": "Full stretch at the bottom, pause at the top.",
+   "muscle": "Calves"
+  },
+  {
+   "id": "c_mv2tiby0",
+   "name": "Standing Calf Raise",
+   "day": "legs",
+   "gym": "both",
+   "sets": 2,
+   "lo": 10,
+   "hi": 12,
+   "load": "lower",
+   "muscle": "Calves"
+  },
+  {
+   "id": "c_mw1hni8p",
+   "name": "Seated Calf Raise",
+   "day": "legs",
+   "gym": "minto",
+   "sets": 2,
+   "lo": 8,
+   "hi": 12,
+   "load": "lower",
+   "muscle": "Calves"
+  }
+ ],
+ "groups": [
+  {
+   "id": "g_row",
+   "name": "Closed Grip Row",
+   "members": [
+    "c_mw02qgc9",
+    "c_mu21v74p",
+    "c_mubm1edn",
+    "c_mv18thxb",
+    "c_mwmgqk1l"
+   ]
+  },
+  {
+   "id": "g_reardelt",
+   "name": "Rear Delts",
+   "members": [
+    "pl_reardelt",
+    "c_mu22ps4p",
+    "c_mubmpybd",
+    "c_mw72m8df"
+   ]
+  },
+  {
+   "id": "g_incline",
+   "name": "Incline Press",
+   "members": [
+    "p_incline",
+    "c_mu0fanxt",
+    "c_mu6a0yyd",
+    "c_mw9osbjk"
+   ]
+  },
+  {
+   "id": "g_cablecurl",
+   "name": "Cable Curls",
+   "members": [
+    "pl_curl",
+    "c_mu227o0i",
+    "c_mwl7twys"
+   ]
+  },
+  {
+   "id": "g_shoulder",
+   "name": "Seated Shoulder Press",
+   "members": [
+    "p_shoulder",
+    "c_mv8r564p",
+    "c_mw49827s",
+    "c_mw9ot0po"
+   ]
+  },
+  {
+   "id": "g_hammer",
+   "name": "Hammer Curls",
+   "members": [
+    "pl_hammer",
+    "c_mw034m1b"
+   ]
+  },
+  {
+   "id": "g_legpress",
+   "name": "Hack Squat / Leg Press",
+   "members": [
+    "c_mux7l5fd",
+    "lg_press"
+   ]
+  }
+ ]
+}
