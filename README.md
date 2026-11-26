@@ -63,6 +63,10 @@ node tests/worker.test.js
 
 The tests no longer need a real backup. They use `tests/fake-test-data.json`, a clearly labelled FAKE backup (14 made-up workouts, 28 progress records, 21 notes, 14 added exercises) that exists only for testing and is not anyone's real workout data. Real backups are personal and are never committed to this repo. Setting `TRACKER_BACKUP` to another file still works, but it must have the same counts.
 
+## How it was made
+
+Built with Claude (Claude Code). Angelo Barone directs the features and tests it.
+
 ## License
 
-Personal project, shared for portfolio purposes.
+MIT. See `LICENSE`.

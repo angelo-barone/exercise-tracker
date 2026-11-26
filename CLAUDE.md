@@ -1,6 +1,6 @@
 # exercise-tracker (Claude reads this first)
 
-Owner: Angelo Barone. No coding experience, does not read code. Explain every change in plain words before and after. Never assume he understands a technical term. Keep replies short, no dashes.
+Owner: Angelo Barone. Built with Claude; Angelo directs the features and tests it. Explain every change in plain words before and after, and explain any technical term you use. Keep replies short, no dashes.
 
 ## What this is
 A hosted phone app: PPL x2 gym logbook. Repo angelo-barone/exercise-tracker, branch master, served by GitHub Pages at https://angelo-barone.github.io/exercise-tracker/ . All paths are relative so it works under the repo subpath.
@@ -58,5 +58,5 @@ Goal: Claude can read his training data at any time with no backup file. The app
 
 ## Open items
 - Gym tags: equipment lists per gym are needed from Angelo before tagging exercises.
-- Workout program revision waits on his back pain and tightness details.
+- Workout program revision waits on more input from Angelo.
 - Real device check on iPhone (Add to Home Screen icon, standalone mode) is only confirmed by him.

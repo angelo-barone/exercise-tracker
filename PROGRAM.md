@@ -58,5 +58,5 @@ His logged sets, notes and history are never touched by an update.
 - Remove an exercise by deleting it from `exercises` AND adding its id to `removed`. An id in both lists is rejected. An exercise left out of both is KEPT on his phone (the update screen shows it as "only on this phone").
 - Day names and the weekly split (Push, Pull, Legs, rest days) are not in this file. Do not change the split here. Only the Full Body list is (see above).
 - If the JSON is broken or a field is invalid, the app refuses the whole file and tells him. Check the file parses before saying you are done.
-- Do not invent exercises, weights or reps. Ask Angelo, and use what he told you about his back pain and gym equipment. Do not put logged workouts or backups in this repo.
+- Do not invent exercises, weights or reps. Ask Angelo, and use what he told you about his needs and gym equipment. Do not put logged workouts or backups in this repo.
 - The current phone data may contain exercises he added in the app that are not in this file. Check the latest backup in `Personal\Health and Wellness\03 Exercise\tracker-backups` if you need to see them.

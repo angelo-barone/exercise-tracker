@@ -47,4 +47,4 @@ IF SOMETHING LOOKS WRONG
 
 THINGS STILL TO DO
 - Tell me which equipment each gym has, so exercises can be tagged for Minto or Montpetit.
-- Tell me about your back pain and tightness so the program can be revised.
+- Tell me anything that should change how the program is built, so it can be revised.
